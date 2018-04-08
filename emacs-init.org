@@ -417,20 +417,6 @@ Git gutter:
 [2018-04-08 Sun 08:19]
 * Themes
 #+begin_src emacs-lisp
-
-;; This code is deprecated - since the move to melpa managed themes
-;;(if (display-graphic-p)
-;;    (progn
-;;      (require 'color-theme)
-;;      (color-theme-initialize)
-;;      (color-theme-gruvbox)
-;;      (color-theme-calm-forest)
-;;      (color-theme-solarized-dark)
-;;      (set-face-attribute 'default nil :font "gohufont-14")
-;;      (set-frame-size (selected-frame) 100 80)
-;;	))
-
-;(load-theme 'darktooth 1)
 (use-package challenger-deep-theme
   :ensure t
   :config
