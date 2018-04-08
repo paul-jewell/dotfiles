@@ -431,10 +431,10 @@ Git gutter:
 ;;	))
 
 ;(load-theme 'darktooth 1)
-(use-package dracula-theme
+(use-package challenger-deep-theme
   :ensure t
   :config
-  (load-theme 'dracula t))
+  (load-theme 'challenger-deep t))
 
 #+end_src
 
