@@ -410,9 +410,14 @@ Git gutter:
   (global-flycheck-mode 1))
 #+end_src
 * All the icons
-#+begin_src 
+#+begin_src emacs-lisp
 (use-package all-the-icons
-:ensure t)
+:ensure t
+:config
+(use-package all-the-icons-dired
+    :ensure t
+    :config
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 #+end_src
 [2018-04-08 Sun 08:19]
 * Themes
@@ -422,13 +427,33 @@ Git gutter:
   :config
   (load-theme 'challenger-deep t))
 
-(set-default-font "Iosevka-12:spacing=110")
-(setq default-frame-alist '((font . "Iosevka-12:spacing=110")))
+(set-default-font "Iosevka-8:spacing=110")
+(setq default-frame-alist '((font . "Iosevka-8:spacing=110")))
 #+end_src
+* Eyebrowse
+#+begin_src emacs-lisp
+(use-package eyebrowse
+  :ensure t
+  :config
+;;  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
+  (eyebrowse-mode t))
+#+end_src
+[2018-04-08 Sun 09:22]
+* Projectile
+#+begin_src emacs-lisp
+(use-package projectile
+  :ensure t
+  :config
+  ;; test fn in hashtabe has to be equal because we will use strings as keys
+  (setq my-projects-loaded (make-hash-table :test 'equal))
+  (setq projectile-completion-system 'ivy)
+  (projectile-global-mode))
+#+end_src
+[2018-04-08 Sun 09:16]
 * Powerline (originally borrowed from https://github.com/MaxSt/dotfiles/blob/master/emacs.d/config.org)
-#+begin_src 
+#+begin_src emacs-lisp
 (use-package powerline
-  :demand t
+  :ensure t
   :config
   (add-hook 'desktop-after-read-hook 'powerline-reset)
   (defun make-rect (color height width)
