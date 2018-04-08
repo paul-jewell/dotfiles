@@ -1,0 +1,18 @@
+# files in .emacs.d which don't need to be saved
+
+elpa/*
+ac-comphist.dat
+.org-id-locations
+abbrev_defs
+bookmarks
+ede-projects.el
+ido.last
+*~
+semanticdb/*
+auto-save-list
+Paul's Custom theme-theme.el
+org-clock-save*
+*#
+*.elc
+
+emacs-init.el

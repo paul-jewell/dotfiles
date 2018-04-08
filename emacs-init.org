@@ -4,7 +4,7 @@
 #+AUTHOR: Paul Jewell
 
 * Initial configuration
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (require 'site-gentoo)
 ;; Set default modes
 (setq default-major-mode 'text-mode)
@@ -31,31 +31,51 @@
 
 (global-set-key (kbd "<f4>") 'revert-buffer)
 
+(defalias 'list-buffers 'ibuffer)
 #+END_SRC
 
 * Package management
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (require 'package)
 (add-to-list 'package-archives
   '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
-#+END_SRC
+#+end_src
 * use-package
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (unless (package-installed-p 'use-package)
 (package-refresh-contents)
 (package-install 'use-package))
-#+END_SRC
+#+end_src
 
+* Swiper - search 
+#+begin_src emacs-lisp
+(use-package counsel
+:ensure t
+)
+(use-package swiper
+  :ensure t
+  :bind (("C-s" . swiper)
+         ("C-r" . swiper)
+         ("C-c C-r" . ivy-resume)
+         ("M-x" . counsel-M-x)
+         ("C-x C-f" . counsel-find-file))
+  :config
+  (progn
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-display-style 'fancy)
+    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+#+end_src
 * Which-key
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package which-key
 :ensure t
 :config (which-key-mode))
-#+END_SRC
+#+end_src
 
 * Ledger Mode
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package ledger-mode
 :ensure t
 :init
@@ -64,9 +84,9 @@
 :config
 (add-to-list 'auto-mode-alist '("\\.dat$" . ledger-mode))
 (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
-#+END_SRC
+#+end_src
 * Go Mode
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 
 ;; Set up go-mode
 (defun auto-complete-for-go ()
@@ -79,41 +99,47 @@
 ;; scss mode
 (setq scss-compile-at-save nil)
 
-#+END_SRC
+#+end_src
 
+* Python
+#+begin_src emacs-lisp
+(use-package jedi
+  :ensure t
+  :init
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (add-hook 'python-mode-hook 'jedi-ac-setup))
+#+end_src
 * SQL mode
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 
 ;; Default to mysql syntax for sql code
 (eval-after-load "sql"
   '(progn (sql-set-product 'mysql)))
 
-#+END_SRC
+#+end_src
 
 * C++ mode
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;; set c++-mode style default
 (defun my-c++-mode-hook()
   ;;(add-to-list 'c-default-style '(c++/l . "stroustrup"))
   (c-set-style "stroustrup"))
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
-#+END_SRC
-
+#+end_src
 * SCSS mode
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;; scss mode
 (setq scss-compile-at-save nil)
 
-#+END_SRC
+#+end_src
 * Private Diary
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;; private diary
 
-#+END_SRC
+#+end_src
 
 * General functions
-
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;Stolen from the emacs wiki. :)
 (defun revert-all-buffers ()
   "Refreshes all open buffers from their respective files"
@@ -128,11 +154,9 @@
       (setq list (cdr list))
       (setq buffer (car list))))
  (message "Refreshing open files"))
-#+END_SRC
-
+#+end_src
 * Org mode configuration
-
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;; define local over rides for org-mode folders
 (setq org-mobile-directory "~/Dropbox/MobileOrg")
 (setq org-agenda-files (quote ("~/git/org"
@@ -142,10 +166,16 @@
 (load "~/.emacs.d/lisp/org-mode.el")
 (require 'org-habit)
 (semantic-mode 1)
-#+END_SRC
-
+#+end_src
+* Org bullet mode
+#+begin_src emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :config(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+[2018-04-07 Sat 19:25]
 * Boilerplate for GPL source files
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (defun boilerplate-gpl3 ()
         (interactive)
         "Insert GPLv3 boilerplate"
@@ -213,45 +243,174 @@
         (interactive)
         "Inserts a timestamp"
         (insert (format-time-string "%Y%m%d.%H%M%S%z/%s")))
-#+END_SRC
+#+end_src
+* Hydra
+#+begin_src 
+  (use-package hydra 
+    :ensure hydra
+    :init 
+    (global-set-key
+    (kbd "C-x t")
+	    (defhydra toggle (:color blue)
+	      "toggle"
+	      ("a" abbrev-mode "abbrev")
+	      ("s" flyspell-mode "flyspell")
+	      ("d" toggle-debug-on-error "debug")
+	      ("c" fci-mode "fCi")
+	      ("f" auto-fill-mode "fill")
+	      ("t" toggle-truncate-lines "truncate")
+	      ("w" whitespace-mode "whitespace")
+	      ("q" nil "cancel")))
+    (global-set-key
+     (kbd "C-x j")
+     (defhydra gotoline 
+       ( :pre (linum-mode 1)
+	      :post (linum-mode -1))
+       "goto"
+       ("t" (lambda () (interactive)(move-to-window-line-top-bottom 0)) "top")
+       ("b" (lambda () (interactive)(move-to-window-line-top-bottom -1)) "bottom")
+       ("m" (lambda () (interactive)(move-to-window-line-top-bottom)) "middle")
+       ("e" (lambda () (interactive)(end-of-buffer)) "end")
+       ("c" recenter-top-bottom "recenter")
+       ("n" next-line "down")
+       ("p" (lambda () (interactive) (forward-line -1))  "up")
+       ("g" goto-line "goto-line")
+       ))
+    (global-set-key
+     (kbd "C-c t")
+     (defhydra hydra-global-org (:color blue)
+       "Org"
+       ("t" org-timer-start "Start Timer")
+       ("s" org-timer-stop "Stop Timer")
+       ("r" org-timer-set-timer "Set Timer") ; This one requires you be in an orgmode doc, as it sets the timer for the header
+       ("p" org-timer "Print Timer") ; output timer value to buffer
+       ("w" (org-clock-in '(4)) "Clock-In") ; used with (org-clock-persistence-insinuate) (setq org-clock-persist t)
+       ("o" org-clock-out "Clock-Out") ; you might also want (setq org-log-note-clock-out t)
+       ("j" org-clock-goto "Clock Goto") ; global visit the clocked task
+       ("c" org-capture "Capture") ; Don't forget to define the captures you want http://orgmode.org/manual/Capture.html
+	     ("l" (or )rg-capture-goto-last-stored "Last Capture"))
+
+     ))
+
+(defhydra multiple-cursors-hydra (:hint nil)
+  "
+     ^Up^            ^Down^        ^Other^
+----------------------------------------------
+[_p_]   Next    [_n_]   Next    [_l_] Edit lines
+[_P_]   Skip    [_N_]   Skip    [_a_] Mark all
+[_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp
+^ ^             ^ ^             [_q_] Quit
+"
+  ("l" mc/edit-lines :exit t)
+  ("a" mc/mark-all-like-this :exit t)
+  ("n" mc/mark-next-like-this)
+  ("N" mc/skip-to-next-like-this)
+  ("M-n" mc/unmark-next-like-this)
+  ("p" mc/mark-previous-like-this)
+  ("P" mc/skip-to-previous-like-this)
+  ("M-p" mc/unmark-previous-like-this)
+  ("r" mc/mark-all-in-region-regexp :exit t)
+  ("q" nil)
+
+  ("<mouse-1>" mc/add-cursor-on-click)
+  ("<down-mouse-1>" ignore)
+  ("<drag-mouse-1>" ignore))
+#+end_src
+[2018-04-08 Sun 08:00]
 * Company mode
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package company
-:ensure t
-:config
-(setq company-idle-delay 0)
-(setq company-minimum-prefix-length 3)
-(global-company-mode 1))
+  :ensure t
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 3)
+  (global-company-mode 1))
 
 (use-package company-irony
-:ensure t
-:config
-(add-to-list 'company-backends 'company-irony))
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'company-irony))
 
 (use-package irony
-:ensure t
-:config
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+  :ensure t
+  :config
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
 (use-package irony-eldoc
-:ensure t
-:config
-(add-hook 'irony-mode-hook #'irony-eldoc))
+  :ensure t
+  :config
+  (add-hook 'irony-mode-hook #'irony-eldoc))
 
 (use-package company-jedi
-:ensure t
-:config
-(add-hook 'python-mode-hook 'jedi:setup))
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook 'jedi:setup))
 
 (defun my/python-mode-hook ()
-(add-to-list 'company-backends 'company-jedi))
+  (add-to-list 'company-backends 'company-jedi))
 
 (add-hook 'python-mode-hook 'my/python-mode-hook)
-#+END_SRC
+#+end_src
+* Magit
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t
+  :init
+  (progn
+  (bind-key "C-x g" 'magit-status)
+  ))
+
+  (use-package git-gutter
+  :ensure t
+  :init
+  (global-git-gutter-mode +1))
+
+  (global-set-key (kbd "M-g M-g") 'hydra-git-gutter/body)
+
+
+  (use-package git-timemachine
+  :ensure t
+  )
+(defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                            :hint nil)
+  "
+Git gutter:
+  _j_: next hunk        _s_tage hunk     _q_uit
+  _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
+  ^ ^                   _p_opup hunk
+  _h_: first hunk
+  _l_: last hunk        set start _R_evision
+"
+  ("j" git-gutter:next-hunk)
+  ("k" git-gutter:previous-hunk)
+  ("h" (progn (goto-char (point-min))
+              (git-gutter:next-hunk 1)))
+  ("l" (progn (goto-char (point-min))
+              (git-gutter:previous-hunk 1)))
+  ("s" git-gutter:stage-hunk)
+  ("r" git-gutter:revert-hunk)
+  ("p" git-gutter:popup-hunk)
+  ("R" git-gutter:set-start-revision)
+  ("q" nil :color blue)
+  ("Q" (progn (git-gutter-mode -1)
+              ;; git-gutter-fringe doesn't seem to
+              ;; clear the markup right away
+              (sit-for 0.1)
+              (git-gutter:clear))
+       :color blue))
+#+end_src
+[2018-04-08 Sun 07:52]
+* Flycheck
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode 1))
+#+end_src
 * Themes
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 
 ;; This code is deprecated - since the move to melpa managed themes
 ;;(if (display-graphic-p)
@@ -265,7 +424,11 @@
 ;;      (set-frame-size (selected-frame) 100 80)
 ;;	))
 
-(load-theme 'darktooth 1)
+;(load-theme 'darktooth 1)
+(use-package dracula-theme
+  :ensure t
+  :config
+  (load-theme 'dracula t))
 
-#+END_SRC
+#+end_src
 
