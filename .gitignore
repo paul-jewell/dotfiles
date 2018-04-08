@@ -16,3 +16,11 @@ org-clock-save*
 *.elc
 
 emacs-init.el
+.python-environments*
+eshell*
+init.el
+irony*
+lisp*
+projectile*
+recentf
+smex*
