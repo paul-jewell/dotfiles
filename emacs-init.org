@@ -166,6 +166,7 @@
 (load "~/.emacs.d/lisp/org-mode.el")
 (require 'org-habit)
 (semantic-mode 1)
+(global-set-key (kbd "C-c w") 'org-refile)
 #+end_src
 * Org bullet mode
 #+begin_src emacs-lisp
@@ -430,13 +431,13 @@ Git gutter:
 (set-default-font "Iosevka-8:spacing=110")
 (setq default-frame-alist '((font . "Iosevka-8:spacing=110")))
 #+end_src
-* Eyebrowse
+* Eyebrowse - Currently disabled - keystroke clash with org-refile
 #+begin_src emacs-lisp
-(use-package eyebrowse
-  :ensure t
-  :config
-;;  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-  (eyebrowse-mode t))
+;;(use-package eyebrowse
+;;  :ensure t
+;;  :config
+;;;;  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
+;;  (eyebrowse-mode t))
 #+end_src
 [2018-04-08 Sun 09:22]
 * Projectile
@@ -532,8 +533,8 @@ Git gutter:
                           (rhs (list
                                 (powerline-ace-window)
                                 " | "
-                                (format "%s" (eyebrowse--get 'current-slot))
-                                " | "
+                             ;;   (format "%s" (eyebrowse--get 'current-slot))
+                             ;;   " | "
                                 (powerline-raw "%l:%c" face1 'r)
                                 " | "
                                 (powerline-raw "%6p" face1 'r)
