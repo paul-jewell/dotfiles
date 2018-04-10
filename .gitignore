@@ -24,3 +24,5 @@ lisp*
 projectile*
 recentf
 smex*
+
+*-local.el
