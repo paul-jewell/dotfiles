@@ -32,6 +32,8 @@
 (global-set-key (kbd "<f4>") 'revert-buffer)
 
 (defalias 'list-buffers 'ibuffer)
+
+;;(load-file "~/.emacs.d/site-local.el")
 #+END_SRC
 
 * Package management
@@ -427,9 +429,14 @@ Git gutter:
   :ensure t
   :config
   (load-theme 'challenger-deep t))
+;; Font size is localised in site-local.el
+(setq font-size "12")
+(setq my/font (concat "Iosevka-" font-size ":spacing=110"))
+(set-default-font my/font)
 
-(set-default-font "Iosevka-8:spacing=110")
-(setq default-frame-alist '((font . "Iosevka-8:spacing=110")))
+(setq frame-font (concat "(font . \" " my/font"\")"))
+(setq default-frame-alist frame-font)
+(setq default-frame-alist '((font . "Iosevka-12:spacing=110")))
 #+end_src
 * Eyebrowse - Currently disabled - keystroke clash with org-refile
 #+begin_src emacs-lisp
