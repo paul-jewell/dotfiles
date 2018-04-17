@@ -553,5 +553,22 @@ Git gutter:
                       (powerline-render rhs))))))
   )
 #+end_src
+* org-gcal
+#+begin_src emacs-lisp
+(setq package-check-signature nil)
 
+(use-package org-gcal
+  :ensure t
+  :config
+  (setq org-gcal-client-id my:org-gcal-client-id
+        org-gcal-client-secret my:org-gcal-client-secret
+        org-gcal-file-alist '(("teulupaul@gmail.com" . "~/git/org/gcal.org"))))
+
+(defun new/org-gcal--notify (title mes)
+    (message "org-gcal::%s - %s" title mes))
+(fset 'org-gcal--notify 'new/org-gcal-notify)
+
+(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
+(add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync) ))
+#+end_src
 
