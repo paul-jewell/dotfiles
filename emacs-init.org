@@ -555,3 +555,13 @@ Git gutter:
 #+end_src
 
 
+* Paredit
+#+begin_src emacs-lisp
+
+
+#+end_src
+* Cider
+#+begin_src emacs-lisp
+
+#+end_src
+
