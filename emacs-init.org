@@ -38,18 +38,75 @@
 
 * Package management
 #+begin_src emacs-lisp
-(require 'package)
-(add-to-list 'package-archives
-  '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-#+end_src
-* use-package
-#+begin_src emacs-lisp
-(unless (package-installed-p 'use-package)
-(package-refresh-contents)
-(package-install 'use-package))
-#+end_src
+;;  (if (fboundp 'gnutls-available-p)
+;;      (fmakunbound 'gnutls-available-p))
 
+(require 'cl)
+(setq tls-checktrust t)
+
+(setq python (executable-find "python"))
+
+(let ((trustfile
+       (replace-regexp-in-string
+        "\\\\" "/"
+        (replace-regexp-in-string
+         "\n" ""
+         (shell-command-to-string (concat python " -m certifi"))))))
+  (setq tls-program
+        (list
+         (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+                 (if (eq window-system 'w32) ".exe" "") trustfile)))
+  (setq gnutls-verify-error t)
+  (setq gnutls-trustfiles (list trustfile)))
+
+(defvar gnu '("gnu" . "https://elpa.gnu.org/packages/"))
+(defvar melpa '("melpa" . "https://melpa.org/packages/"))
+(defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(defvar org-elpa '("org" . "http://orgmode.org/elpa/"))
+
+;; Add marmalade to package repos
+(setq package-archives nil)
+(add-to-list 'package-archives melpa-stable t)
+(add-to-list 'package-archives melpa t)
+(add-to-list 'package-archives gnu t)
+(add-to-list 'package-archives org-elpa t)
+
+(package-initialize)
+
+(unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
+             (file-exists-p (concat init-dir "elpa/archives/melpa"))
+             (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
+  (package-refresh-contents))
+
+(defun packages-install (&rest packages)
+  (message "running packages-install")
+  (mapc (lambda (package)
+          (let ((name (car package))
+                (repo (cdr package)))
+            (when (not (package-installed-p name))
+              (let ((package-archives (list repo)))
+                (package-initialize)
+                (package-install name)))))
+        packages)
+  (package-initialize)
+  (delete-other-windows))
+
+;; Install extensions if they're missing
+(defun init--install-packages ()
+  (message "Lets install some packages")
+  (packages-install
+   ;; Since use-package this is the only entry here
+   ;; ALWAYS try to use use-package!
+   (cons 'use-package melpa)
+   ))
+
+(condition-case nil
+    (init--install-packages)
+  (error
+   (package-refresh-contents)
+   (init--install-packages)))
+
+#+end_src
 * Swiper - search 
 #+begin_src emacs-lisp
 (use-package counsel
