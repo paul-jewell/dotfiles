@@ -614,11 +614,81 @@ Git gutter:
 
 * Paredit
 #+begin_src emacs-lisp
+(use-package paredit
+  :ensure t
+  :diminish paredit-mode
+  :config
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+  :bind (("C-c d" . paredit-forward-down))
+  )
 
+;; Ensure paredit is used EVERYWHERE!
+(use-package paredit-everywhere
+  :ensure t
+  :diminish paredit-everywhere-mode
+  :config
+  (add-hook 'list-mode-hook #'paredit-everywhere-mode))
 
+(use-package highlight-parentheses
+  :ensure t
+  :diminish highlight-parentheses-mode
+  :config
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda()
+              (highlight-parentheses-mode)
+              )))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'lisp-mode-hook
+            (lambda()
+              (rainbow-delimiters-mode)
+              )))
+
+(global-highlight-parentheses-mode)
 #+end_src
 * Cider
 #+begin_src emacs-lisp
+(use-package cider
+  :ensure t
+  ;;:pin melpa-stable
 
+  :config
+  (add-hook 'cider-repl-mode-hook #'company-mode)
+  (add-hook 'cider-mode-hook #'company-mode)
+  (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'cider-mode-hook #'cider-hydra-mode)
+  (add-hook 'clojure-mode-hook #'paredit-mode)
+  (setq cider-repl-use-pretty-printing t)
+  (setq cider-repl-display-help-banner nil)
+  (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
+
+  :bind (("M-r" . cider-namespace-refresh)
+         ("C-c r" . cider-repl-reset)
+         ("C-c ." . cider-reset-test-run-tests))
+  )
+
+
+;; (use-package clj-refactor
+;;   :ensure t
+;;   :config
+;;   (add-hook 'clojure-mode-hook (lambda ()
+;;                                  (clj-refactor-mode 1)
+;;                                  ;; insert keybinding setup here
+;;                                  ))
+;;   (cljr-add-keybindings-with-prefix "C-c C-m")
+;;   (setq cljr-warn-on-eval nil)
+;;   :bind ("C-c '" . hydra-cljr-help-menu/body)
+;;   )
+
+
+(load-library (concat init-dir "cider-hydra/cider-hydra.el"))
+(require 'cider-hydra)
 #+end_src
 
