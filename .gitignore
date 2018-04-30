@@ -25,4 +25,6 @@ projectile*
 recentf
 smex*
 
+org-gcal
+cider-hydra
 *-local.el
