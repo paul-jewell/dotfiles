@@ -166,7 +166,7 @@
   :ensure t
   :init
   (add-hook 'python-mode-hook 'jedi:setup)
-  (add-hook 'python-mode-hook 'jedi-ac-setup))
+  (add-hook 'python-mode-hook 'jedi:ac-setup))
 #+end_src
 * SQL mode
 #+begin_src emacs-lisp
