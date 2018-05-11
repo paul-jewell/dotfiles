@@ -10,11 +10,14 @@
 (setq default-major-mode 'text-mode)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
+;; Go straight to scratch buffer on startup
 (setq inhibit-startup-screen t)
 
 ;; dont use tabs for indenting
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 3)
+(setq-default sh-basic-offset 2)
+(setq-default sh-indentation 2)
 
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -28,10 +31,18 @@
 
 ;; Remove the tool-bar from the top
 (tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+
+(setq initial-frame-alist '((top . 0) (left . 0) (width . 177) (height . 60)))
+;; Full path in title bar
+(setq-default frame-title-format "%b (%f)")
 
 (global-set-key (kbd "<f4>") 'revert-buffer)
 
 (defalias 'list-buffers 'ibuffer)
+
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups"))))
 
 (load-file "~/.emacs.d/site-local.el")
 #+END_SRC
@@ -166,7 +177,7 @@
   :ensure t
   :init
   (add-hook 'python-mode-hook 'jedi:setup)
-  (add-hook 'python-mode-hook 'jedi-ac-setup))
+  (add-hook 'python-mode-hook 'jedi:ac-setup))
 #+end_src
 * SQL mode
 #+begin_src emacs-lisp
@@ -199,7 +210,7 @@
 
 * General functions
 #+begin_src emacs-lisp
-;Stolen from the emacs wiki. :)
+;Stolen from the emacs wiki. 
 (defun revert-all-buffers ()
   "Refreshes all open buffers from their respective files"
   (interactive)
@@ -377,6 +388,29 @@
 ;;   ("<drag-mouse-1>" ignore))
 #+end_src
 [2018-04-08 Sun 08:00]
+* Javascript / html
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
+(add-hook 'js-mode-hook 'subword-mode)
+(add-hook 'html-mode-hook 'subword-mode)
+(setq js-indent-level 2)
+(eval-after-load "sgml-mode"
+  '(progn
+     (require 'tagedit)
+     (tagedit-add-paredit-like-keybindings)
+     (add-hook 'html-mode-hook (lambda () (tagedit-mode 1)))))
+
+;; Coffeescript
+(add-to-list 'auto-mode-alist '("\\.coffee.erb$" . coffee-mode))
+(add-hook 'coffee-mode-hook 'subword-mode)
+(add-hook 'coffee-mode-hook 'highlight-indentation-current-column-mode)
+(add-hook 'coffee-mode-hook
+          (defun coffee-mode-newline-and-indent ()
+            (define-key coffee-mode-map "\C-j" 'coffee-newline-and-indent)
+            (setq coffee-cleanup-whitespace nil)))
+(custom-set-variables
+ '(coffee-tab-width 2))
+#+end_src
 * Company mode
 #+begin_src emacs-lisp
 (use-package company
@@ -618,6 +652,7 @@ Git gutter:
   :ensure t
   :diminish paredit-mode
   :config
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
   (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
   (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
@@ -632,7 +667,7 @@ Git gutter:
   :ensure t
   :diminish paredit-everywhere-mode
   :config
-  (add-hook 'list-mode-hook #'paredit-everywhere-mode))
+  (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
 
 (use-package highlight-parentheses
   :ensure t
@@ -650,10 +685,14 @@ Git gutter:
             (lambda()
               (rainbow-delimiters-mode)
               )))
-
+              
 (global-highlight-parentheses-mode)
 #+end_src
-* Cider
+* Clojure
+#+begin_src emacs-lisp
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+#+end_src
+** Cider
 #+begin_src emacs-lisp
 (use-package cider
   :ensure t
