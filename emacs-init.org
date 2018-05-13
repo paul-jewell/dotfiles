@@ -34,7 +34,6 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 
-(setq initial-frame-alist '((top . 0) (left . 0) (width . 177) (height . 60)))
 ;; Full path in title bar
 (setq-default frame-title-format "%b (%f)")
 
