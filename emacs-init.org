@@ -740,6 +740,10 @@ Git gutter:
 (require 'cider-hydra)
 
 #+end_src
+* Lisp - slime
+#+begin_src emac-lisp
+(setq inferior-lisp-program "/usr/bin/sbcl")
+#+end_src
 * mu4e
 #+begin_src emacs-lisp
 (require 'mu4e)
