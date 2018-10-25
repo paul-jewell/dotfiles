@@ -741,7 +741,7 @@ Git gutter:
 
 #+end_src
 * Lisp - slime
-#+begin_src emac-lisp
+#+begin_src emacs-lisp
 (setq inferior-lisp-program "/usr/bin/sbcl")
 (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
 #+end_src
