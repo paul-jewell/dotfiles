@@ -18,7 +18,7 @@ org-clock-save*
 emacs-init.el
 .python-environments*
 eshell*
-init.el
+emacs-custom.el
 irony*
 lisp*
 projectile*

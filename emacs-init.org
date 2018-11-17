@@ -259,6 +259,9 @@
 (setq org-agenda-files (quote ("~/git/org"
                                "~/git/org/toyota")))
 
+
+(add-to-list 'auto-mode-alist '("\\.\\(org\\|org-archive\\|txt\\)$" . org-mode))
+
 ;; org-mode configuration from Bernt Hansen - bernt@norang.ca
 (load "~/.emacs.d/lisp/org-mode.el")
 (require 'org-habit)
@@ -269,7 +272,7 @@
 #+begin_src emacs-lisp
 (use-package org-bullets
   :ensure t
-  :config(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+end_src
 [2018-04-07 Sat 19:25]
 * Boilerplate for GPL source files
