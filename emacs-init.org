@@ -23,6 +23,10 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-variable 'confirm-kill-emacs 'yes-or-no-p)
 
+;; Eliminate C-z sleep
+(global-unset-key [(control z)])
+(global-unset-key [(control x)(control z)])
+
 ;; The following lines are always needed. Choose your own keys.
 (global-font-lock-mode t)
 (global-set-key "\C-x\C-r" 'prefix-region)
@@ -139,8 +143,8 @@
 * Which-key
 #+begin_src emacs-lisp
 (use-package which-key
-:ensure t
-:config (which-key-mode))
+  :ensure t
+  :config (which-key-mode))
 #+end_src
 
 * Ledger Mode
@@ -156,18 +160,12 @@
 #+end_src
 * Go Mode
 #+begin_src emacs-lisp
-
-;; Set up go-mode
-(defun auto-complete-for-go ()
-  (auto-complete-mode 1))
-(add-hook 'go-mode-hook 'auto-complete-for-go)
-
-(with-eval-after-load 'go-mode
-  (require 'go-auto complete))
-
-;; scss mode
-(setq scss-compile-at-save nil)
-
+  (use-package go-mode
+     :ensure t
+     :config
+     (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1)))
+     (with-eval-after-load 'go-mode
+       (require 'go-autocomplete)))
 #+end_src
 
 * Python
@@ -224,9 +222,39 @@
       (setq buffer (car list))))
  (message "Refreshing open files"))
 #+end_src
+* Smex
+#+begin_src emacs-lisp
+(use-package smex
+:ensure t
+:bind (("M-x" . smex)
+       ("M-X" . smex-major-mode-commands)
+       ("C-c C-c M-x" . 'execute-extended-command)) ;; Original M-x command
+:config (smex-initialize))
+
+;; Delayed loading - initialisation when used for the first time
+;; (global-set-key [(meta x)]
+;;   (lambda ()
+;;     (interactive)
+;;     (or (boundp 'smex-cache)
+;;         (smex-initialize))
+;;     (global-set-key [(meta x)] 'smex) (smex)))
+
+;; (global-set-key [(shift meta x)]
+;;   (lambda () (interactive)
+;;   (or (boundp 'smex-cache) (smex-initialize))
+;;   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
+;;   (smex-major-mode-commands)))
+#+end_src
+* Multiple Cursors
+#+begin_src emacs-lisp
+(use-package multiple-cursors
+  :ensure t
+  :config (global-set-key (kbd "C-c m c") 'mc/edit-lines))
+#+end_src
 * Org mode configuration
 #+begin_src emacs-lisp
 ;; define local over rides for org-mode folders
+
 (setq org-mobile-directory "~/Dropbox/MobileOrg")
 (setq org-agenda-files (quote ("~/git/org"
                                "~/git/org/toyota")))
@@ -736,8 +764,12 @@ Git gutter:
 ;;   :bind ("C-c '" . hydra-cljr-help-menu/body)
 ;;   )
 
-(load-library (concat init-dir "cider-hydra/cider-hydra.el"))
-(require 'cider-hydra)
+(use-package cider-hydra
+  :ensure t)
+
+;; Removed local version of cider-hydra - using melpa version
+;;(load-library (concat init-dir "cider-hydra/cider-hydra.el"))
+;;(require 'cider-hydra)
 
 #+end_src
 * Lisp - slime
@@ -805,3 +837,5 @@ Git gutter:
 
 #+end_src
 [2018-06-24 Sun 20:36]
+
+#  LocalWords:  src
