@@ -795,6 +795,7 @@ Git gutter:
             slime-fuzzy))))
     (setq slime-net-coding-system 'utf-8-unix)
     (setq inferior-lisp-program "/usr/bin/sbcl")
+    (load (expand-file-name "~/quicklisp/slime-helper.el"))
     (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
     
     (use-package ac-slime
