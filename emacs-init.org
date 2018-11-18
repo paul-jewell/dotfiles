@@ -777,8 +777,44 @@ Git gutter:
 #+end_src
 * Lisp - slime
 #+begin_src emacs-lisp
-(setq inferior-lisp-program "/usr/bin/sbcl")
-(setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
+
+;; shamelessly copied from 
+;; https://github.com/ajukraine/ajukraine-dotemacs/blob/master/aj/rc-modes/init.el
+;; 17/11/2018
+
+(use-package slime
+  :commands slime
+  :config
+  (progn
+    (add-hook
+     'slime-load-hook
+     #'(lambda ()
+         (slime-setup
+          '(slime-fancy
+            slime-repl
+            slime-fuzzy))))
+    (setq slime-net-coding-system 'utf-8-unix)
+    (setq inferior-lisp-program "/usr/bin/sbcl")
+    (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
+    
+    (use-package ac-slime
+      :init
+      (progn
+        (add-hook 'slime-mode-hook 'set-up-slime-ac)
+        (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))
+      :config
+      (progn
+        (eval-after-load "auto-complete"
+          '(add-to-list 'ac-modes 'slime-repl-mode))))))
+
+#+end_src
+* elisp-slime
+#+begin_src emacs-lisp
+(use-package elisp-slime-nav
+  :ensure t
+  :config
+  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+    (add-hook hook #'elisp-slime-nav-mode)))
 #+end_src
 * mu4e
 #+begin_src emacs-lisp
