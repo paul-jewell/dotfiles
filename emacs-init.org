@@ -160,12 +160,14 @@
 #+end_src
 * Go Mode
 #+begin_src emacs-lisp
-  (use-package go-mode
-     :ensure t
-     :config
-     (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1)))
-     (with-eval-after-load 'go-mode
-       (require 'go-autocomplete)))
+(use-package go-autocomplete
+  :ensure t)
+(use-package go-mode
+   :ensure t
+   :config
+   (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1)))
+   (with-eval-after-load 'go-mode
+     (require 'go-autocomplete)))
 #+end_src
 
 * Python

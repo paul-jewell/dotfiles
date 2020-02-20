@@ -3,7 +3,7 @@
 ;; Org-mode personal configuration
 
 ;;; Commentary:
-;; Developed from that provided by Bernt Hansen
+;; Developed/inspired from Bernt Hansen's configuration
 ;; bernt@norang.ca
 ;; Errors are mine! - paulj
 
@@ -22,17 +22,20 @@
 (global-set-key (kbd "<f7>") 'bh/set-truncate-lines)
 (global-set-key (kbd "<f8>") 'org-cycle-agenda-files)
 (global-set-key (kbd "<f9> <f9>") 'bh/show-org-agenda)
-(global-set-key (kbd "<f9> b") 'bbdb)
+;; TODO: Resolve bbdb issues
+;; (global-set-key (kbd "<f9> b") 'bbdb)
 (global-set-key (kbd "<f9> c") 'calendar)
 (global-set-key (kbd "<f9> f") 'boxquote-insert-file)
-(global-set-key (kbd "<f9> g") 'gnus)
+;; Not using gnus
+;; (global-set-key (kbd "<f9> g") 'gnus)
 (global-set-key (kbd "<f9> h") 'bh/hide-other)
 (global-set-key (kbd "<f9> n") 'bh/toggle-next-task-display)
 
 (global-set-key (kbd "<f9> I") 'bh/punch-in)
 (global-set-key (kbd "<f9> O") 'bh/punch-out)
 
-(global-set-key (kbd "<f9> o") 'bh/make-org-scratch)
+;; Confirm function make-org-scratch
+;; (global-set-key (kbd "<f9> o") 'bh/make-org-scratch)
 
 (global-set-key (kbd "<f9> r") 'boxquote-region)
 (global-set-key (kbd "<f9> s") 'bh/switch-to-scratch)
@@ -63,7 +66,7 @@
     (org-cycle)))
 
 (defun bh/set-truncate-lines ()
-  "Toggle value of truncate-lines and refresh window display."
+  "Toggle value of 'truncate-lines' and refresh window display."
   (interactive)
   (setq truncate-lines (not truncate-lines))
   ;; now refresh window display (an idiom from simple.el):
@@ -71,16 +74,26 @@
     (set-window-start (selected-window)
                       (window-start (selected-window)))))
 
-(defun bh/make-org-scratch ()
-  (interactive)
-  (find-file "/tmp/publish/scratch.org")
-  (gnus-make-directory "/tmp/publish"))
+;; (defun bh/make-org-scratch ()
+;;   (interactive)
+;;   (find-file "/tmp/publish/scratch.org")
+;;   (gnus-make-directory "/tmp/publish"))
 
 (defun bh/switch-to-scratch ()
+  "Switch to scratch buffer."
   (interactive)
   (switch-to-buffer "*scratch*"))
 
 ;; Global TODO states and colours
+;;(defvar org-todo-keywords)
+;;(defvar org-todo-keyword-faces)
+;;(defvar org-use-fast-todo-selection)
+;;(defvar org-treat-S-cursor-todo-selection-as-state-change)
+;;(defvar org-todo-state-tags-triggers)
+;;(defvar org-directory)
+;;(defvar org-default-notes-file)
+;;(defvar org-capture-templates)
+
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
               (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
@@ -135,6 +148,7 @@
 
 ;; Remove empty LOGBOOK drawers on clock out
 (defun bh/remove-empty-drawer-on-clock-out ()
+  "Remove empty LOGBOOK drawers on clock out."
   (interactive)
   (save-excursion
     (beginning-of-line 0)
@@ -146,13 +160,13 @@
 (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                  (org-agenda-files :maxlevel . 9))))
 
-; Use full outline paths for refile targets - we file directly with IDO
+;; Use full outline paths for refile targets - we file directly with IDO
 (setq org-refile-use-outline-path t)
 
-; Targets complete directly with IDO
+;; Targets complete directly with IDO
 (setq org-outline-path-complete-in-steps nil)
 
-; Allow refile to create parent tasks with confirmation
+;; Allow refile to create parent tasks with confirmation
 (setq org-refile-allow-creating-parent-nodes (quote confirm))
 
 ; Use IDO for both buffer and file completion and ido-everywhere to t
@@ -441,7 +455,6 @@ A prefix arg forces clock in of the default task."
                             ("@errand" . ?e)
                             ("@office" . ?o)
                             ("@home" . ?H)
-                            ("@Brussels" . ?B)
                             (:endgroup)
                             ("WAITING" . ?w)
                             ("HOLD" . ?h)
