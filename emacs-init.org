@@ -35,7 +35,7 @@
 
 ;; Remove the tool-bar from the top
 (tool-bar-mode -1)
-(menu-bar-mode -1)
+;;(menu-bar-mode -1)
 (scroll-bar-mode -1)
 
 ;; Full path in title bar
@@ -344,6 +344,64 @@
         (interactive)
         "Inserts a timestamp"
         (insert (format-time-string "%Y%m%d.%H%M%S%z/%s")))
+#+end_src
+* AucTeX
+#+begin_src emacs-lisp
+(use-package auctex
+  :ensure t
+  :mode ("\\.tex\\'" . latex-mode)
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq-default TeX-master nil)
+
+  (add-hook 'LaTeX-mode-hook 
+            (lambda ()
+              (company-mode)
+              (visual-line-mode) ; May prefer auto-fill-mode
+              (flyspell-mode)
+              (turn-on-reftex)
+              (setq TeX-PDF-mode t)
+              (setq reftex-plug-into-AUCtex t)
+              (LaTeX-math-mode)))
+
+;; Update PDF buffers after successful LaTaX runs
+(add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+          #'TeX-revert-document-buffer)
+
+;; to use pdfview with auctex
+(add-hook 'Latex-mode-hook 'pdf-tools-install))
+#+end_src
+* reftex
+#+begin_src emacs-lisp
+(use-package reftex
+:ensure t
+:defer t
+:config
+(setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
+#+end_src
+* ivy-bibtex
+TODO: Modify the paths etc in this section:
+#+begin_src emacs-lisp
+;(use-package ivy-bibtex
+;  :ensure t
+;  :bind ("C-c b b" . ivy-bibtex)
+;  :config
+;  (setq bibtex-completion-bibliography 
+;        '("C:/Users/Nasser/OneDrive/Bibliography/references-zot.bib"))
+;  (setq bibtex-completion-library-path 
+;        '("C:/Users/Nasser/OneDrive/Bibliography/references-pdf"
+;          "C:/Users/Nasser/OneDrive/Bibliography/references-etc"))
+;
+;  ;; using bibtex path reference to pdf file
+;  (setq bibtex-completion-pdf-field "File")
+;
+;  ;;open pdf with external viwer foxit
+;  (setq bibtex-completion-pdf-open-function
+;        (lambda (fpath)
+;          (call-process "C:\\Program Files (x86)\\Foxit Software\\Foxit Reader\\FoxitReader.exe" nil 0 nil fpath)))
+;
+;  (setq ivy-bibtex-default-action 'bibtex-completion-insert-citation))
 #+end_src
 * Hydra
 #+begin_src emacs-lisp
@@ -783,8 +841,10 @@ Git gutter:
 ;; 17/11/2018
 
 (use-package slime
+;;  :load-path (expand-site-lisp "slime")
   :commands slime
   :config
+
   (progn
     (add-hook
      'slime-load-hook
@@ -821,6 +881,9 @@ Git gutter:
 #+begin_src emacs-lisp
 (require 'mu4e)
 (setq mail-user-agent 'mu4e-user-agent)
+
+(require 'mu4e-contrib)
+(setq mu4e-html2text-command 'mu4e-shr2text)
 
 (require 'smtpmail)
 

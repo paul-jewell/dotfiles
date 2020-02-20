@@ -1,9 +1,10 @@
 ;;; init.el --- Startup file for emacs
 
 ;;; Commentary:
-;; Initial configuration file loaded by Emacs.  Sets the custom
-;; configuration file location, then loads the code in emacs-init.org
-;; (c) 2017 - 2018 Paul Jewell
+;; Initial configuration file loaded by Emacs.
+;;  - Sets the custom configuration file location
+;; - loads the code in emacs-init.org
+;; (c) 2017 - 2020 Paul Jewell
 ;; Licence: BSD
 
 ;;; Code:
