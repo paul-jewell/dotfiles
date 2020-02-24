@@ -1768,7 +1768,9 @@ Late deadlines first, then scheduled, then non-late deadlines"
 (global-set-key (kbd "<C-f6>") '(lambda () (interactive) (bookmark-set "SAVED")))
 (global-set-key (kbd "<f6>") '(lambda () (interactive) (bookmark-jump "SAVED")))
 
-(require 'org-mime)
+;(require 'org-mime)
+(use-package org-mime
+  :ensure t)
 
 (setq org-agenda-skip-additional-timestamps-same-entry t)
 
