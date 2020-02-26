@@ -14,14 +14,19 @@
 
 (package-initialize)
 
+;; To load external version of org-mode, clone the code from git:
+;; > cd <directory below which you want the org code>
+;; > git clone https://code.orgmode.org/bzg/org-mode.git
+;; > cd org-mode
+;; > make autoloads # creates org-loaddefs.el in the lisp directory
+
+; Define the location of the orgmode code:
 (add-to-list 'load-path "/home/paul/git/org-mode/lisp")
 (add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
+
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 (use-package org
     :ensure t)
-;	     :ensure org-plus-contrib
-;	     :load-path "~/git/org-mode"
-;	     :demand t)
 
 (defvar init-dir) ;; Initial directory for emacs configuration
 (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
