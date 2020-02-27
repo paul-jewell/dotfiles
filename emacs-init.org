@@ -258,14 +258,6 @@
 #+end_src
 * Org mode configuration
 #+begin_src emacs-lisp
-;; define local over rides for org-mode folders
-
-(setq org-mobile-directory "~/Dropbox/MobileOrg")
-(setq org-agenda-files (quote ("~/Nextcloud/org"
-                               "~/Nextcloud/org/toyota")))
-
-
-;;(add-to-list 'auto-mode-alist '("\\.\\(org\\|org-archive\\|txt\\)$" . org-mode))
 
 ;; org-mode configuration from Bernt Hansen - bernt@norang.ca
 (load "~/.emacs.d/lisp/org-mode.el")
