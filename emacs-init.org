@@ -5,7 +5,11 @@
 
 * Initial configuration
 #+begin_src emacs-lisp
-(require 'site-gentoo)
+;; Load machine local definitions
+(load-file "~/.emacs.d/site-local.el")
+
+(if *load-site-gentoo*
+    (require 'site-gentoo))
 ;; Set default modes
 (setq default-major-mode 'text-mode)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -47,7 +51,6 @@
 
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups"))))
 
-(load-file "~/.emacs.d/site-local.el")
 #+END_SRC
 
 * Package management
