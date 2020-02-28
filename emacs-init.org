@@ -839,6 +839,7 @@ Git gutter:
 
 (use-package slime
 ;;  :load-path (expand-site-lisp "slime")
+  :ensure t
   :commands slime
   :config
 
@@ -856,6 +857,7 @@ Git gutter:
     (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
     
     (use-package ac-slime
+      :ensure t
       :init
       (progn
         (add-hook 'slime-mode-hook 'set-up-slime-ac)
