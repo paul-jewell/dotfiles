@@ -272,6 +272,25 @@
   :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+end_src
 [2018-04-07 Sat 19:25]
+* Org-roam mode
+Installation advice from the org-roam documentation website:
+https://org-roam.readthedocs.io/en/master/installation/
+#+begin_src emacs-lisp
+(use-package org-roam
+      :hook
+      (after-init . org-roam-mode)
+      :custom
+      (org-roam-directory "~/git/org/roam/")
+      (org-roam-index-file "index.org")
+      :bind (:map org-roam-mode-map
+              (("C-c n l" . org-roam)
+               ("C-c n f" . org-roam-find-file)
+               ("C-c n j" . org-roam-jump-to-index)
+               ("C-c n b" . org-roam-switch-to-buffer)
+               ("C-c n g" . org-roam-graph))
+              :map org-mode-map
+              (("C-c n i" . org-roam-insert))))
+#+end_src
 * Boilerplate for GPL source files
 #+begin_src emacs-lisp
 (defun boilerplate-gpl3 ()
@@ -618,8 +637,12 @@ Git gutter:
   (load-theme 'challenger-deep t))
 ;; Font size is localised in site-local.el
 (setq my:font (concat "Iosevka-" font-size ":spacing=110"))
-(set-default-font my:font)
-(set-frame-font my:font t)
+;; Font size setting for Emacs 27:
+(set-face-attribute 'default nil :font my:font )
+(set-frame-font my:font nil t)
+;; Old font size setting:
+;(set-default-font my:font)
+;(set-frame-font my:font t)
 #+end_src
 * Eyebrowse - Currently disabled - keystroke clash with org-refile
 #+begin_src emacs-lisp
