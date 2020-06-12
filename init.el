@@ -9,10 +9,15 @@
 
 ;;; Code:
 
-;(eval-after-load "org"
-;  '(debug))
+(defvar *packages-initialised* nil)
 
-(package-initialize)
+(defun initialise-packages ()
+  "Ensure `package-initialize' is called only once."
+  (unless *packages-initialised*
+    (package-initialize)
+    (setq *packages-initialised* t)))
+
+(initialise-packages)
 
 ;; To load external version of org-mode, clone the code from git:
 ;; > cd <directory below which you want the org code>

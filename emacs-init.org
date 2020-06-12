@@ -8,6 +8,8 @@
 ;; Load machine local definitions
 (load-file "~/.emacs.d/site-local.el")
 
+
+
 (if *load-site-gentoo*
     (require 'site-gentoo))
 ;; Set default modes
@@ -57,8 +59,9 @@
 #+begin_src emacs-lisp
 ;;  (if (fboundp 'gnutls-available-p)
 ;;      (fmakunbound 'gnutls-available-p))
+;;; Code:
 
-(require 'cl)
+;;(require 'cl)
 (setq tls-checktrust t)
 
 (setq python (executable-find "python"))
@@ -88,7 +91,7 @@
 (add-to-list 'package-archives gnu t)
 (add-to-list 'package-archives org-elpa t)
 
-(package-initialize)
+(initialise-packages)
 
 (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
              (file-exists-p (concat init-dir "elpa/archives/melpa"))
@@ -102,10 +105,10 @@
                 (repo (cdr package)))
             (when (not (package-installed-p name))
               (let ((package-archives (list repo)))
-                (package-initialize)
+                (initialise-packages)
                 (package-install name)))))
         packages)
-  (package-initialize)
+  (initialise-packages)
   (delete-other-windows))
 
 ;; Install extensions if they're missing
@@ -175,11 +178,12 @@
 
 * Python
 #+begin_src emacs-lisp
-(use-package jedi
-  :ensure t
-  :init
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (add-hook 'python-mode-hook 'jedi:ac-setup))
+;;; jedi mode should not be installed when using company mode. company-jedi should be used instead
+;(use-package jedi
+;  :ensure t
+;  :init
+;  (add-hook 'python-mode-hook 'jedi:setup)
+;  (add-hook 'python-mode-hook 'jedi:ac-setup))
 #+end_src
 * SQL mode
 #+begin_src emacs-lisp
