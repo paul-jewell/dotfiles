@@ -638,10 +638,10 @@ Git gutter:
 [2018-04-08 Sun 08:19]
 * Themes
 #+begin_src emacs-lisp
-(use-package challenger-deep-theme
+(use-package gruvbox-theme
   :ensure t
   :config
-  (load-theme 'challenger-deep t))
+  (load-theme 'gruvbox t))
 ;; Font size is localised in site-local.el
 (setq my:font (concat "Iosevka-" font-size ":spacing=110"))
 ;; Font size setting for Emacs 27:
