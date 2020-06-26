@@ -855,10 +855,6 @@ Git gutter:
 (use-package cider-hydra
   :ensure t)
 
-;; Removed local version of cider-hydra - using melpa version
-;;(load-library (concat init-dir "cider-hydra/cider-hydra.el"))
-;;(require 'cider-hydra)
-
 #+end_src
 * Lisp - slime
 #+begin_src emacs-lisp
