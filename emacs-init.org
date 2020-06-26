@@ -281,6 +281,7 @@ Installation advice from the org-roam documentation website:
 https://org-roam.readthedocs.io/en/master/installation/
 #+begin_src emacs-lisp
 (use-package org-roam
+      :ensure t
       :hook
       (after-init . org-roam-mode)
       :custom
