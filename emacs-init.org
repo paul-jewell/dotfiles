@@ -3,10 +3,11 @@
 #+STARTUP: hideblocks
 #+AUTHOR: Paul Jewell
 
+
 * Initial configuration
 #+begin_src emacs-lisp
 ;; Load machine local definitions
-(load-file "~/.emacs.d/site-local.el")
+;; (load-file "~/.emacs.d/site-local.el")
 
 
 
@@ -184,6 +185,11 @@
 ;  :init
 ;  (add-hook 'python-mode-hook 'jedi:setup)
 ;  (add-hook 'python-mode-hook 'jedi:ac-setup))
+;;; Alternative - use elpy - not yet fully configured
+;(use-package elpy
+;  :ensure t
+;  :init
+;  (advice-add 'python-mode :before 'elpy-enable))
 #+end_src
 * SQL mode
 #+begin_src emacs-lisp
@@ -201,12 +207,6 @@
   ;;(add-to-list 'c-default-style '(c++/l . "stroustrup"))
   (c-set-style "stroustrup"))
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
-#+end_src
-* SCSS mode
-#+begin_src emacs-lisp
-;; scss mode
-(setq scss-compile-at-save nil)
-
 #+end_src
 * Private Diary
 #+begin_src emacs-lisp
@@ -266,7 +266,11 @@
 ;; org-mode configuration from Bernt Hansen - bernt@norang.ca
 (load "~/.emacs.d/lisp/org-mode.el")
 (require 'org-habit)
-(semantic-mode 1)
+
+;(semantic-mode 1)  ; this generates an error under windows. Maybe don't need it...
+                    ; - Need to confirm impact of removal. Looks like it's functionality
+                    ;   has been replaced by lsp.
+
 (global-set-key (kbd "C-c w") 'org-refile)
 #+end_src
 * Org bullet mode
@@ -281,6 +285,7 @@ Installation advice from the org-roam documentation website:
 https://org-roam.readthedocs.io/en/master/installation/
 #+begin_src emacs-lisp
 (use-package org-roam
+      :ensure t
       :hook
       (after-init . org-roam-mode)
       :custom
@@ -367,30 +372,31 @@ https://org-roam.readthedocs.io/en/master/installation/
 #+end_src
 * AucTeX
 #+begin_src emacs-lisp
-(use-package auctex
-  :ensure t
-  :mode ("\\.tex\\'" . latex-mode)
-  :config
-  (setq TeX-auto-save t)
-  (setq TeX-parse-self t)
-  (setq-default TeX-master nil)
+(when *enable-auctex*
+  (use-package auctex
+    :ensure t
+    :mode ("\\.tex\\'" . latex-mode)
+    :config
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    
+    (add-hook 'LaTeX-mode-hook 
+              (lambda ()
+                (company-mode)
+                (visual-line-mode) ; May prefer auto-fill-mode
+                (flyspell-mode)
+                (turn-on-reftex)
+                (setq TeX-PDF-mode t)
+                (setq reftex-plug-into-AUCtex t)
+                (LaTeX-math-mode)))
 
-  (add-hook 'LaTeX-mode-hook 
-            (lambda ()
-              (company-mode)
-              (visual-line-mode) ; May prefer auto-fill-mode
-              (flyspell-mode)
-              (turn-on-reftex)
-              (setq TeX-PDF-mode t)
-              (setq reftex-plug-into-AUCtex t)
-              (LaTeX-math-mode)))
+    ;; Update PDF buffers after successful LaTaX runs
+    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+              #'TeX-revert-document-buffer)
 
-;; Update PDF buffers after successful LaTaX runs
-(add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
-          #'TeX-revert-document-buffer)
-
-;; to use pdfview with auctex
-(add-hook 'Latex-mode-hook 'pdf-tools-install))
+    ;; to use pdfview with auctex
+    (add-hook 'Latex-mode-hook 'pdf-tools-install)))
 #+end_src
 * reftex
 #+begin_src emacs-lisp
@@ -614,7 +620,6 @@ Git gutter:
               (git-gutter:clear))
        :color blue))
 #+end_src
-[2018-04-08 Sun 07:52]
 * Flycheck
 #+begin_src emacs-lisp
 (use-package flycheck
@@ -632,7 +637,6 @@ Git gutter:
     :config
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 #+end_src
-[2018-04-08 Sun 08:19]
 * Themes
 #+begin_src emacs-lisp
 (use-package challenger-deep-theme
@@ -651,12 +655,11 @@ Git gutter:
 * Eyebrowse - Currently disabled - keystroke clash with org-refile
 #+begin_src emacs-lisp
 ;;(use-package eyebrowse
-;;  :ensure t
+;;  :ensure r
 ;;  :config
 ;;;;  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
 ;;  (eyebrowse-mode t))
 #+end_src
-[2018-04-08 Sun 09:22]
 * Projectile
 #+begin_src emacs-lisp
 (use-package projectile
@@ -667,7 +670,6 @@ Git gutter:
   (setq projectile-completion-system 'ivy)
   (projectile-global-mode))
 #+end_src
-[2018-04-08 Sun 09:16]
 * Powerline (originally borrowed from https://github.com/MaxSt/dotfiles/blob/master/emacs.d/config.org)
 #+begin_src emacs-lisp
 (use-package powerline

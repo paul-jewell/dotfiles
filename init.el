@@ -9,6 +9,9 @@
 
 ;;; Code:
 
+;; Load machine local definitions
+(load-file "~/.emacs.d/site-local.el")
+
 (defvar *packages-initialised* nil)
 
 (defun initialise-packages ()
@@ -25,9 +28,10 @@
 ;; > cd org-mode
 ;; > make autoloads # creates org-loaddefs.el in the lisp directory
 
+;; Following definitions moved to site-local.el
 ; Define the location of the orgmode code:
-(add-to-list 'load-path "/home/paul/git/org-mode/lisp")
-(add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
+;(add-to-list 'load-path "/home/paul/git/org-mode/lisp")
+;(add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
 
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 (use-package org
