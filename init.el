@@ -25,10 +25,6 @@
 ;; > cd org-mode
 ;; > make autoloads # creates org-loaddefs.el in the lisp directory
 
-; Define the location of the orgmode code:
-(add-to-list 'load-path "/home/paul/git/org-mode/lisp")
-(add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
-
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 (use-package org
     :ensure t)
