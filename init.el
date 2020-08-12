@@ -9,6 +9,10 @@
 
 ;;; Code:
 
+(add-to-list 'load-path "~/git/org-mode/lisp")
+(add-to-list 'load-path "~/git/org-mode/contrib/lisp/")
+
+
 (defvar *packages-initialised* nil)
 
 (defun initialise-packages ()

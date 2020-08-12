@@ -960,7 +960,7 @@ Git gutter:
   (setq
    user-mail-address "paul@teulu.org"
    user-full-name  "Paul Jewell"
-   message-signature "Paul Jewell\n")))
+   message-signature "Paul Jewell\n"))
    
 
 
