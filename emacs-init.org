@@ -154,6 +154,18 @@
   :config (which-key-mode))
 #+end_src
 
+* Flyspell configuration
+#+begin_src emacs-lisp
+  (setenv "LANG" "en_GB")
+  (setq ispell-program-name "hunspell")
+  (setq ispell-hunspell-dict-paths-alist
+          '(("en_GB" "c:/Hunspell/en_GB.aff")))
+  (setq ispell-local-dictionary "en_GB")
+  (setq ispell-local-dictionary-alist
+          '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)))
+;  (flyspell-mode 1)
+  (global-set-key (kbd "M-\\") 'ispell-word)
+#+end_src
 * Ledger Mode
 #+begin_src emacs-lisp
 (use-package ledger-mode
@@ -289,7 +301,7 @@ https://org-roam.readthedocs.io/en/master/installation/
       :hook
       (after-init . org-roam-mode)
       :custom
-      (org-roam-directory "~/git/org/roam/")
+      (org-roam-directory my-org-roam-directory)
       (org-roam-index-file "index.org")
       :bind (:map org-roam-mode-map
               (("C-c n l" . org-roam)
@@ -971,6 +983,5 @@ Git gutter:
 
 
 #+end_src
-[2018-06-24 Sun 20:36]
 
 #  LocalWords:  src
