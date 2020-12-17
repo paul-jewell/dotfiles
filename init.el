@@ -9,14 +9,8 @@
 
 ;;; Code:
 
-<<<<<<< HEAD
 ;; Load machine local definitions
 (load-file "~/.emacs.d/site-local.el")
-=======
-(add-to-list 'load-path "~/git/org-mode/lisp")
-(add-to-list 'load-path "~/git/org-mode/contrib/lisp/")
-
->>>>>>> 282d6e4c07ece8864ebf38dd6e77576101984d18
 
 (defvar *packages-initialised* nil)
 
