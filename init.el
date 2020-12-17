@@ -9,8 +9,14 @@
 
 ;;; Code:
 
+<<<<<<< HEAD
 ;; Load machine local definitions
 (load-file "~/.emacs.d/site-local.el")
+=======
+(add-to-list 'load-path "~/git/org-mode/lisp")
+(add-to-list 'load-path "~/git/org-mode/contrib/lisp/")
+
+>>>>>>> 282d6e4c07ece8864ebf38dd6e77576101984d18
 
 (defvar *packages-initialised* nil)
 
@@ -27,11 +33,6 @@
 ;; > git clone https://code.orgmode.org/bzg/org-mode.git
 ;; > cd org-mode
 ;; > make autoloads # creates org-loaddefs.el in the lisp directory
-
-;; Following definitions moved to site-local.el
-; Define the location of the orgmode code:
-;(add-to-list 'load-path "/home/paul/git/org-mode/lisp")
-;(add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
 
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 (use-package org
