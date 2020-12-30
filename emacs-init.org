@@ -285,7 +285,7 @@ https://org-roam.readthedocs.io/en/master/installation/
       :hook
       (after-init . org-roam-mode)
       :custom
-      (org-roam-directory "~/git/org/roam/")
+      (org-roam-directory my-org-roam-directory) 
       (org-roam-index-file "index.org")
      ;; (setq org-roam-link-title-format "R:%s")
       :bind (:map org-roam-mode-map
@@ -967,6 +967,13 @@ Git gutter:
 
 
 #+end_src
-[2018-06-24 Sun 20:36]
+* Ox-Hugo
+#+begin_src emacs-lisp
+(use-package ox-hugo
+  :ensure t
+  :after ox)
+
+#+end_src
+
 
 #  LocalWords:  src
