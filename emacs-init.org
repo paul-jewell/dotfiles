@@ -301,6 +301,7 @@ https://org-roam.readthedocs.io/en/master/installation/
       :hook
       (after-init . org-roam-mode)
       :custom
+      (org-roam-db-location my-org-roam-db-location)
       (org-roam-directory my-org-roam-directory)
       (org-roam-index-file "index.org")
      ;; (setq org-roam-link-title-format "R:%s")
