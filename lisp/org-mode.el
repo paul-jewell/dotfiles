@@ -121,9 +121,9 @@
               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
-(setq org-directory (car org-agenda-files))
-(setq org-default-notes-file (concat (file-name-as-directory org-directory) "refile.org"))
-(setq org-default-refile-file (concat (file-name-as-directory org-directory) "refile.org"))
+(defvar org-directory (car org-agenda-files))
+(defvar org-default-notes-file (concat (file-name-as-directory org-directory) "refile.org"))
+(defvar org-default-refile-file (concat (file-name-as-directory org-directory) "refile.org"))
 
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
@@ -133,7 +133,7 @@
   (shell-command-to-string "uuidgen"))
 
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
-(setq org-capture-templates
+(defvar org-capture-templates
       (quote (("t" "todo" entry (file org-default-refile-file)
                "* TODO %?
 :PROPERTIES:
@@ -211,7 +211,7 @@
 ;;;; Refile settings
 ; Exclude DONE state tasks from refile targets
 (defun bh/verify-refile-target ()
-  "Exclude todo keywords with a done state from refile targets"
+  "Exclude todo keywords with a done state from refile targets."
   (not (member (nth 2 (org-heading-components)) org-done-keywords)))
 
 (setq org-refile-target-verify-function 'bh/verify-refile-target)

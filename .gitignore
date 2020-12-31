@@ -20,7 +20,6 @@ emacs-init.el
 eshell*
 emacs-custom.el
 irony*
-lisp*
 projectile*
 recentf
 smex*
