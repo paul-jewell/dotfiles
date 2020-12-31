@@ -128,24 +128,51 @@
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
 
+(defun pj/uuidgen ()
+  "Generate a UUID for the ID Property of each task."
+  (shell-command-to-string "uuidgen"))
+
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
       (quote (("t" "todo" entry (file org-default-refile-file)
-               "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-              ("r" "respond" entry (file org-default-refile-file)
-               "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+               "* TODO %?
+:PROPERTIES:
+:ID:    %(pj/uuidgen):CREATED: %U\n%a
+:END:" :prepend t :clock-in t :clock-resume t)
+              
               ("n" "note" entry (file org-default-refile-file)
-               "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-              ("j" "Journal" entry (file+datetree org-default-refile-file)
-               "* %?\n%U\n" :clock-in t :clock-resume t)
+               "* %? :NOTE:\n
+:PROPERTIES:
+:ID: %(shell-command-to-string \"uuidgen\"):CREATED: %U\n%
+:END:" :clock-in t :clock-resume t)
+
+              ("j" "Journal" entry (file+datetree "~Nextcloud/git/org/diary.org.gpg")
+               "* %?" :clock-in t :clock-resume t)
+              
               ("w" "org-protocol" entry (file org-default-refile-file)
-               "* TODO Review %c\n%U\n" :immediate-finish t)
+               "* TODO Review %c\n
+:PROPERTIES:
+:ID: %(pj/uuidgen):CREATED: %U
+:END:" :immediate-finish t)
               ("m" "Meeting" entry (file org-default-refile-file)
-               "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+               "* MEETING with %? :MEETING:
+:PROPERTIES:
+:ID: %(pj/uuidgen):CREATED: %U
+:END:" :clock-in t :clock-resume t)
+
               ("p" "Phone call" entry (file org-default-refile-file)
-               "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+               "* PHONE %? :PHONE:
+:PROPERTIES:
+:ID: %(pj/uuidgen):CREATED: %U
+:END:" :clock-in t :clock-resume t)
+
               ("h" "Habit" entry (file org-default-refile-file)
-               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+               "* NEXT %?\n\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")
+:PROPERTIES:
+:ID: %(pj/uuidgen):CREATED: %U
+:STYLE: habit
+:REPEAT_TO_STATE: NEXT
+:END:\n"))))
 
 ;; Remove empty LOGBOOK drawers on clock out
 (defun bh/remove-empty-drawer-on-clock-out ()

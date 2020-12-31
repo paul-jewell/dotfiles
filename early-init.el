@@ -1,4 +1,4 @@
-;;; package ---  early-init.el: Prevent package-initialize beign called before loading the init file
+;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
 ;;; Commentary:
 
 ;;; Code:

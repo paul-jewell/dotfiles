@@ -981,5 +981,12 @@ Git gutter:
 
 
 #+end_src
+* Ox-Hugo
+#+begin_src emacs-lisp
+(use-package ox-hugo
+  :ensure t
+  :after ox)
 
-#  LocalWords:  src
+#+end_src
+
+# LocalWords:  src
