@@ -121,9 +121,9 @@
               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
-(defvar org-directory (car org-agenda-files))
-(defvar org-default-notes-file (concat (file-name-as-directory org-directory) "refile.org"))
-(defvar org-default-refile-file (concat (file-name-as-directory org-directory) "refile.org"))
+(defvar *pj/org-directory* (car org-agenda-files))
+(defvar *pj/org-default-notes-file* (concat (file-name-as-directory *pj/org-directory*) "refile.org"))
+(defvar *pj/org-default-refile-file* (concat (file-name-as-directory *pj/org-directory*) "refile.org"))
 
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
@@ -134,13 +134,13 @@
 
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (defvar org-capture-templates
-      (quote (("t" "todo" entry (file org-default-refile-file)
+      (quote (("t" "todo" entry (file *pj/org-default-refile-file*)
                "* TODO %?
 :PROPERTIES:
 :ID:    %(pj/uuidgen):CREATED: %U\n%a
 :END:" :prepend t :clock-in t :clock-resume t)
               
-              ("n" "note" entry (file org-default-refile-file)
+              ("n" "note" entry (file *pj/org-default-refile-file*)
                "* %? :NOTE:\n
 :PROPERTIES:
 :ID: %(shell-command-to-string \"uuidgen\"):CREATED: %U\n%
@@ -149,24 +149,24 @@
               ("j" "Journal" entry (file+datetree "~Nextcloud/git/org/diary.org.gpg")
                "* %?" :clock-in t :clock-resume t)
               
-              ("w" "org-protocol" entry (file org-default-refile-file)
+              ("w" "org-protocol" entry (file *pj/org-default-refile-file*)
                "* TODO Review %c\n
 :PROPERTIES:
 :ID: %(pj/uuidgen):CREATED: %U
 :END:" :immediate-finish t)
-              ("m" "Meeting" entry (file org-default-refile-file)
+              ("m" "Meeting" entry (file *pj/org-default-refile-file*)
                "* MEETING with %? :MEETING:
 :PROPERTIES:
 :ID: %(pj/uuidgen):CREATED: %U
 :END:" :clock-in t :clock-resume t)
 
-              ("p" "Phone call" entry (file org-default-refile-file)
+              ("p" "Phone call" entry (file *pj/org-default-refile-file*)
                "* PHONE %? :PHONE:
 :PROPERTIES:
 :ID: %(pj/uuidgen):CREATED: %U
 :END:" :clock-in t :clock-resume t)
 
-              ("h" "Habit" entry (file org-default-refile-file)
+              ("h" "Habit" entry (file *pj/org-default-refile-file*)
                "* NEXT %?\n\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")
 :PROPERTIES:
 :ID: %(pj/uuidgen):CREATED: %U

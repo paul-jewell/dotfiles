@@ -10,7 +10,7 @@
 ;;; Code:
 
 ;; Load machine local definitions
-(load-file "~/.emacs.d/site-local.el")
+(load-file "~/.emacs.d/site-specific.el")
 
 (defvar *packages-initialised* nil)
 
