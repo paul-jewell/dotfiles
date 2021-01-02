@@ -158,8 +158,9 @@
 #+begin_src emacs-lisp
   (setenv "LANG" "en_GB")
   (setq ispell-program-name "hunspell")
-  (setq ispell-hunspell-dict-paths-alist
-          '(("en_GB" "c:/Hunspell/en_GB.aff")))
+  (if (string= system-type "windows-nt")
+      (setq ispell-hunspell-dict-paths-alist
+          '(("en_GB" "c:/Hunspell/en_GB.aff"))))
   (setq ispell-local-dictionary "en_GB")
   (setq ispell-local-dictionary-alist
           '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)))
@@ -276,7 +277,8 @@
 #+begin_src emacs-lisp
 
 ;; org-mode configuration from Bernt Hansen - bernt@norang.ca
-(load "~/.emacs.d/lisp/org-mode.el")
+(setq org-agenda-files *pj/org-agenda-files*)
+(load "~/.emacs.d/lisp/my-org-mode.el")
 (require 'org-habit)
 
 ;(semantic-mode 1)  ; this generates an error under windows. Maybe don't need it...
