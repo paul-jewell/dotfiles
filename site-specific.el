@@ -55,7 +55,7 @@
 
 ;; define local over rides for org-mode folders
 ;;(setq org-mobile-directory "~/Dropbox/MobileOrg")
-(setq org-agenda-files '("~/Nextcloud/org"))
+(defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
 (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
 (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db")
 
