@@ -19,7 +19,7 @@
 (global-set-key (kbd "<f12>") 'org-agenda)
 
 
-(global-set-key (kbd "<F7>") 'bh/set-truncate-lines)
+(global-set-key (kbd "<F7>") 'pj/set-truncate-lines)
 
 ;; Cycles through the different org-mode agenda files (buffers)
 (global-set-key (kbd "<f8>") 'org-cycle-agenda-files)
@@ -31,27 +31,27 @@
 ;; Not using gnus
 ;; (global-set-key (kbd "<f9> g") 'gnus)
 
-(global-set-key (kbd "<f9> n") 'bh/toggle-next-task-display)
-(global-set-key (kbd "<f9> I") 'bh/punch-in)
-(global-set-key (kbd "<f9> O") 'bh/punch-out)
+(global-set-key (kbd "<f9> n")   'bh/toggle-next-task-display)
+(global-set-key (kbd "<f9> I")   'bh/punch-in)
+(global-set-key (kbd "<f9> O")   'bh/punch-out)
 
-(global-set-key (kbd "<f9> s") 'bh/switch-to-scratch)
+(global-set-key (kbd "<f9> s")   'bh/switch-to-scratch)
 
-(global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
-(global-set-key (kbd "<f9> T") 'bh/toggle-insert-inactive-timestamp)
+(global-set-key (kbd "<f9> t")   'bh/insert-inactive-timestamp)
+(global-set-key (kbd "<f9> T")   'bh/toggle-insert-inactive-timestamp)
 
-(global-set-key (kbd "<f9> l") 'org-toggle-link-display)
-(global-set-key (kbd "<f9> SPC") 'bh/clock-in-last-task)
-(global-set-key (kbd "C-<f9>") 'previous-buffer)
-(global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
-(global-set-key (kbd "C-x n r") 'narrow-to-region)
-(global-set-key (kbd "C-<f10>") 'next-buffer)
-(global-set-key (kbd "<f11>") 'org-clock-goto)
-(global-set-key (kbd "C-<f11>") 'org-clock-in)
+(global-set-key (kbd "<f9> l")   'org-toggle-link-display)
+(global-set-key (kbd "<f9> SPC") 'pj/clock-in-last-task)
+(global-set-key (kbd "C-<f9>")   'previous-buffer)
+(global-set-key (kbd "M-<f9>")   'org-toggle-inline-images)
+(global-set-key (kbd "C-x n r")  'narrow-to-region)
+(global-set-key (kbd "C-<f10>")  'next-buffer)
+(global-set-key (kbd "<f11>")    'org-clock-goto)
+(global-set-key (kbd "C-<f11>")  'org-clock-in)
 
-(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c c")    'org-capture)
 
-(defun bh/set-truncate-lines ()
+(defun pj/set-truncate-lines ()
   "Toggle value of 'truncate-lines' and refresh window display."
   (interactive)
   (setq truncate-lines (not truncate-lines))
@@ -65,15 +65,41 @@
   (interactive)
   (switch-to-buffer "*scratch*"))
 
-;; Global TODO states and colours
-;;(defvar org-todo-keywords)
-;;(defvar org-todo-keyword-faces)
-;;(defvar org-use-fast-todo-selection)
-;;(defvar org-treat-S-cursor-todo-selection-as-state-change)
-;;(defvar org-todo-state-tags-triggers)
-;;(defvar org-directory)
-;;(defvar org-default-notes-file)
-;;(defvar org-capture-templates)
+;; Variables used by orgmode (originally defined in packages):
+
+(defvar org-todo-keywords)
+(defvar org-todo-keyword-faces)
+(defvar org-use-fast-todo-selection)
+(defvar org-treat-S-cursor-todo-selection-as-state-change)
+(defvar org-todo-state-tags-triggers)
+(defvar org-agenda-files)
+(defvar org-refile-targets)
+(defvar org-refile-use-outline-path)
+(defvar org-outline-path-complete-in-steps)
+(defvar org-refile-allow-creating-parent-nodes)
+(defvar org-completion-use-ido)
+(defvar ido-everywhere)
+(defvar ido-max-directory-size)
+(defvar ido-default-file-method)
+(defvar ido-default-buffer-method)
+(defvar org-indirect-buffer-display)
+(defvar org-refile-target-verify-function)
+(defvar org-done-keywords)
+(defvar org-agenda-dim-blocked-tasks)
+(defvar org-agenda-compact-blocks)
+(defvar org-agenda-custom-commands)
+(defvar org-agenda-auto-exclude-function)
+(defvar org-clock-history-length)
+(defvar org-clock-in-resume)
+(defvar org-clock-in-switch-to-state)
+(defvar org-drawers)
+(defvar org-clock-into-drawer)
+(defvar org-clock-out-remove-zero-time-clocks)
+(defvar org-clock-out-when-done)
+(defvar org-clock-persist)
+(defvar org-clock-persist-query-resume)
+(defvar org-clock-auto-clock-resolution)
+(defvar org-clock-report-include-clocking-task)
 
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
@@ -89,7 +115,7 @@
               ("MEETING" :foreground "forest green" :weight bold)
               ("PHONE" :foreground "forest green" :weight bold))))
 
-(setq org-use-fast-todo-selection t)
+(setq org-use-fast-todo-selection 'auto)
 
 (setq org-treat-S-cursor-todo-selection-as-state-change nil)
 
@@ -156,14 +182,15 @@
 :END:\n"))))
 
 ;; Remove empty LOGBOOK drawers on clock out
-(defun bh/remove-empty-drawer-on-clock-out ()
+(defun pj/remove-empty-drawer-on-clock-out ()
   "Remove empty LOGBOOK drawers on clock out."
   (interactive)
   (save-excursion
     (beginning-of-line 0)
     (org-remove-empty-drawer-at (point))))
 
-(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+(add-hook 'org-clock-out-hook 'pj/remove-empty-drawer-on-clock-out 'append)
+
 
 ; Targets include this file and any file contributing to the agenda - up to 9 levels deep
 (setq org-refile-targets (quote ((nil :maxlevel . 9)
@@ -277,16 +304,14 @@
                        (org-tags-match-list-sublevels nil))))
                nil))))
 
-(defun bh/org-auto-exclude-function (tag)
-  "Automatic task exclusion in the agenda with / RET"
-  (and (cond
-        ((string= tag "hold")
-         t)
-        ((string= tag "farm")
-         t))
-       (concat "-" tag)))
+(defun pj/org-auto-exclude-function (tag)
+  "Automatic task exclusion in the agenda if TAG is \"hold\"  with / RET."
+  (cond
+     ((string= tag "hold")
+      t))
+  (concat "-" tag))
 
-(setq org-agenda-auto-exclude-function 'bh/org-auto-exclude-function)
+(setq org-agenda-auto-exclude-function 'pj/org-auto-exclude-function)
 
 ;;
 ;; Resume clocking task when emacs is restarted
@@ -315,9 +340,13 @@
 ;; Include current clocking task in clock reports
 (setq org-clock-report-include-clocking-task t)
 
-(setq bh/keep-clock-running nil)
+(defvar *pj/keep-clock-running* nil)
 
-(defun bh/clock-in-to-next (kw)
+;; TODO: according to the documentation, the parameter should be the
+;; state of the task - not sure why this code is fetching the state
+;; using org-get-todo-state. Maybe no need...
+
+(defun pj/clock-in-to-next (kw)
   "Switch a task from TODO to NEXT when clocking in.
 Skips capture tasks, projects, and subprojects.
 Switch projects and subprojects from NEXT back to TODO"
@@ -331,7 +360,7 @@ Switch projects and subprojects from NEXT back to TODO"
       "TODO"))))
 
 (defun bh/find-project-task ()
-  "Move point to the parent (project) task if any"
+  "Move point to the parent (project) task if any."
   (save-restriction
     (widen)
     (let ((parent-task (save-excursion (org-back-to-heading 'invisible-ok) (point))))
@@ -346,7 +375,7 @@ Switch projects and subprojects from NEXT back to TODO"
 selected task.  If no task is selected set the Organization task
 as the default task."
   (interactive "p")
-  (setq bh/keep-clock-running t)
+  (setq *pj/keep-clock-running* t)
   (if (equal major-mode 'org-agenda-mode)
       ;;
       ;; We're in the agenda
@@ -368,7 +397,7 @@ as the default task."
 
 (defun bh/punch-out ()
   (interactive)
-  (setq bh/keep-clock-running nil)
+  (setq *pj/keep-clock-running* nil)
   (when (org-clock-is-active)
     (org-clock-out))
   (org-agenda-remove-restriction-lock))
@@ -390,7 +419,7 @@ as the default task."
         (if parent-task
             (org-with-point-at parent-task
               (org-clock-in))
-          (when bh/keep-clock-running
+          (when *pj/keep-clock-running*
             (bh/clock-in-default-task)))))))
 
 (defvar bh/organization-task-id "eb155a82-92b2-4f25-a3c6-0304591af2f9")
@@ -401,7 +430,7 @@ as the default task."
     (org-clock-in '(16))))
 
 (defun bh/clock-out-maybe ()
-  (when (and bh/keep-clock-running
+  (when (and *pj/keep-clock-running*
              (not org-clock-clocking-in)
              (marker-buffer org-clock-default-task)
              (not org-clock-resolving-clocks-due-to-idleness))
