@@ -8,6 +8,9 @@
 (defvar *pj/load-site-gentoo* t     "Load gentoo's config file.")
 (defvar *pj/enable-auctex*    t     "Enable auctex mode.")
 (defvar *pj/font-size*        "10"  "Fontsize for this system.")
+
+(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+
 ;; Three possibilities for specifying values:
 
 ;; - Globally, for all systems
