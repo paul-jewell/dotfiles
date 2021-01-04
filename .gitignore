@@ -27,3 +27,4 @@ org-gcal
 cider-hydra
 *-local.el
 org-roam.db
+bbdb
