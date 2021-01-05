@@ -3,8 +3,7 @@
 ;;; Commentary:
 ;; Initial configuration file loaded by Emacs.
 ;;  - Sets the custom configuration file location
-;; - loads the code in emacs-init.org
-;; (c) 2017 - 2020 Paul Jewell
+;; (c) 2017 - 2021 Paul Jewell
 ;; Licence: BSD
 
 ;;; Code:
