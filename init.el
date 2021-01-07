@@ -89,7 +89,8 @@
 ;;.....Package management
 ;;     ------------------
 
-(require 'cl)
+;;(require 'cl)
+(require 'gnutls)
 
 (setq tls-checktrust t)
 
@@ -160,12 +161,79 @@
    (init--install-packages)))
 
 ;;==============================================================================
+;;.....Ivy
+;;     ---
+
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-wrap t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+
+  (push '(completion-at-point . ivy--regex-fuzzy) ivy-re-builders-alist)
+  (push '(swiper . ivy--regex-ignore-order) ivy-re-builders-alist)
+  (push '(counsel-M-x . ivy--regex-ignore-order) ivy-re-builders-alist)
+
+  (setf (alist-get 'swiper ivy-height-alist) 15)
+  (setf (alist-get 'counsel-switch-buffer ivy-height-alist) 7))
+
+(use-package ivy-hydra
+  :defer t
+  :after hydra)
+
+(use-package ivy-rich
+  :ensure t
+  :init
+  (ivy-rich-mode 1)
+  :config
+  (setcdr  (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+  (setq ivy-rich-display-transformers-list
+        (plist-put ivy-rich-display-transformers-list
+                   'ivy-switch-buffer
+                   '(:columns
+                     ((ivy-rich-candidate (:width 40))
+                      (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right)); return the buffer indicators
+                      (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))          ; return the major mode info
+                      (ivy-rich-switch-buffer-project (:width 15 :face success))             ; return project name using `projectile'
+                      (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
+                     :predicate
+                     (lambda (cand)
+                       (if-let ((buffer (get-buffer cand)))
+                           ;; Don't mess with EXWM buffers
+                           (with-current-buffer buffer
+                             (not (derived-mode-p 'exwm-mode)))))))))
+
+;;==============================================================================
 ;;.....Swiper
 ;;     ------
 
 ;; Counsel - completion package working with ivy.
 (use-package counsel
-  :ensure t)
+  :ensure t
+  :bind (("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history))
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+  :config
+  (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
 ;; TODO: Configure counsel-bbdb to work eith email, or configure a different
 ;;       package to manage contacts (synced with cardDAV)
@@ -290,6 +358,53 @@
        ("M-X" . smex-major-mode-commands)
        ("C-c C-c M-x" . 'execute-extended-command)) ;; Original M-x command
 :config (smex-initialize))
+
+(defadvice ido-set-matches-1 (around ido-smex-acronym-matches activate)
+  "Filters ITEMS by setting acronynms first."
+  (if (and (fboundp 'smex-already-running) (smex-already-running) (> (length ido-text) 1))
+
+      ;; We use a hash table for the matches, <type> => <list of items>, where
+      ;; <type> can be one of (e.g. `ido-text' is "ff"):
+      ;; - strict: strict acronym match (i.e. "^f[^-]*-f[^-]*$");
+      ;; - relaxed: for relaxed match (i.e. "^f[^-]*-f[^-]*");
+      ;; - start: the text start with (i.e. "^ff.*");
+      ;; - contains: the text contains (i.e. ".*ff.*");
+      (let ((regex (concat "^" (mapconcat 'char-to-string ido-text "[^-]*-")))
+            (matches (make-hash-table :test 'eq)))
+
+        ;; Filtering
+        (dolist (item items)
+          (let ((key))
+            (cond
+             ;; strict match
+             ((string-match (concat regex "[^-]*$") item)
+              (setq key 'strict))
+
+             ;; relaxed match
+             ((string-match regex item)
+              (setq key 'relaxed))
+
+             ;; text that start with ido-text
+             ((string-match (concat "^" ido-text) item)
+              (setq key 'start))
+
+             ;; text that contains ido-text
+             ((string-match ido-text item)
+              (setq key 'contains)))
+
+            (when key
+              ;; We have a winner! Update its list.
+              (let ((list (gethash key matches ())))
+                (puthash key (push item list) matches)))))
+
+        ;; Finally, we can order and return the results
+        (setq ad-return-value (append (gethash 'strict matches)
+                                      (gethash 'relaxed matches)
+                                      (gethash 'start matches)
+                                      (gethash 'contains matches))))
+
+    ;; ...else, run the original ido-set-matches-1
+    ad-do-it))
 
 ;; Delayed loading - initialisation when used for the first time
 ;; (global-set-key [(meta x)]
@@ -732,7 +847,7 @@ Git gutter:
   :config
   (load-theme 'gruvbox t))
 ;; Font size is localised in site-local.el
-(setq my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
+(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
 ;; Font size setting for Emacs 27:
 (set-face-attribute 'default nil :font my:font )
 (set-frame-font my:font nil t)
@@ -863,6 +978,9 @@ Git gutter:
                       (powerline-render center)
                       (powerline-fill face2 (powerline-width rhs))
                       (powerline-render rhs)))))))
+
+(require 'diminish)
+
 
 ;;==============================================================================
 ;;.....Paredit
