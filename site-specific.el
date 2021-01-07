@@ -38,6 +38,7 @@
     ;; define the location of the orgmode code
     (add-to-list 'load-path  "/home/paul/git/org-mode/lisp")
     (add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
+    (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/git/org/roam/")
     (setq *pj/font-size* "10")))
  (t
   (error "Undefined system-type %s" system-type)))

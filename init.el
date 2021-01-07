@@ -165,6 +165,7 @@
 ;;     ---
 
 (use-package ivy
+  :ensure t
   :diminish
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
@@ -873,10 +874,10 @@ Git gutter:
 (use-package projectile
   :ensure t
   :config
-  ;; test fn in hashtabe has to be equal because we will use strings as keys
-  (setq my-projects-loaded (make-hash-table :test 'equal))
+  ;; test fn in hashtable has to be equal because we will use strings as keys
+  (defvar my-projects-loaded (make-hash-table :test 'equal))
   (setq projectile-completion-system 'ivy)
-  (projectile-global-mode))
+  (projectile-mode))
 
 
 ;;==============================================================================
@@ -979,7 +980,8 @@ Git gutter:
                       (powerline-fill face2 (powerline-width rhs))
                       (powerline-render rhs)))))))
 
-(require 'diminish)
+(use-package diminish
+  :ensure t)
 
 
 ;;==============================================================================
