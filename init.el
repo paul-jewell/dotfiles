@@ -353,12 +353,12 @@
 ;;     ----
 ;; M-x enhancement - show most recently used commands which match as typing.
 
-(use-package smex
-:ensure t
-:bind (("M-x" . smex)
-       ("M-X" . smex-major-mode-commands)
-       ("C-c C-c M-x" . 'execute-extended-command)) ;; Original M-x command
-:config (smex-initialize))
+;; (use-package smex
+;; :ensure t
+;; :bind (("M-x" . smex)
+;;        ("M-X" . smex-major-mode-commands)
+;;        ("C-c C-c M-x" . 'execute-extended-command)) ;; Original M-x command
+;; :config (smex-initialize))
 
 (defadvice ido-set-matches-1 (around ido-smex-acronym-matches activate)
   "Filters ITEMS by setting acronynms first."
@@ -1019,6 +1019,7 @@ Git gutter:
 
 (use-package rainbow-delimiters
   :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode)
   :config
   (add-hook 'lisp-mode-hook
             (lambda()
@@ -1118,64 +1119,125 @@ Git gutter:
 ;;==============================================================================
 ;;.....mu4e
 ;;     ----
+(require 'mu4e)
+
+(defvar *pj/archive-location* (concat "/teulu.org/Archive/" (format-time-string "%Y")))
 
 (when *pj/enable-mu4e-mode*
-  (require 'mu4e)
-  (setq mail-user-agent 'mu4e-user-agent)
-  (require 'mu4e-contrib)
-  (setq mu4e-html2text-command 'mu4e-shr2text)
+  (use-package mu4e
+    :ensure nil   ;; mu4e comes from mu package - don't download from melpa
+    :defer 10
+    :config
+    
+    ;; Need to be 't' to avoid mail syncing issues
+    (setq mu4e-change-filenames-when-moving t)
+    
+    ;; Refresh mail every 10 minutes - using isync
+    (setq mu4e-update-interval (* 10 60))
+    (setq mu4e-get-mail-command "mbsync -a")
+    (setq mu4e-maildir "~/Mail")
+
+    (setq mu4e-contexts
+          (list
+           ;; Personal account
+           (make-mu4e-context
+            :name "home"
+            :match-func
+            (lambda (msg)
+              (when msg
+                (string-prefix-p "/teulu.org" (mu4e-message-field msg :maildir))))
+            :vars
+            (nconc '((user-mail-address . "paul@teulu.org")
+                     (user-full-name . "Paul Jewell")
+                     (mu4e-drafts-folder . "/teulu.org/Drafts")
+                     (mu4e-sent-folder . "/teulu.org/Sent"))
+                   (list (cons 'mu4e-refile-folder (concat "/teulu.org/Archive/" (format-time-string "%Y"))))
+                   '((mu4e-trash-folder . "/teulu.org/Trash")
+                     (mu4e-bookmarks
+                      .
+                      ((:name "Inbox"
+                              :query "maildir:/teulu.org/Inbox"
+                              :key ?a)
+                       (:name "Unread"
+                              :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
+                              :key ?u))))))))))
+
+
+
+
+;; (require 'mu4e)
+;; (setq mail-user-agent 'mu4e-user-agent)
+;; (require 'mu4e-contrib)
+;; (setq mu4e-html2text-command 'mu4e-shr2text)
   
-  (require 'smtpmail)
+;; (require 'smtpmail)
   
-  (setq mu4e-maildir "/home/paul/mail/home")
-                                        ;(setq
-                                        ;   message-send-mail-function   'smtpmail-send-it
-                                        ;   smtpmail-default-smtp-server "smtp.123-reg.co.uk"
-                                        ;   smtpmail-smtp-server         "smtp.123-reg.co.uk"
-                                        ;   smtpmail-local-domain        "teulu.org")
+;; (setq mu4e-maildir "/home/paul/mail/home")
+;;                                         ;(setq
+;;                                         ;   message-send-mail-function   'smtpmail-send-it
+;;                                         ;   smtpmail-default-smtp-server "smtp.123-reg.co.uk"
+;;                                         ;   smtpmail-smtp-server         "smtp.123-reg.co.uk"
+;;                                         ;   smtpmail-local-domain        "teulu.org")
+
   
-  (setq send-mail-function 'sendmail-send-it
-        sendmail-program "/usr/local/bin/msmtp-enqueue.sh"
-        mail-specify-envelope-from t
-        message-sendmail-envelope-from 'header
-        mail-envelope-from 'header)
+;; (setq send-mail-function 'sendmail-send-it
+;;       sendmail-program "/usr/local/bin/msmtp-enqueue.sh"
+;;       mail-specify-envelope-from t
+;;       message-sendmail-envelope-from 'header
+;;       mail-envelope-from 'header)
   
-  (setq mu4e-sent-folder   "/Sent")
-  (setq mu4e-drafts-folder "/Drafts")
-  (setq mu4e-trash-folder  "/Trash")
+;; (setq mu4e-sent-folder   "/Sent")
+;; (setq mu4e-drafts-folder "/Drafts")
+;; (setq mu4e-trash-folder  "/Trash")
   
-  (setq mu4e-get-mail-command "offlineimap"
-        mu4e-html2text-command "w3m -T text/html"
-        mu4e-update-interval 120
-        mu4e-headers-auto-update t
-        mu4e-compose-signature-auto-include nil)
+;; (setq mu4e-get-mail-command "offlineimap"
+;;       mu4e-html2text-command "w3m -T text/html"
+;;       mu4e-update-interval 120
+;;       mu4e-headers-auto-update t
+;;       mu4e-compose-signature-auto-include nil)
   
-                                        ; TODO:: Need to check folder names
-  (setq mu4e-maildir-shortcuts
-        '( ("/INBOX"      . ?i)
-           ("/sent Items" . ?s)))
+;;                                         ; TODO:: Need to check folder names
+
+;; (setq mu4e-maildir-shortcuts
+;;       '( ("/INBOX"      . ?i)
+;;          ("/sent Items" . ?s)))
   
-  (setq mu4e-show-images t)
+;; (setq mu4e-show-images t)
   
-  (when (fboundp 'imagemagick-register-types)
-    (imagemagick-register-types))
+;; (when (fboundp 'imagemagick-register-types)
+;;   (imagemagick-register-types))
   
-  (setq mu4e-sent-messages-behaviour 'delete)
+;; (setq mu4e-sent-messages-behaviour 'delete)
   
-  (add-hook 'mu4e-compose-mode-hook
-            (defun my-do-compose-stuff ()
-              "My settings for message composition"
-              (auto-fill-mode -1)
-              (flyspell-mode)))
+;; (add-hook 'mu4e-compose-mode-hook
+;;           (defun my-do-compose-stuff ()
+;;             "My settings for message composition"
+;;             (auto-fill-mode -1)
+;;             (flyspell-mode)))
   
-  (setq
-   user-mail-address "paul@teulu.org"
-   user-full-name  "Paul Jewell"
-   message-signature "Paul Jewell\n"))
+;; (setq
+;;  user-mail-address "paul@teulu.org"
+;;  user-full-name  "Paul Jewell"
+;;  message-signature "Paul Jewell\n")
+
+;;==============================================================================
+;;.....helpful
+;;     -------
+
+(use-package helpful
+  :ensure t
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
 
 ;;==============================================================================
 ;;.....Ox-Hugo
-;;     -----
+;;     -------
 
 (use-package ox-hugo
   :ensure t
