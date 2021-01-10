@@ -1162,63 +1162,6 @@ Git gutter:
                                       :key ?u)))))))))
 
 
-
-
-;; (require 'mu4e)
-;; (setq mail-user-agent 'mu4e-user-agent)
-;; (require 'mu4e-contrib)
-;; (setq mu4e-html2text-command 'mu4e-shr2text)
-  
-;; (require 'smtpmail)
-  
-;; (setq mu4e-maildir "/home/paul/mail/home")
-;;                                         ;(setq
-;;                                         ;   message-send-mail-function   'smtpmail-send-it
-;;                                         ;   smtpmail-default-smtp-server "smtp.123-reg.co.uk"
-;;                                         ;   smtpmail-smtp-server         "smtp.123-reg.co.uk"
-;;                                         ;   smtpmail-local-domain        "teulu.org")
-
-  
-;; (setq send-mail-function 'sendmail-send-it
-;;       sendmail-program "/usr/local/bin/msmtp-enqueue.sh"
-;;       mail-specify-envelope-from t
-;;       message-sendmail-envelope-from 'header
-;;       mail-envelope-from 'header)
-  
-;; (setq mu4e-sent-folder   "/Sent")
-;; (setq mu4e-drafts-folder "/Drafts")
-;; (setq mu4e-trash-folder  "/Trash")
-  
-;; (setq mu4e-get-mail-command "offlineimap"
-;;       mu4e-html2text-command "w3m -T text/html"
-;;       mu4e-update-interval 120
-;;       mu4e-headers-auto-update t
-;;       mu4e-compose-signature-auto-include nil)
-  
-;;                                         ; TODO:: Need to check folder names
-
-;; (setq mu4e-maildir-shortcuts
-;;       '( ("/INBOX"      . ?i)
-;;          ("/sent Items" . ?s)))
-  
-;; (setq mu4e-show-images t)
-  
-;; (when (fboundp 'imagemagick-register-types)
-;;   (imagemagick-register-types))
-  
-;; (setq mu4e-sent-messages-behaviour 'delete)
-  
-;; (add-hook 'mu4e-compose-mode-hook
-;;           (defun my-do-compose-stuff ()
-;;             "My settings for message composition"
-;;             (auto-fill-mode -1)
-;;             (flyspell-mode)))
-  
-;; (setq
-;;  user-mail-address "paul@teulu.org"
-;;  user-full-name  "Paul Jewell"
-;;  message-signature "Paul Jewell\n")
-
 ;;==============================================================================
 ;;.....helpful
 ;;     -------
