@@ -1134,7 +1134,7 @@ Git gutter:
     
     ;; Refresh mail every 10 minutes - using isync
     (setq mu4e-update-interval (* 10 60))
-    (setq mu4e-get-mail-command "mbsync -a")
+    (setq mu4e-get-mail-command "mbsync --full -a")
     (setq mu4e-maildir "~/Mail")
 
     (setq mu4e-contexts
@@ -1147,20 +1147,19 @@ Git gutter:
               (when msg
                 (string-prefix-p "/teulu.org" (mu4e-message-field msg :maildir))))
             :vars
-            (nconc '((user-mail-address . "paul@teulu.org")
-                     (user-full-name . "Paul Jewell")
-                     (mu4e-drafts-folder . "/teulu.org/Drafts")
-                     (mu4e-sent-folder . "/teulu.org/Sent"))
-                   (list (cons 'mu4e-refile-folder (concat "/teulu.org/Archive/" (format-time-string "%Y"))))
-                   '((mu4e-trash-folder . "/teulu.org/Trash")
-                     (mu4e-bookmarks
-                      .
-                      ((:name "Inbox"
-                              :query "maildir:/teulu.org/Inbox"
-                              :key ?a)
-                       (:name "Unread"
-                              :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
-                              :key ?u))))))))))
+            `((user-mail-address . "paul@teulu.org")
+              (user-full-name . "Paul Jewell")
+              (mu4e-drafts-folder . "/teulu.org/Drafts")
+              (mu4e-sent-folder . "/teulu.org/Sent")
+              (mu4e-refile-folder . ,(concat "/teulu.org/Archive/" (format-time-string "%Y")))
+              (mu4e-trash-folder . "/teulu.org/Trash")
+              (mu4e-bookmarks .
+                              ((:name "Inbox"
+                                      :query "maildir:/teulu.org/Inbox"
+                                      :key ?a)
+                               (:name "Unread"
+                                      :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
+                                      :key ?u)))))))))
 
 
 
