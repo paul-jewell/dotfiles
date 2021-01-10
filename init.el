@@ -92,35 +92,22 @@
 ;;(require 'cl)
 (require 'gnutls)
 
-(setq tls-checktrust t)
+;;(setq tls-checktrust t)
 
-(defvar python)
-(setq python (executable-find "python"))
+(defvar pj/python)
+(setq pj/python (executable-find "python"))
 
-(let ((trustfile
-       (replace-regexp-in-string
-        "\\\\" "/"
-        (replace-regexp-in-string
-         "\n" ""
-         (shell-command-to-string (concat python " -m certifi"))))))
-  (setq tls-program
-        (list
-         (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
-                 (if (eq window-system 'w32) ".exe" "") trustfile)))
-  (setq gnutls-verify-error t)
-  (setq gnutls-trustfiles (list trustfile)))
-
-(defvar gnu '("gnu" . "https://elpa.gnu.org/packages/"))
-(defvar melpa '("melpa" . "https://melpa.org/packages/"))
-(defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(defvar org-elpa '("org" . "https://orgmode.org/elpa/"))
+(defvar pj/gnu '("gnu" . "https://elpa.gnu.org/packages/"))
+(defvar pj/melpa '("melpa" . "https://melpa.org/packages/"))
+(defvar pj/melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(defvar pj/org-elpa '("org" . "https://orgmode.org/elpa/"))
 
 ;; Add marmalade to package repos
 (setq package-archives nil)
-(add-to-list 'package-archives melpa-stable t)
-(add-to-list 'package-archives melpa t)
-(add-to-list 'package-archives gnu t)
-(add-to-list 'package-archives org-elpa t)
+(add-to-list 'package-archives pj/melpa-stable t)
+(add-to-list 'package-archives pj/melpa t)
+(add-to-list 'package-archives pj/gnu t)
+(add-to-list 'package-archives pj/org-elpa t)
 
 (initialise-packages)
 
