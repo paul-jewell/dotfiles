@@ -89,10 +89,7 @@
 ;;.....Package management
 ;;     ------------------
 
-;;(require 'cl)
 (require 'gnutls)
-
-;;(setq tls-checktrust t)
 
 (defvar pj/python)
 (setq pj/python (executable-find "python"))
@@ -138,7 +135,7 @@
   (packages-install
    ;; Since use-package this is the only entry here
    ;; ALWAYS try to use use-package!
-   (cons 'use-package melpa)
+   (cons 'use-package pj/melpa)
    ))
 
 (condition-case nil
@@ -252,10 +249,11 @@
   :config (which-key-mode))
 
 ;;==============================================================================
-;;.....flyspell
-;;     --------
+;;.....ispell
+;;     ------
 ;; Spell checker.
 
+(require 'ispell)
 (setenv "LANG" "en_GB")
 (setq ispell-program-name "hunspell")
 (if (string= system-type "windows-nt")
@@ -624,13 +622,13 @@
 (global-set-key
  (kbd "C-x j")
  (defhydra gotoline 
-   ( :pre (linum-mode 1)
-	       :post (linum-mode -1))
+   (:pre (linum-mode 1)
+	      :post (linum-mode -1))
    "goto"
-   ("t" (lambda () (interactive)(move-to-window-line-top-bottom 0)) "top")
-   ("b" (lambda () (interactive)(move-to-window-line-top-bottom -1)) "bottom")
-   ("m" (lambda () (interactive)(move-to-window-line-top-bottom)) "middle")
-   ("e" (lambda () (interactive)(end-of-buffer)) "end")
+   ("t" (move-to-window-line-top-bottom 0) "top")
+   ("b" (move-to-window-line-top-bottom -2) "bottom")
+   ("m" (move-to-window-line-top-bottom) "middle")
+   ("e" (goto-char (point-max)) "end")
    ("c" recenter-top-bottom "recenter")
    ("n" next-line "down")
    ("p" (lambda () (interactive) (forward-line -1))  "up")
