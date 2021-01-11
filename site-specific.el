@@ -24,30 +24,42 @@
 ;; - By system name
 
 (cond
- ((is-linux-p)
-  (cond ((string= "q"))) (progn
-    (setq *pj/enable-mu4e-mode* t)
-    (setq *pj/load-site-gentoo* t)
-    (setq *pj/enable-auctex* t)
-    
-    ;; define the location of the orgmode code
-    (add-to-list 'load-path  "/home/paul/git/org-mode/lisp")
-    (add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
-    (setq *pj/font-size* "10")))
-
- ((is-windows-p) ;; Not WSL2 installation - that is declared as linux
-  (progn
-    (setq *pj/enable-mu4e-mode* nil)
-    (setq *pj/load-site-gentoo* nil)
-    (setq *pj/enable-auctex* nil)
-    
-    ;; define the location of the orgmode code
-    (add-to-list 'load-path  "/home/paul/git/org-mode/lisp")
-    (add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
-    (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/git/org/roam/")
-    (setq *pj/font-size* "10")))
- (t
-  (error "Undefined system-type %s" system-type)))
+ ((pj/is-linux-p)
+  (if (string-prefix-p "DESKTOP" (system-name))
+      (progn
+         (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3") 
+	(setq *pj/enable-mu4e-mode* t)
+	(setq *pj/load-site-gentoo* nil)
+	(setq *pj/enable-auctex* t)
+	
+	;; define the location of the orgmode code
+	(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+	(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+    (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+    (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/git/org/roam/")
+    (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/git/org/org-roam.db")
+	(setq *pj/font-size* "10"))
+    (progn
+      (setq *pj/enable-mu4e-mode* t)
+      (setq *pj/load-site-gentoo* t)
+      (setq *pj/enable-auctex* t))))
+  
+  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+   (progn
+     (setq *pj/enable-mu4e-mode* nil)
+     (setq *pj/load-site-gentoo* nil)
+     (setq *pj/enable-auctex* nil)
+     
+     ;; define the location of the orgmode code
+     (add-to-list 'load-path  "/home/paul/git/org-mode/lisp")
+     (add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
+     (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/git/org/roam/")
+     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+     (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
+     (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db")
+     (setq *pj/font-size* "10")))
+  (t
+   (error "Undefined system-type %s" system-type)))
 
 ;; (cond
 ;;  ((string= "tristan" (system-name))
