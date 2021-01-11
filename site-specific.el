@@ -46,6 +46,9 @@
       (setq *pj/enable-mu4e-mode* t)
       (setq *pj/load-site-gentoo* t)
       (setq *pj/enable-auctex* t)
+	   ;; define the location of the orgmode code
+	   (add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+	   (add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
       (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
       (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db"))))
