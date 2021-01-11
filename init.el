@@ -1104,47 +1104,45 @@ Git gutter:
 ;;==============================================================================
 ;;.....mu4e
 ;;     ----
-(require 'mu4e)
-
-(defvar *pj/archive-location* (concat "/teulu.org/Archive/" (format-time-string "%Y")))
 
 (when *pj/enable-mu4e-mode*
+  (require 'mu4e)
   (use-package mu4e
-    :ensure nil   ;; mu4e comes from mu package - don't download from melpa
-    :defer 10
-    :config
+       :ensure nil ;; mu4e comes from mu package - don't download from melpa
+       :defer 10
+       :config
     
-    ;; Need to be 't' to avoid mail syncing issues
-    (setq mu4e-change-filenames-when-moving t)
+       ;; Need to be 't' to avoid mail syncing issues
+       (setq mu4e-change-filenames-when-moving t)
     
-    ;; Refresh mail every 10 minutes - using isync
-    (setq mu4e-update-interval (* 10 60))
-    (setq mu4e-get-mail-command "mbsync --full -a")
-    (setq mu4e-maildir "~/Mail")
+       ;; Refresh mail every 10 minutes - using isync
+       (setq mu4e-update-interval (* 10 60))
+       (setq mu4e-get-mail-command "mbsync --full -a")
+       (setq mu4e-maildir "~/Mail")
 
-    (setq mu4e-contexts
-          (list
-           ;; Personal account
-           (make-mu4e-context
-            :name "home"
-            :match-func
-            (lambda (msg)
-              (when msg
-                (string-prefix-p "/teulu.org" (mu4e-message-field msg :maildir))))
-            :vars
-            `((user-mail-address . "paul@teulu.org")
-              (user-full-name . "Paul Jewell")
-              (mu4e-drafts-folder . "/teulu.org/Drafts")
-              (mu4e-sent-folder . "/teulu.org/Sent")
-              (mu4e-refile-folder . ,(concat "/teulu.org/Archive/" (format-time-string "%Y")))
-              (mu4e-trash-folder . "/teulu.org/Trash")
-              (mu4e-bookmarks .
-                              ((:name "Inbox"
-                                      :query "maildir:/teulu.org/Inbox"
-                                      :key ?a)
-                               (:name "Unread"
-                                      :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
-                                      :key ?u)))))))))
+       (setq mu4e-contexts
+             (list
+              ;; Personal account
+              (make-mu4e-context
+               :name "home"
+               :match-func
+               (lambda (msg)
+                 (when msg
+                   (string-prefix-p "/teulu.org" (mu4e-message-field msg :maildir))))
+               :vars
+               `((user-mail-address . "paul@teulu.org")
+                 (user-full-name . "Paul Jewell")
+                 (mu4e-drafts-folder . "/teulu.org/Drafts")
+                 (mu4e-sent-folder . "/teulu.org/Sent")
+                 (mu4e-refile-folder . ,(concat "/teulu.org/Archive/" (format-time-string "%Y")))
+                 (mu4e-trash-folder . "/teulu.org/Trash")
+                 (mu4e-bookmarks .
+                                 ((:name "Inbox"
+                                         :query "maildir:/teulu.org/Inbox"
+                                         :key ?a)
+                                  (:name "Unread"
+                                         :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
+                                         :key ?u)))))))))
 
 
 ;;==============================================================================

@@ -13,7 +13,7 @@
 (require 'org-agenda)
 (require 'org-clock)
 (require 'org-archive)
-(require 'org-checklist "~/Nextcloud/git/org-mode/contrib/lisp/org-checklist.el")
+(require 'org-checklist)
 (require 'org-crypt)
 (require 'org-protocol)
 (require 'ido)
