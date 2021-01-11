@@ -3,5 +3,6 @@
 
 ;;; Code:
 
-(setq package-enable-at-startup nil)
+(if (> emacs-major-version 27)
+    (setq package-enable-at-startup nil))
 

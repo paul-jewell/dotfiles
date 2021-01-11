@@ -11,6 +11,12 @@
 
 (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
+(defun pj/is-windows-p ()
+  (string= "windows-nt" system-type))
+
+(defun pj/is-linux-p ()
+  (string= "gnu/linux" system-type))
+
 ;; Three possibilities for specifying values:
 
 ;; - Globally, for all systems
@@ -18,8 +24,8 @@
 ;; - By system name
 
 (cond
- ((string= "gnu/linux" system-type)
-  (progn
+ ((is-linux-p)
+  (cond ((string= "q"))) (progn
     (setq *pj/enable-mu4e-mode* t)
     (setq *pj/load-site-gentoo* t)
     (setq *pj/enable-auctex* t)
@@ -29,7 +35,7 @@
     (add-to-list 'load-path "/home/paul/git/org-mode/contrib/lisp")
     (setq *pj/font-size* "10")))
 
- ((string= "windows-nt" system-type)
+ ((is-windows-p) ;; Not WSL2 installation - that is declared as linux
   (progn
     (setq *pj/enable-mu4e-mode* nil)
     (setq *pj/load-site-gentoo* nil)
