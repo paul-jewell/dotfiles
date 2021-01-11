@@ -1,0 +1,3 @@
+# Declare files to have lf at end of lines
+* text eol=lf
+
