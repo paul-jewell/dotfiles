@@ -1813,7 +1813,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 (setq org-hide-emphasis-markers t)
 ; Match - in lists and replace with centre dot character
 (font-lock-add-keywords 'org-mode
-                        '(("^ *\\[-]\\) "
+                        '(("^ *\\[-] "
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 (add-hook 'org-mode-hook 'visual-line-mode)

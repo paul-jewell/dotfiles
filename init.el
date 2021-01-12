@@ -462,8 +462,8 @@
 ;;     ----------------------------
 
 (defun boilerplate-gpl3 ()
+  "Insert boilerplate for c/c++ file with GPLv3 license."
         (interactive)
-        "Insert GPLv3 boilerplate"
         (insert "
 /********************************************************************************
  * Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
@@ -484,8 +484,8 @@
 "))
 
 (defun boilerplate-lgpl3 ()
+  "Insert boilerplate for c/c++ file with LGPLv3 license."
         (interactive)
-        "Insert LGPLv3 boilerplate"
         (insert "
 /********************************************************************************
  * Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
@@ -504,9 +504,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
  ********************************************************************************/
 "))
+
 (defun boilerplate-agpl3 ()
+  "Insert boilerplate for c/c++ file with AGPLv3 license."
         (interactive)
-        "Insert AGPLv3 boilerplate"
         (insert "
 /********************************************************************************
  * Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
@@ -525,11 +526,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
  ********************************************************************************/
 "))
-
-(defun insert-timestamp ()
-  (interactive)
-  "Inserts a timestamp"
-  (insert (format-time-string "%Y%m%d.%H%M%S%z/%s")))
 
 ;;==============================================================================
 ;;.....auctex
@@ -634,7 +630,6 @@
    ("p" (lambda () (interactive) (forward-line -1))  "up")
    ("g" goto-line "goto-line")
    ))
-
     ;;    (global-set-key
 ;;     (kbd "C-c t")
 ;;     (defhydra hydra-global-org (:color blue)
@@ -688,26 +683,29 @@
 ;;.....javascript / HTML
 ;;     -----------------
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
-(add-hook 'js-mode-hook 'subword-mode)
-(add-hook 'html-mode-hook 'subword-mode)
-(setq js-indent-level 2)
-(eval-after-load "sgml-mode"
-  '(progn
-     (require 'tagedit)
-     (tagedit-add-paredit-like-keybindings)
-     (add-hook 'html-mode-hook (lambda () (tagedit-mode 1)))))
+(use-package js2-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-amode-list '("\\.js\\'" . js2-mode))
+  (add-jook 'js2-mode-hook #'js2-imenu-extras-mode))
 
-;; Coffeescript
-(add-to-list 'auto-mode-alist '("\\.coffee.erb$" . coffee-mode))
-(add-hook 'coffee-mode-hook 'subword-mode)
-(add-hook 'coffee-mode-hook 'highlight-indentation-current-column-mode)
-(add-hook 'coffee-mode-hook
-          (defun coffee-mode-newline-and-indent ()
-            (define-key coffee-mode-map "\C-j" 'coffee-newline-and-indent)
-            (setq coffee-cleanup-whitespace nil)))
-(custom-set-variables
- '(coffee-tab-width 2))
+(use-package js2-refactor
+  :ensure t
+  :config
+  (add-hook 'js2-mode-hook #'js2-refactor-mode)
+  ;; (js2-add-keybindings-with-prefix "C-c C-r") ;; Clash with ivy-resume
+  (define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+  ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+  ;; unbind it.
+  (define-key js-mode-map (kbd "M-.") nil))
+  
+(add-hook 'js2-mode-hook (lambda ()
+                           (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+(use-package xref-js2
+  :ensure t)
+
+
 
 ;;==============================================================================
 ;;.....company mode
