@@ -686,8 +686,8 @@
 (use-package js2-mode
   :ensure t
   :config
-  (add-to-list 'auto-amode-list '("\\.js\\'" . js2-mode))
-  (add-jook 'js2-mode-hook #'js2-imenu-extras-mode))
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode))
 
 (use-package js2-refactor
   :ensure t
@@ -1107,21 +1107,46 @@ Git gutter:
   (require 'mu4e)
   (use-package mu4e
        :ensure nil ;; mu4e comes from mu package - don't download from melpa
-       :defer 10
+       ;;:defer 10
        :config
-    
+
+       (auth-source-pass-enable)
+       (setq auth-source-debug t) ;;...temporarily...
+       (setq auth-source-do-cache nil)
+       (setq auth-sources '(password-store))
+
+       (setq message-kill-buffer-on-exit t)
        ;; Need to be 't' to avoid mail syncing issues
        (setq mu4e-change-filenames-when-moving t)
     
        ;; Refresh mail every 10 minutes - using isync
        (setq mu4e-update-interval (* 10 60))
-       (setq mu4e-get-mail-command "mbsync --full -a")
+       (setq mu4e-get-mail-command "mbsync -a")
        (setq mu4e-maildir "~/Mail")
 
+       (setq smtpmail-debug-info t)
+       (setq smtpmail-debug-verb t)
+       (setq smtpmail-stream-type 'tls)
+
+       (defun sign-or-encrypt-message ()
+         "Check whether the message should be encrypted and/or signed."
+         (let ((answer (read-from-minibuffer "Sign or encrypt?\nEmpty to do nothing.\n[s/e]: ")))
+           (cond
+            ((string-equal answer "s") (progn
+                                         (message "Signing message.")
+                                         (mml-secure-message-sign-pgpmime)))
+            ((string-equal answer "e") (progn
+                                         (message "Encrypting and signing message.")
+                                         (mml-secure-message-encrypt-pgpmime)))
+            (t (progn
+                 (message "Don't sign or encrypt message.")
+                 nil)))))
+
+       (add-hook 'message-send-hook 'sign-or-encrypt-message) 
+       
        (setq mu4e-contexts
-             (list
-              ;; Personal account
-              (make-mu4e-context
+             `(,(make-mu4e-context
+               ;; Personal account
                :name "home"
                :match-func
                (lambda (msg)
@@ -1134,13 +1159,46 @@ Git gutter:
                  (mu4e-sent-folder . "/teulu.org/Sent")
                  (mu4e-refile-folder . ,(concat "/teulu.org/Archive/" (format-time-string "%Y")))
                  (mu4e-trash-folder . "/teulu.org/Trash")
+                 (smtp-queue-dir . "~/.email/teulu.org/queue/cur")
+                 (smtpmail-smtp-user . "paul@teulu.org")
+                 ;;(smtpmail-starttls-credentials . (("cpanel-008-lon-hostingww.com" 465 nil nil)))
+                 ;;(smtpmail-default-smtp-server . "cpanel-008-lon-hostingww.com")
+                 (smtpmail-smtp-server . "mail.teulu.org")
+                 (smtpmail-smtp-service . 465)
+                 (mu4e-sent-messages-behavior . sent)
                  (mu4e-bookmarks .
                                  ((:name "Inbox"
                                          :query "maildir:/teulu.org/Inbox"
                                          :key ?a)
                                   (:name "Unread"
                                          :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
-                                         :key ?u)))))))))
+                                         :key ?u)))))
+               ,(make-mu4e-context
+                 ;; Applied-jidoka work email
+                 :name "work"
+                 :match-func
+                 (lambda (msg)
+                   (when msg
+                     (string-prefix-p "/applied-jidoka.co.uk" (mu4e-message-field msg :maildir))))
+                 :vars
+                 `((user-mail-address . "paul@applied-jidoka.co.uk")
+                   (user-full-name . "Paul Jewell")
+                   (mu4e-drafts-folder . "/applied-jidoka.co.uk/Drafts")
+                   (mu4e-sent-folder . "/applied-jidoka.co.uk/Sent")
+                   (mu4e-refile-folder . ,(concat "/applied-jidoka.co.uk/Archive/" (format-time-string "%Y")))
+                   (mu4e-trash-folder . "/applied-jidoka.co.uk/Trash")
+                   (smtp-queue-dir . "~/.email/applied-jidoka.co.uk/queue/cur")
+                   (smtpmail-smtp-user . "paul@applied-jidoka.co.uk")
+                   (smtp-smtp-service . 465)
+                   (mu4e-sent-messages-behavior . sent)
+                   (mu4e-bookmarks .
+                                   ((:name "Inbox"
+                                           :query "maildir:/applied-jidoka.co.uk/Inbox"
+                                           :key ?a)
+                                    (:name "Unread"
+                                           :query "maildir:/applied-jidoka.co.uk/Inbox AND flag:unread AND NOT flag:trashed"
+                                           :key ?u)))))))))
+
 
 
 ;;==============================================================================

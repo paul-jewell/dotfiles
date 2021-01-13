@@ -1748,9 +1748,8 @@ Late deadlines first, then scheduled, then non-late deadlines"
 
 (setq org-startup-folded t)
 
-(add-hook 'message-mode-hook 'orgstruct++-mode 'append)
 (add-hook 'message-mode-hook 'turn-on-auto-fill 'append)
-(add-hook 'message-mode-hook 'bbdb-define-all-aliases 'append)
+(add-hook 'message-mode-hook 'bbdb-mail-aliases 'append)
 (add-hook 'message-mode-hook 'orgtbl-mode 'append)
 (add-hook 'message-mode-hook 'turn-on-flyspell 'append)
 (add-hook 'message-mode-hook
@@ -1761,7 +1760,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 
 ;; Disable keys in org-mode
-;;    C-c [ 
+;;    C-c [
 ;;    C-c ]
 ;;    C-c ;
 ;;    C-c C-x C-q  cancelling the clock (we never want this)
