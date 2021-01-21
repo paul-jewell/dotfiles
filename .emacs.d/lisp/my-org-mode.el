@@ -44,10 +44,10 @@
 (global-set-key (kbd "<f9> I")   'pj/punch-in)
 (global-set-key (kbd "<f9> O")   'pj/punch-out)
 
-(global-set-key (kbd "<f9> s")   'bh/switch-to-scratch)
+(global-set-key (kbd "<f9> s")   'pj/switch-to-scratch)
 
-(global-set-key (kbd "<f9> t")   'bh/insert-inactive-timestamp)
-(global-set-key (kbd "<f9> T")   'bh/toggle-insert-inactive-timestamp)
+(global-set-key (kbd "<f9> t")   'pj/insert-inactive-timestamp)
+(global-set-key (kbd "<f9> T")   'pj/toggle-insert-inactive-timestamp)
 
 (global-set-key (kbd "<f9> l")   'org-toggle-link-display)
 (global-set-key (kbd "<f9> SPC") 'pj/clock-in-last-task)
@@ -202,11 +202,11 @@
 ;;;; Refile settings
 ; Exclude DONE state tasks from refile targets
 
-(defun bh/verify-refile-target ()
+(defun pj/verify-refile-target ()
   "Exclude todo keywords with a done state from refile targets."
   (not (member (nth 2 (org-heading-components)) org-done-keywords)))
 
-(setq org-refile-target-verify-function 'bh/verify-refile-target)
+(setq org-refile-target-verify-function 'pj/verify-refile-target)
 
 ;; Do not dim blocked tasks
 
@@ -852,12 +852,12 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (require 'ox-latex)
 (require 'ox-ascii)
 
-(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
+(add-hook 'org-babel-after-execute-hook 'pj/display-inline-images 'append)
 
 ; Make babel results blocks lowercase
 (setq org-babel-results-keyword "results")
 
-(defun bh/display-inline-images ()
+(defun pj/display-inline-images ()
   "Display inline images."
   (condition-case nil
       (org-display-inline-images)
@@ -875,6 +875,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
          (shell . t)
          (ledger . t)
          (org . t)
+         (lisp . t)
          (latex . t))))
 
 ; Do not prompt to confirm evaluation
@@ -1074,7 +1075,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 ; the project that includes this file
 ;
 ; It's bound to C-S-F12 so I just edit and hit C-S-F12 when I'm done and move on to the next thing
-(defun bh/save-then-publish (&optional force)
+(defun pj/save-then-publish (&optional force)
   (interactive "P")
   (save-buffer)
   (org-save-all-org-buffers)
@@ -1082,7 +1083,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
         (org-html-validation-link "<a href=\"http://validator.w3.org/check?uri=referer\">Validate XHTML 1.0</a>"))
     (org-publish-current-project force)))
 
-(global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish)
+(global-set-key (kbd "C-s-<f12>") 'pj/save-then-publish)
 
 (setq org-latex-listings t)
 
@@ -1151,7 +1152,7 @@ so change the default 'F' binding in the agenda to allow both"
   (if (equal arg 4)
       (org-agenda-follow-mode)
     (widen)
-    (bh/set-agenda-restriction-lock 4)
+    (pj/set-agenda-restriction-lock 4)
     (org-agenda-redo)
     (goto-char (point-min))))
 
@@ -1198,7 +1199,7 @@ so change the default 'F' binding in the agenda to allow both"
         (org-with-point-at (pj/get-pom-from-agenda-restriction-or-point)
           (pj/narrow-up-one-org-level))
         (org-agenda-redo))
-    (bh/narrow-up-one-org-level)))
+    (pj/narrow-up-one-org-level)))
 
 (add-hook 'org-agenda-mode-hook
           '(lambda () (org-defkey org-agenda-mode-map "U" 'pj/narrow-up-one-level))
@@ -1640,10 +1641,10 @@ Late deadlines first, then scheduled, then non-late deadlines"
 (defun pj/insert-heading-inactive-timestamp ()
   "Insert heading inactive timestamp."
   (save-excursion
-    (when bh/insert-inactive-timestamp
+    (when pj/insert-inactive-timestamp
       (org-return)
       (org-cycle)
-      (bh/insert-inactive-timestamp))))
+      (pj/insert-inactive-timestamp))))
 
 (add-hook 'org-insert-heading-hook 'pj/insert-heading-inactive-timestamp 'append)
 
