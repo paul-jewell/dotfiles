@@ -1,0 +1,11 @@
+\.git
+\.gitignore
+\.gitattributes
+^/.*\.org
+
+.+~
+\#.*\#
+
+^/LICENSE.*
+^/README.*
+^/COPYING

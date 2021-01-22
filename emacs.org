@@ -1,13 +1,74 @@
+#+TITLE: Emacs Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/init.el
+
+Emacs configuration.
+
+* table of contents                                                 :toc:
+:PROPERTIES:
+:TOC: :include all :ignore this
+:END:
+- [[#preamble][Preamble]]
+- [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
+- [[#site-specific-code][Site specific code]]
+- [[#general-configuration][General configuration]]
+- [[#package-management][Package Management]]
+- [[#ivy][Ivy]]
+- [[#swiper][Swiper]]
+- [[#which-key][Which-key]]
+- [[#ispell][ispell]]
+- [[#ledger][Ledger]]
+- [[#go][Go]]
+- [[#python][Python]]
+- [[#sql][SQL]]
+- [[#c][C++]]
+- [[#multiple-cursors][Multiple Cursors]]
+- [[#org-mode][Org-mode]]
+- [[#org-bullet-mode][Org Bullet mode]]
+- [[#org-roam][Org-roam]]
+- [[#licence-boilerplate][Licence Boilerplate]]
+- [[#auctex][Auctex]]
+- [[#reftex][Reftex]]
+- [[#hydra][Hydra]]
+- [[#javascript-and-html][Javascript and HTML]]
+- [[#company-mode][Company mode]]
+- [[#magit][Magit]]
+- [[#flycheck][Flycheck]]
+- [[#all-the-icons][All the icons]]
+- [[#themes][Themes]]
+- [[#eyebrowse][eyebrowse]]
+- [[#projectile][Projectile]]
+- [[#powerline][Powerline]]
+- [[#paredit][Paredit]]
+- [[#clojure][Clojure]]
+- [[#lisp][Lisp]]
+- [[#emacs-lisp][emacs-lisp]]
+- [[#mu4e---email][mu4e - Email]]
+- [[#org-caldav][org-caldav]]
+- [[#helpful][Helpful]]
+- [[#erc][ERC]]
+- [[#toc-org][toc-org]]
+- [[#ox-hugo][ox-hugo]]
+
+* Preamble
+
+#+begin_src emacs-lisp
 ;;; init.el --- Startup file for emacs
 
 ;;; Commentary:
 ;; Initial configuration file loaded by Emacs.
 ;;  - Sets the custom configuration file location
+;; This file is generated from init.org and tangled. Changes should
+;; be made to that file; also for more information - see details there.
+;;
 ;; (c) 2017 - 2021 Paul Jewell
 ;; Licence: BSD
 
 ;;; Code:
+#+end_src
 
+* Machine specific code, and package initialisation
+
+#+begin_src emacs-lisp
 ;; Load machine local definitions
 (load-file "~/.emacs.d/site-specific.el")
 
@@ -22,6 +83,93 @@
     (setq *packages-initialised* t)))
 
 (initialise-packages)
+
+#+end_src
+
+* Site specific code
+Some opportunity for refactoring here. Currently this code tangles to
+a separate file, but perhaps better if the code fed out to specific
+files for each machine?
+
+#+begin_src  emacs-lisp :tangle ./.emacs.d/site-specific.el
+;;; Site-specific.el --- local variables for each system
+;;; commentary:
+;;; code:
+
+;; Globals to configure which blocks are loaded
+
+(defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
+(defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
+(defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
+(defvar *pj/font-size*        "10"  "Fontsize for this system.")
+
+(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+
+(defun pj/is-windows-p ()
+  "True if run in windows environment."
+  (string= "windows-nt" system-type))
+
+(defun pj/is-linux-p ()
+  "True if run in linux environment."
+  (string= "gnu/linux" system-type))
+
+;; Three possibilities for specifying values:
+
+;; - Globally, for all systems
+;; - By operating system
+;; - By system name
+
+(cond
+ ((pj/is-linux-p)
+  (if (string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+      (progn
+        (require 'gnutls)
+        (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+	     (setq *pj/enable-mu4e-mode* t)
+	     (setq *pj/load-site-gentoo* nil)
+	     (setq *pj/enable-auctex* t)
+	     
+	     ;; define the location of the orgmode code
+	     (add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+	     (add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+        (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+        (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/git/org/roam/")
+        (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/git/org/org-roam.db")
+	     (setq *pj/font-size* "10"))
+    (progn
+      (setq *pj/enable-mu4e-mode* t)
+      (setq *pj/load-site-gentoo* t)
+      (setq *pj/enable-auctex* t)
+	   ;; define the location of the orgmode code
+	   (add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+	   (add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+      (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+      (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
+      (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db"))))
+ ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+  (progn
+    (setq *pj/enable-mu4e-mode* nil)
+    (setq *pj/load-site-gentoo* nil)
+    (setq *pj/enable-auctex* nil)
+    
+    ;; define the location of the orgmode code
+    (add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
+    (add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
+    (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/git/org/roam/")
+    (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+    (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
+    (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db")
+    (setq *pj/font-size* "10")))
+ (t
+  (error "Undefined system-type %s" system-type)))
+
+(provide 'site-specific)
+;;; site-specific.el ends here
+
+
+#+end_src
+
+#+begin_src emacs-lisp
 
 ;; To load external version of org-mode, clone the code from git:
 ;; > cd <directory below which you want the org code>
@@ -39,6 +187,12 @@
 ;; Save emacs customisations in this file:
 (setq custom-file "~/.emacs.d/emacs-custom.el")
 (load custom-file)
+
+#+end_src
+
+* General configuration
+
+#+begin_src emacs-lisp
 
 ;;==============================================================================
 ;;.....General configuration
@@ -84,6 +238,16 @@
 (defalias 'list-buffers 'ibuffer)
 
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups"))))
+#+end_src
+
+* Package Management
+
+Packages are currently installed using use-package. With the
+configuration of a guix laptop, there is an opportunity to use guix to
+load the packages into the system. Use of guix on top of gentoo is
+still to be explored...
+
+#+begin_src emacs-lisp
 
 ;;==============================================================================
 ;;.....Package management
@@ -143,7 +307,11 @@
   (error
    (package-refresh-contents)
    (init--install-packages)))
+#+end_src
 
+* Ivy
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Ivy
 ;;     ---
@@ -203,7 +371,11 @@
                            ;; Don't mess with EXWM buffers
                            (with-current-buffer buffer
                              (not (derived-mode-p 'exwm-mode)))))))))
+#+end_src
 
+* Swiper
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Swiper
 ;;     ------
@@ -239,6 +411,11 @@
     (setq ivy-display-style 'fancy)
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
 
+#+end_src
+
+* Which-key
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....which-key
 ;;     ---------
@@ -248,6 +425,11 @@
   :ensure t
   :config (which-key-mode))
 
+#+end_src
+
+* ispell
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ispell
 ;;     ------
@@ -265,6 +447,11 @@
 ;; (flyspell-mode 1)
 (global-set-key (kbd "M-\\") 'ispell-word)
 
+#+end_src
+
+* Ledger
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ledger
 ;;     ------
@@ -279,6 +466,11 @@
   (add-to-list 'auto-mode-alist '("\\.dat$" . ledger-mode))
   (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
 
+#+end_src
+
+* Go
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....go
 ;;     --
@@ -293,6 +485,11 @@
    (with-eval-after-load 'go-mode
      (require 'go-autocomplete)))
 
+#+end_src
+
+* Python
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Python
 ;;     ------
@@ -312,6 +509,11 @@
 ;;  :init
 ;;  (advice-add 'python-mode :before 'elpy-enable))
 
+#+end_src
+
+* SQL
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....SQL
 ;;     ---
@@ -323,6 +525,11 @@
   '(progn (sql-set-product 'mysql)))
 
 
+#+end_src
+
+* C++
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....c++
 ;;     ---
@@ -406,6 +613,11 @@
 ;;   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
 ;;   (smex-major-mode-commands)))
 
+#+end_src
+
+* Multiple Cursors
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....multiple cursors
 ;;     ----------------
@@ -414,6 +626,11 @@
   :ensure t
   :config (global-set-key (kbd "C-c m c") 'mc/edit-lines))
 
+#+end_src
+
+* Org-mode
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org mode
 ;;     --------
@@ -423,6 +640,11 @@
 (require 'org-habit)
 (global-set-key (kbd "C-c w") 'org-refile)
 
+#+end_src
+
+* Org Bullet mode
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org bullet mode
 ;;     ---------------
@@ -431,6 +653,11 @@
   :ensure t
   :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
+#+end_src
+
+* Org-roam
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org roam mode
 ;;     -------------
@@ -457,6 +684,11 @@
               (("C-c n i" . org-roam-insert))))
 
 
+#+end_src
+
+* Licence Boilerplate
+I set this up a long time ago, before I knew emacs-lisp. 
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....GPL3 File header boilerplate
 ;;     ----------------------------
@@ -466,21 +698,21 @@
         (interactive)
         (insert "
 /********************************************************************************
- * Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- *                                                                              *
- * This program is free software: you can redistribute it and/or modify         *
- * it under the terms of the GNU General Public License as published by         *
- * the Free Software Foundation, either version 3 of the License, or            *
- * (at your option) any later version.                                          *
- *                                                                              *
- * This program is distributed in the hope that it will be useful,              *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- * GNU General Public License for more details.                                 *
- *                                                                              *
- * You should have received a copy of the GNU General Public License            *
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ********************************************************************************/
+ ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
+ ,*                                                                              *
+ ,* This program is free software: you can redistribute it and/or modify         *
+ ,* it under the terms of the GNU General Public License as published by         *
+ ,* the Free Software Foundation, either version 3 of the License, or            *
+ ,* (at your option) any later version.                                          *
+ ,*                                                                              *
+ ,* This program is distributed in the hope that it will be useful,              *
+ ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+ ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+ ,* GNU General Public License for more details.                                 *
+ ,*                                                                              *
+ ,* You should have received a copy of the GNU General Public License            *
+ ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
+ ,********************************************************************************/
 "))
 
 (defun boilerplate-lgpl3 ()
@@ -488,21 +720,21 @@
         (interactive)
         (insert "
 /********************************************************************************
- * Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- *                                                                              *
- * This program is free software: you can redistribute it and/or modify         *
- * it under the terms of the GNU Lesser General Public License as published by  *
- * the Free Software Foundation, either version 3 of the License, or            *
- * (at your option) any later version.                                          *
- *                                                                              *
- * This program is distributed in the hope that it will be useful,              *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- * GNU Lesser General Public License for more details.                          *
- *                                                                              *
- * You should have received a copy of the GNU Lesser General Public License     *
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ********************************************************************************/
+ ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
+ ,*                                                                              *
+ ,* This program is free software: you can redistribute it and/or modify         *
+ ,* it under the terms of the GNU Lesser General Public License as published by  *
+ ,* the Free Software Foundation, either version 3 of the License, or            *
+ ,* (at your option) any later version.                                          *
+ ,*                                                                              *
+ ,* This program is distributed in the hope that it will be useful,              *
+ ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+ ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+ ,* GNU Lesser General Public License for more details.                          *
+ ,*                                                                              *
+ ,* You should have received a copy of the GNU Lesser General Public License     *
+ ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
+ ,********************************************************************************/
 "))
 
 (defun boilerplate-agpl3 ()
@@ -510,23 +742,28 @@
         (interactive)
         (insert "
 /********************************************************************************
- * Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- *                                                                              *
- * This program is free software: you can redistribute it and/or modify         *
- * it under the terms of the GNU Affero General Public License as published by  *
- * the Free Software Foundation, either version 3 of the License, or            *
- * (at your option) any later version.                                          *
- *                                                                              *
- * This program is distributed in the hope that it will be useful,              *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- * GNU Affero General Public License for more details.                          *
- *                                                                              *
- * You should have received a copy of the GNU Affero General Public License     *
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ********************************************************************************/
+ ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
+ ,*                                                                              *
+ ,* This program is free software: you can redistribute it and/or modify         *
+ ,* it under the terms of the GNU Affero General Public License as published by  *
+ ,* the Free Software Foundation, either version 3 of the License, or            *
+ ,* (at your option) any later version.                                          *
+ ,*                                                                              *
+ ,* This program is distributed in the hope that it will be useful,              *
+ ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+ ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+ ,* GNU Affero General Public License for more details.                          *
+ ,*                                                                              *
+ ,* You should have received a copy of the GNU Affero General Public License     *
+ ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
+ ,********************************************************************************/
 "))
 
+#+end_src
+
+* Auctex
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....auctex
 ;;     ------
@@ -558,6 +795,13 @@
     (add-hook 'Latex-mode-hook 'pdf-tools-install)))
 
 
+#+end_src
+
+* Reftex
+
+I haven't used this yet, so there may be some issues.
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....reftex
 ;;     ------
@@ -596,6 +840,11 @@
 ;;  (setq ivy-bibtex-default-action 'bibtex-completion-insert-citation))
 
 
+#+end_src
+
+* Hydra
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....hydra
 ;;     -----
@@ -679,6 +928,11 @@
   ("0" (text-scale-adjust 0) "reset")
   ("q" nil "quit" :color blue))
 
+#+end_src
+
+* Javascript and HTML
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....javascript / HTML
 ;;     -----------------
@@ -707,6 +961,11 @@
 
 
 
+#+end_src
+
+* Company mode
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....company mode
 ;;     ------------
@@ -746,6 +1005,11 @@
 
 (add-hook 'python-mode-hook 'my/python-mode-hook)
 
+#+end_src
+
+* Magit
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....magit
 ;;     -----
@@ -796,6 +1060,11 @@ Git gutter:
               (git-gutter:clear))
    :color blue))
 
+#+end_src
+
+* Flycheck
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....flycheck
 ;;     --------
@@ -805,6 +1074,11 @@ Git gutter:
   :init
   (global-flycheck-mode 1))
 
+#+end_src
+
+* All the icons
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....all the icons
 ;;     -------------
@@ -822,6 +1096,11 @@ Git gutter:
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 
 
+#+end_src
+
+* Themes
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....themes
 ;;     ------
@@ -839,6 +1118,11 @@ Git gutter:
 ;;(set-default-font my:font)
 ;;(set-frame-font my:font t)
 
+#+end_src
+
+* eyebrowse
+
+#+begin_src emacs-lisp :no-tangle
 ;;==============================================================================
 ;;.....eyebrowse
 ;;     ---------
@@ -850,6 +1134,11 @@ Git gutter:
 ;;;;  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
 ;;  (eyebrowse-mode t))
 
+#+end_src
+
+* Projectile
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Projectile
 ;;     ----------
@@ -863,6 +1152,11 @@ Git gutter:
   (projectile-mode))
 
 
+#+end_src
+
+* Powerline
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....powerline
 ;;     ---------
@@ -967,6 +1261,11 @@ Git gutter:
   :ensure t)
 
 
+#+end_src
+
+* Paredit
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Paredit
 ;;     -------
@@ -992,13 +1291,13 @@ Git gutter:
   :config
   (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
 
-(use-package highlight-parentheses
-  :ensure t
-  :diminish highlight-parentheses-mode
-  :config
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda()
-              (highlight-parentheses-mode))))
+;; (use-package highlight-parentheses
+;;   :ensure t
+;;   :diminish highlight-parentheses-mode
+;;   :config
+;;   (add-hook 'emacs-lisp-mode-hook
+;;             (lambda()
+;;               (highlight-parentheses-mode))))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -1008,8 +1307,13 @@ Git gutter:
             (lambda()
               (rainbow-delimiters-mode))))
 
-(global-highlight-parentheses-mode)
+;;(global-highlight-parentheses-mode)
 
+#+end_src
+
+* Clojure
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Clojure
 ;;     -------
@@ -1051,6 +1355,11 @@ Git gutter:
   :ensure t)
 
 
+#+end_src
+
+* Lisp
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....lisp - slime
 ;;     ------------
@@ -1089,6 +1398,11 @@ Git gutter:
         (eval-after-load "auto-complete"
           '(add-to-list 'ac-modes 'slime-repl-mode))))))
 
+#+end_src
+
+* emacs-lisp
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....elisp - slime
 ;;     -------------
@@ -1099,6 +1413,11 @@ Git gutter:
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook #'elisp-slime-nav-mode)))
 
+#+end_src
+
+* mu4e - Email 
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....mu4e
 ;;     ----
@@ -1211,6 +1530,13 @@ Git gutter:
                                            :query "maildir:/applied-jidoka.co.uk/Inbox AND flag:unread AND NOT flag:trashed"
                                            :key ?u)))))))))
 
+#+end_src
+
+* org-caldav
+Still under development
+
+#+begin_src emacs-lisp
+
 (use-package org-caldav
   :ensure t
   :config
@@ -1227,6 +1553,11 @@ Git gutter:
 
 
 
+#+end_src
+
+* Helpful
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....helpful
 ;;     -------
@@ -1242,6 +1573,12 @@ Git gutter:
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
+#+end_src
+
+* ERC
+Developed from bbatsov's code on his github.
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ERC
 ;;     ---
@@ -1282,8 +1619,8 @@ Git gutter:
     (mkdir erc-log-channels-directory t))
 
 (setq erc-save-buffer-on-part t)
-(defadvice save-buffers-kill-emacs (before save-logs (arg) activate)
-  (save-some-buffers t (lambda () (when (eq major-mode 'erc-mode) t))))
+;; (defadvice save-buffers-kill-emacs (before save-logs (arg) activate)
+;;   (save-some-buffers t (lambda () (when (eq major-mode 'erc-mode) t))))
 
 ;; truncate long irc buffers
 (erc-truncate-mode +1)
@@ -1296,21 +1633,29 @@ Git gutter:
 
 ;; set different dictionaries by different servers/channels
 ;;(setq erc-spelling-dictionaries '(("#emacs" "american")))
+(defun clean-message (s)
+  "Clean up message S for notification function."
+  (let* ((s (replace-regexp-in-string ">" "&gt;" s))
+         (s (replace-regexp-in-string "<" "&lt;" s))
+         (s (replace-regexp-in-string "&" "&amp;" s))
+         (s (replace-regexp-in-string "\"" "&quot;" s))))
+  (replace-regexp-in-string "'" "&apos;" s))
 
 ;; TODO - replace this with use of notify.el
 ;; Notify my when someone mentions my nick.
 (defun call-libnotify (matched-type nick msg)
+  "Notify when NICK is mentioned in MSG (MATCHED-TYPE)."
   (let* ((cmsg  (split-string (clean-message msg)))
          (nick   (first (split-string nick "!")))
          (msg    (mapconcat 'identity (rest cmsg) " ")))
     (shell-command-to-string
-     (format "notify-send -u critical '%s says:' '%s'" nick msg))))
+     (format "notify-send -t 500 -u normal '%s says:' '%s'" nick msg))))
 
 (add-hook 'erc-text-matched-hook 'call-libnotify)
 
 (defvar erc-notify-nick-alist nil
   "Alist of nicks and the last time they tried to trigger a
-notification")
+notification.")
 
 (defvar erc-notify-timeout 10
   "Number of seconds that must elapse between notifications from
@@ -1335,6 +1680,7 @@ that can occur between two notifications.  The default is
 
 ;; private message notification
 (defun erc-notify-on-private-msg (proc parsed)
+  "Notify when private message is received (PROC PARSED)."
   (let ((nick (car (erc-parse-user (erc-response.sender parsed))))
         (target (car (erc-response.command-args parsed)))
         (msg (erc-response.contents parsed)))
@@ -1342,7 +1688,7 @@ that can occur between two notifications.  The default is
                (not (erc-is-message-ctcp-and-not-action-p msg))
                (erc-notify-allowed-p nick))
       (shell-command-to-string
-       (format "notify-send -u critical '%s says:' '%s'" nick msg))
+       (format "notify-send -t 500 -u normal '%s says:' '%s'" nick msg))
       nil)))
 
 (add-hook 'erc-server-PRIVMSG-functions 'erc-notify-on-private-msg)
@@ -1350,16 +1696,16 @@ that can occur between two notifications.  The default is
 ;; autoaway setup
 (setq erc-auto-discard-away t)
 (setq erc-autoaway-idle-seconds 600)
-(setq erc-autoaway-use-emacs-idle t)
+(setq erc-autoaway-idle-method 'emacs)
 
 ;; auto identify
-(when (file-exists-p (expand-file-name "~/.ercpass"))
-  (load "~/.ercpass")
-  (require 'erc-services)
-  (erc-services-mode 1)
-  (setq erc-prompt-for-nickserv-password nil)
-  (setq erc-nickserv-passwords
-        `((freenode (("paulj" . ,paulj-pass))))))
+;; (when (file-exists-p (expand-file-name "~/.ercpass"))
+;;   (load "~/.ercpass")
+;;   (require 'erc-services)
+;;   (erc-services-mode 1)
+;;   (setq erc-prompt-for-password nil))
+  ;; (setq erc-nickserv-passwords
+  ;;       `((freenode (("paulj" . ,paulj-pass))))))
 
 ;; utf-8 always and forever
 (setq erc-server-coding-system '(utf-8 . utf-8))
@@ -1377,7 +1723,7 @@ that can occur between two notifications.  The default is
          (buffer-list))))
 
 (defun stop-irc ()
-  "Disconnects from all irc servers"
+  "Disconnects from all irc servers."
   (interactive)
   (dolist (buffer (filter-server-buffers))
     (message "Server buffer: %s" (buffer-name buffer))
@@ -1385,7 +1731,31 @@ that can occur between two notifications.  The default is
       (erc-quit-server "Asta la vista"))))
 
 
+#+end_src
 
+* toc-org
+Make table of contents when saving org-files.
+
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....toc-org
+;;     -------
+
+(use-package toc-org
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook 'toc-org-mode)
+
+  ;; enable in markdown as well
+  (add-hook 'markdown-mode-hook 'toc-org-mode))
+
+
+#+end_src
+
+* ox-hugo
+Not yet set up. Website development with org and hugo.
+
+#+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Ox-Hugo
 ;;     -------
@@ -1394,5 +1764,10 @@ that can occur between two notifications.  The default is
   :ensure t
   :after ox)
 
+
+
+
 (provide 'init)
 ;;; init.el ends here
+
+#+end_src

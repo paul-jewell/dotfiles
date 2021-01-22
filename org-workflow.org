@@ -1,3 +1,30 @@
+#+TITLE: org-workflow.org - personalised gtd workflow for org-mode
+#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/lisp/my-org-mode.el
+
+Org-mode workflow developed over time from the excellent configuration
+shared by Bernt Hansen. Since then I have brought the code up to date
+with the current org-mode version, and also removed sections I wasn't
+using.
+
+TODO: Complete the breakdown and documentation in this file.
+
+* Table of contents                                                     :toc:
+:PROPERTIES:
+:TOC: :include all :ignore this
+:END:
+
+- [[#preamble][Preamble]]
+- [[#key-bindings][Key bindings]]
+- [[#key-bindings-1][Key bindings]]
+- [[#helper-functions][Helper functions]]
+- [[#capture-templates][Capture templates]]
+- [[#agenda-custom-commands][Agenda custom commands]]
+- [[#clocking-management][Clocking management]]
+- [[#agenda-clock-report-parameters][Agenda clock report parameters]]
+
+* Preamble
+
+#+begin_src emacs-lisp
 ;;; package --- Summary
 
 ;; Org-mode personal configuration
@@ -17,6 +44,13 @@
 (require 'org-crypt)
 (require 'org-protocol)
 (require 'ido)
+
+#+end_src
+
+* Key bindings
+
+#+begin_src emacs-lisp
+
 
 ;; Standard key bindings
 (global-set-key "\C-cl" 'org-store-link)
@@ -60,6 +94,12 @@
 
 (global-set-key (kbd "C-c c")    'org-capture)
 
+#+end_src
+
+* Key bindings
+
+#+begin_src emacs-lisp
+
 (defun pj/set-truncate-lines ()
   "Toggle value of 'truncate-lines' and refresh window display."
   (interactive)
@@ -68,6 +108,12 @@
   (save-excursion
     (set-window-start (selected-window)
                       (window-start (selected-window)))))
+
+#+end_src
+
+* Helper functions
+
+#+begin_src emacs-lisp
 
 (defun pj/switch-to-scratch ()
   "Switch to scratch buffer."
@@ -113,6 +159,12 @@
   "Generate a UUID for the ID Property of each task."
   (shell-command-to-string "uuidgen"))
 
+
+#+end_src
+
+* Capture templates
+
+#+begin_src emacs-lisp
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (defvar org-capture-templates
   (quote (("t" "todo" entry (file *pj/org-default-refile-file*)
@@ -215,6 +267,12 @@
 
 (setq org-agenda-compact-blocks t)
 
+
+#+end_src
+
+* Agenda custom commands
+
+#+begin_src emacs-lisp
 ;; Custom agenda command definitions
 
 (setq org-agenda-custom-commands
@@ -299,6 +357,11 @@
 
 (setq org-agenda-auto-exclude-function 'pj/org-auto-exclude-function)
 
+#+end_src
+
+* Clocking management
+
+#+begin_src emacs-lisp
 ;;
 ;; Resume clocking task when emacs is restarted
 
@@ -477,6 +540,11 @@ A prefix arg forces clock in of the default task."
 
 (setq org-clock-out-remove-zero-time-clocks t)
 
+#+end_src
+
+* Agenda clock report parameters
+
+#+begin_src emacs-lisp
 ;; Agenda clock report parameters
 
 (setq org-agenda-clockreport-parameter-plist
@@ -1844,3 +1912,5 @@ Late deadlines first, then scheduled, then non-late deadlines"
 
 (provide 'my-org-mode)
 ;;; my-org-mode.el ends here
+
+#+end_src

@@ -1,0 +1,812 @@
+#+TITLE: System Configuration with Guix
+
+* Table of Contents                                                     :toc:
+:PROPERTIES:
+:TOC:      :include all :ignore this
+:END:
+:CONTENTS:
+- [[#channels][Channels]]
+- [[#systems][Systems]]
+  - [[#base-configuration][Base Configuration]]
+  - [[#machines][Machines]]
+    - [[#per-system-settings][Per-System Settings]]
+    - [[#zerocool][zerocool]]
+    - [[#davinci][davinci]]
+    - [[#phantom][phantom]]
+  - [[#usb-installation-image][USB Installation Image]]
+- [[#profile-management][Profile Management]]
+  - [[#activating-profiles][Activating Profiles]]
+  - [[#updating-profiles][Updating Profiles]]
+- [[#dotfiles-management][Dotfiles Management]]
+  - [[#syncing][Syncing]]
+  - [[#updating][Updating]]
+- [[#nix-package-manager][Nix Package Manager]]
+- [[#system-installation][System Installation]]
+:END:
+
+- [[#introduction][Introduction]]
+- [[#channels][Channels]]
+- [[#systems][Systems]]
+  - [[#base-configuration][Base Configuration]]
+  - [[#machines][Machines]]
+  - [[#usb-installation-image][USB Installation Image]]
+- [[#profile-management][Profile Management]]
+  - [[#activating-profiles][Activating Profiles]]
+  - [[#updating-profiles][Updating Profiles]]
+- [[#dotfiles-management][Dotfiles Management]]
+  - [[#syncing][Syncing]]
+  - [[#updating][Updating]]
+  - [[#system-installation][System Installation]]
+
+* Introduction
+This file was originally created by David Wilson, and can be seen here:
+https://github.com/daviwil/dotfiles
+My modifications are made to configure the contents for my systems. 
+* Channels
+
+Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which basically amount to Git repositories which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel.
+
+*.config/guix/channels.scm:*
+
+#+begin_src scheme :tangle ./.config/guix/channels.scm
+
+  ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+  ;; (cons* (channel
+  ;;         (name 'nonguix)
+  ;;         (commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
+  ;;         (url "https://gitlab.com/nonguix/nonguix"))
+  ;;        %default-channels)
+
+  (list (channel
+          (name 'nonguix)
+          (commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
+          (url "https://gitlab.com/nonguix/nonguix"))
+        (channel
+          (name 'guix)
+          (commit "190187326ad7516dd6728eed7bb6ef2d4f92897a")
+          (url "https://git.savannah.gnu.org/git/guix.git")
+          (introduction
+            (make-channel-introduction
+              "9edb3f66fd807b096b48283debdcddccfea34bad"
+            (openpgp-fingerprint
+              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+
+#+end_src
+
+The following channel list can be used when testing patches to packages and services from a local clone of the Guix repo.  You'll have to create a branch and commit changes to it before =guix pull= can pick them up, though.  You can change the target branch using the =branch= field of the =channel=.
+
+#+begin_src scheme :tangle ./.config/guix/channels.scm
+
+;; (list (channel
+;;         (name 'nonguix)
+;;         (url "https://gitlab.com/nonguix/nonguix"))
+;;       (channel
+;;         (name 'guix)
+;;         (branch "fix-glu-pkg-config")
+;;         (url "file:///home/daviwil/Projects/Code/guix")
+;;         (introduction
+;;           (make-channel-introduction
+;;             "d06d5db885e4b8399e878708862fbe3a67f0592c"
+;;             (openpgp-fingerprint
+;;               "53C4 1E6E 41AA FE55 335A  CA5E 446A 2ED4 D940 BF14")))))
+
+#+end_src
+
+* Systems
+
+** Base Configuration
+
+This base configuration is shared between all of the machines I manage with Guix.  Since all of my machines are Lenovo ThinkPad laptops, the same basic configuration applies pretty cleanly across all of them.  This may change in the future.
+
+Any configuration that derives from =base-operating-system= must invoke =guix system= in a specific way to ensure it gets loaded correctly:
+
+#+begin_src sh
+
+sudo -E guix system -L ~/.dotfiles/.config/guix/systems reconfigure ~/.dotfiles/.config/guix/systems/davinci.scm
+
+#+end_src
+
+*.config/guix/systems/base-system.scm:*
+
+#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+(define-module (base-system)
+  #:use-module (gnu)
+  #:use-module (srfi srfi-1)
+  #:use-module (gnu system nss)
+  #:use-module (gnu services pm)
+  #:use-module (gnu services cups)
+  #:use-module (gnu services desktop)
+;;  #:use-module (gnu services docker)
+  #:use-module (gnu services networking)
+;;  #:use-module (gnu services virtualization)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages cups)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages mtools)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages web-browsers)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages package-management)
+  #:use-module (nongnu packages linux)
+  #:use-module (nongnu system linux-initrd))
+
+(use-service-modules nix)
+(use-service-modules desktop xorg)
+(use-package-modules certs)
+(use-package-modules shells)
+
+#+end_src
+
+Add a =udev= rule to enable members of the =video= group to control screen brightness.
+
+#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+
+;; Allow members of the "video" group to change the screen brightness.
+(define %backlight-udev-rule
+  (udev-rule
+   "90-backlight.rules"
+   (string-append "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                  "RUN+=\"/run/current-system/profile/bin/chgrp video /sys/class/backlight/%k/brightness\""
+                  "\n"
+                  "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                  "RUN+=\"/run/current-system/profile/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
+
+#+end_src
+
+Override the default =%desktop-services= to add the =udev= backlight configuration and include OpenVPN in the list of NetworkManager plugins.
+
+#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+
+(define %my-desktop-services
+  (modify-services %desktop-services
+                   (elogind-service-type config =>
+                                         (elogind-configuration (inherit config)
+                                                                (handle-lid-switch-external-power 'suspend)))
+                   (udev-service-type config =>
+                                      (udev-configuration (inherit config)
+                                                          (rules (cons %backlight-udev-rule
+                                                                       (udev-configuration-rules config)))))
+                   (network-manager-service-type config =>
+                                                 (network-manager-configuration (inherit config)
+                                                                                (vpn-plugins
+                                                                                 (list network-manager-openvpn))))))
+
+#+end_src
+
+Use the =libinput= driver for all input devices since it's a bit more modern than the default.
+
+#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+
+(define %xorg-libinput-config
+  "Section \"InputClass\"
+  Identifier \"Touchpads\"
+  Driver \"libinput\"
+  MatchDevicePath \"/dev/input/event*\"
+  MatchIsTouchpad \"on\"
+
+  Option \"Tapping\" \"on\"
+  Option \"TappingDrag\" \"on\"
+  Option \"DisableWhileTyping\" \"on\"
+  Option \"MiddleEmulation\" \"on\"
+  Option \"ScrollMethod\" \"twofinger\"
+EndSection
+Section \"InputClass\"
+  Identifier \"Keyboards\"
+  Driver \"libinput\"
+  MatchDevicePath \"/dev/input/event*\"
+  MatchIsKeyboard \"on\"
+EndSection
+")
+
+#+end_src
+
+Define the =base-operating-system= which will be inherited by all machine configurations.
+
+#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+
+(define-public base-operating-system
+  (operating-system
+    (host-name "base-system")
+    (timezone "Europe/London")
+    (locale "en_GB.utf8")
+
+    ;; Use non-free Linux and firmware
+    (kernel linux)
+    (firmware (list linux-firmware))
+    (initrd microcode-initrd)
+
+    ;; Choose US English keyboard layout.  The "altgr-intl"
+    ;; variant provides dead keys for accented characters.
+    (keyboard-layout (keyboard-layout "gb" "altgr-intl" #:model "thinkpad"))
+
+    ;; Use the UEFI variant of GRUB with the EFI System
+    ;; Partition mounted on /boot/efi.
+    (bootloader (bootloader-configuration
+                 (bootloader grub-efi-bootloader)
+                 (target "/boot/efi")
+                 (keyboard-layout keyboard-layout)))
+
+
+    ;; Guix doesn't like it when there isn't a file-systems
+    ;; entry, so add one that is meant to be overridden
+    (file-systems (cons*
+                   (file-system
+                     (mount-point "/tmp")
+                     (device "none")
+                     (type "tmpfs")
+                     (check? #f))
+                   %base-file-systems))
+
+    (users (cons (user-account
+                  (name "paul")
+                  (comment "Paul Jewell")
+                  (group "users")
+                  (home-directory "/home/paul")
+                  (supplementary-groups '(
+                                          "wheel"     ;; sudo
+                                          "netdev"    ;; network devices
+                                          "kvm"
+                                          "tty"
+                                          "input"
+;;                                          "docker"
+                                          "realtime"  ;; Enable realtime scheduling
+                                          "lp"        ;; control bluetooth devices
+                                          "audio"     ;; control audio devices
+                                          "video")))  ;; control video devices
+                 %base-user-accounts))
+
+    ;; Add the 'realtime' group
+    (groups (cons (user-group (system? #t) (name "realtime"))
+                  %base-groups))
+
+    ;; Install bare-minimum system packages
+    (packages (append (list
+                        git
+                        ntfs-3g
+                        exfat-utils
+                        fuse-exfat
+                        stow
+                        vim
+                        emacs
+                        bluez
+                        bluez-alsa
+                        pulseaudio
+                        tlp
+                        xf86-input-libinput
+                        nss-certs     ;; for HTTPS access
+                        gvfs)         ;; for user mounts
+                    %base-packages))
+
+    ;; Use the "desktop" services, which include the X11 log-in service,
+    ;; networking with NetworkManager, and more
+    (services (cons* (service slim-service-type
+                              (slim-configuration
+                                (xorg-configuration
+                                  (xorg-configuration
+                                    (keyboard-layout keyboard-layout)
+                                    (extra-config (list %xorg-libinput-config))))))
+                    (service tlp-service-type
+                             (tlp-configuration
+                                (cpu-boost-on-ac? #t)
+                                (wifi-pwr-on-bat? #t)))
+                    (pam-limits-service ;; This enables JACK to enter realtime mode
+                     (list
+                      (pam-limits-entry "@realtime" 'both 'rtprio 99)
+                      (pam-limits-entry "@realtime" 'both 'memlock 'unlimited)))
+                    (service thermald-service-type)
+                    (service docker-service-type)
+                    (service libvirt-service-type
+                             (libvirt-configuration
+                              (unix-sock-group "libvirt")
+                              (tls-port "16555")))
+                    (service cups-service-type
+                             (cups-configuration
+                               (web-interface? #t)
+                               (extensions
+                                 (list cups-filters))))
+                    (service nix-service-type)
+                    (bluetooth-service #:auto-enable? #t)
+                    (remove (lambda (service)
+                                (eq? (service-kind service) gdm-service-type))
+                            %my-desktop-services)))
+
+    ;; Allow resolution of '.local' host names with mDNS
+    (name-service-switch %mdns-host-lookup-nss)))
+
+#+end_src
+
+** Machines
+
+Machines are named after opera stars and greek gods (during initial setup!).
+
+*** Per-System Settings
+
+Some settings need to be customized on a per-system basis without tweaking individual configuration files.  Thanks to org-mode's =noweb= functionality, I can define a set of variables that can be tweaked for each system and applied across these configuration files when they get generated.
+
+I also define a function called =dw/system-settings-get= which can retrieve these settings appropriately.
+
+#+begin_src emacs-lisp :tangle ./.emacs.d/per-system-settings.el :noweb yes
+
+(require 'map) ;; Needed for map-merge
+
+(setq dw/system-settings
+  (map-merge
+    'list
+    '((desktop/dpi . 180)
+      (desktop/background . "samuel-ferrara-uOi3lg8fGl4-unsplash.jpg")
+      ;; David has a 4K monitor - I suspect these font sizes will be a problem on a 1084p monitor
+      ;; (emacs/default-face-size . 220)
+      ;; (emacs/variable-face-size . 245)
+      ;; (emacs/fixed-face-size . 200)
+      (polybar/height . 35)
+      (polybar/font-0-size . 18)
+      (polybar/font-1-size . 14)
+      (polybar/font-2-size . 20)
+      (polybar/font-3-size . 13)
+      (dunst/font-size . 20)
+      (dunst/max-icon-size . 88)
+      (vimb/default-zoom . 180)
+      (qutebrowser/default-zoom . 200))
+    <<system-settings>>))
+
+#+end_src
+
+*** zeus
+
+zeus is a Lenovo X270 being used as a test bed for guix configuration.
+
+**** *.config/guix/systems/zeus.scm:*
+
+#+begin_src scheme :tangle ./.config/guix/systems/zeus.scm
+
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+(define-module (zeus)
+  #:use-module (base-system)
+  #:use-module (gnu))
+
+(operating-system
+ (inherit base-operating-system)
+ (host-name "zeus")
+
+ (bootloader
+  (bootloader-configuration
+   (bootloader grub-bootloader)
+   (target "/dev/nvme0n1")
+   (keyboard-layout keyboard-layout)))
+ (swap-devices
+  (list (uuid "24a8f7e7-c62e-453e-91bb-91fbb9f09209")))
+ (file-systems
+  (cons* (file-system
+          (mount-point "/")
+          (device
+           (uuid "e52ab0d9-a6b7-47dd-a1b3-256b1a491e73"
+                 'ext4))
+          (type "ext4"))
+         %base-file-systems)))
+
+#+end_src
+
+**** *System Settings*
+These are the emacs configuration settings specific to this
+system. Currently they are managed through the site-specific.el file,
+generated from [[file+sys:~/.dotfiles/emacs.org][emacs.org]]
+
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+
+(when (equal system-name "zeus"))
+
+#+end_src
+
+*** tristan
+
+=tristan= is my main desktop AMD Ryzen 9 system, running =gentoo linux=,
+and dual booting into =windows=.
+
+Currently, there is no guix installation on this system, but there is
+emacs on both operating systems.
+
+System Settings
+
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+   (when (equal system-name "tristan"))
+
+   (when (pj/is-windows-p))
+#+end_src
+
+*** davinci
+
+David Wilson's system =davinci= is a ThinkPad T480s that I use at my day job.
+
+*.config/guix/systems/davinci.scm:*
+
+#+begin_src scheme :tangle ./.config/guix/systems/davinci.scm
+
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+(define-module (davinci)
+  #:use-module (base-system)
+  #:use-module (gnu))
+
+(operating-system
+ (inherit base-operating-system)
+ (host-name "davinci")
+
+ (mapped-devices
+  (list (mapped-device
+         (source (uuid "eaba53d9-d7e5-4129-82c8-df28bfe6527e"))
+         (target "system-root")
+         (type luks-device-mapping))))
+
+ (file-systems (cons*
+                (file-system
+                 (device (file-system-label "system-root"))
+                 (mount-point "/")
+                 (type "ext4")
+                 (dependencies mapped-devices))
+                (file-system
+                 (device "/dev/nvme0n1p2")
+                 (mount-point "/boot/efi")
+                 (type "vfat"))
+                %base-file-systems)))
+
+#+end_src
+
+*System Settings*
+
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+
+  (when (equal system-name "davinci")
+    '((desktop/dpi . 130)
+      (emacs/default-face-size . 165)
+      (emacs/fixed-face-size . 165)
+      (emacs/variable-face-size . 190)
+      (polybar/height . 25)
+      (polybar/font-0-size . 12)
+      (polybar/font-1-size . 8)
+      (polybar/font-2-size . 14)
+      (polybar/font-3-size . 9)
+      (dunst/font-size . 14)
+      (dunst/max-icon-size . 64)
+      (vimb/default-zoom . 150)
+      (qutebrowser/default-zoom . 150)))
+
+  ;; When booted into Windows
+  (when (equal system-name "daviwil-t480")
+    '((desktop/dpi . 130)
+      (emacs/default-face-size . 110)
+      (emacs/fixed-face-size . 110)
+      (emacs/variable-face-size . 134)
+      (polybar/height . 25)
+      (polybar/font-0-size . 12)
+      (polybar/font-1-size . 8)
+      (polybar/font-2-size . 14)
+      (polybar/font-3-size . 9)
+      (dunst/font-size . 14)
+      (dunst/max-icon-size . 64)
+      (vimb/default-zoom . 150)
+      (qutebrowser/default-zoom . 150)))
+
+#+end_src
+
+*** phantom
+
+=phantom= is a ThinkPad X1 Extreme that I use for music production and video editing.  For whatever reason, loading the =nouveau= driver crashes the machine upon booting so I've blacklisted it for now until I figure out how to get it working correctly.
+
+*.config/guix/systems/phantom.scm:*
+
+#+begin_src scheme :tangle ./.config/guix/systems/phantom.scm
+
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+(define-module (phantom)
+  #:use-module (base-system)
+  #:use-module (gnu))
+
+(operating-system
+ (inherit base-operating-system)
+ (host-name "phantom")
+
+ (mapped-devices
+  (list (mapped-device
+         (source (uuid "091b8ad5-efb3-4c5b-8370-7db99c404a30"))
+         (target "system-root")
+         (type luks-device-mapping))))
+
+ (file-systems (cons*
+                (file-system
+                 (device (file-system-label "system-root"))
+                 (mount-point "/")
+                 (type "ext4")
+                 (dependencies mapped-devices))
+                (file-system
+                 (device "/dev/nvme0n1p1")
+                 (mount-point "/boot/efi")
+                 (type "vfat"))
+                %base-file-systems)))
+
+#+end_src
+
+*System Settings*
+
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+
+(when (equal system-name "phantom")
+  '((desktop/dpi . 240)
+    (polybar/height . 40)
+    (vimb/default-zoom . 200)))
+
+#+end_src
+
+** USB Installation Image
+
+To install Guix on another machine, you first to build need a USB image.  Since I use modern laptops that require non-free components, I have to build a custom installation image with the full Linux kernel.  I also include a few other programs that are useful for the installation process.  I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
+
+*.config/guix/systems/install.scm:*
+
+#+begin_src scheme :tangle ./.config/guix/systems/install.scm
+
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
+;;;
+;;; This program is free software: you can redistribute it and/or modify
+;;; it under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation, either version 3 of the License, or
+;;; (at your option) any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;; Generate a bootable image (e.g. for USB sticks, etc.) with:
+;; $ guix system disk-image nongnu/system/install.scm
+
+(define-module (nongnu system install)
+  #:use-module (gnu system)
+  #:use-module (gnu system install)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages mtools)
+  #:use-module (gnu packages package-management)
+  #:use-module (nongnu packages linux)
+  #:export (installation-os-nonfree))
+
+(define installation-os-nonfree
+  (operating-system
+    (inherit installation-os)
+    (kernel linux)
+    (firmware (list linux-firmware))
+
+    ;; Add some extra packages useful for the installation process
+    (packages
+     (append (list git exfat-utils fuse-exfat stow vim)
+             (operating-system-packages installation-os)))))
+
+installation-os-nonfree
+
+#+end_src
+
+* Profile Management
+
+I like to separate my packages into separate manifests that get installed as profiles which can be updated independently.  These profiles get installed under the =~/.guix-extra-profiles= path and sourced by my =~/.profile= when I log in.
+
+To make the management of multiple profiles easier, I've created a couple of shell scripts:
+
+** Activating Profiles
+
+This script accepts a space-separated list of manifest file names (without extension) under the =~/.config/guix/manifests= folder and then installs those profiles for the first time.  For example:
+
+#+begin_src sh
+
+activate-profiles desktop emacs music
+
+#+end_src
+
+*.bin/activate-profiles:*
+
+#+begin_src sh :tangle ./.bin/activate-profiles :shebang #!/bin/sh
+
+# NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+GREEN='\033[1;32m'
+RED='\033[1;30m'
+NC='\033[0m'
+GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
+
+profiles=$*
+if [[ $# -eq 0 ]]; then
+    profiles="$HOME/.config/guix/manifests/*.scm";
+fi
+
+for profile in $profiles; do
+  # Remove the path and file extension, if any
+  profileName=$(basename $profile)
+  profileName="${profile%.*}"
+  profilePath="$GUIX_EXTRA_PROFILES/$profileName"
+  manifestPath=$HOME/.config/guix/manifests/$profile.scm
+
+  if [ -f $manifestPath ]; then
+    echo
+    echo -e "${GREEN}Activating profile:" $manifestPath "${NC}"
+    echo
+
+    mkdir -p $profilePath
+    guix package --manifest=$manifestPath --profile="$profilePath/$profileName"
+
+    # Source the new profile
+    GUIX_PROFILE="$profilePath/$profileName"
+    if [ -f $GUIX_PROFILE/etc/profile ]; then
+        . "$GUIX_PROFILE"/etc/profile
+    else
+        echo -e "${RED}Couldn't find profile:" $GUIX_PROFILE/etc/profile "${NC}"
+    fi
+  else
+    echo "No profile found at path" $profilePath
+  fi
+done
+
+#+end_src
+
+** Updating Profiles
+
+This script accepts a space-separated list of manifest file names (without extension) under the =~/.config/guix/manifests= folder and then installs any updates to the packages contained within them.  If no profile names are provided, it walks the list of profile directories under =~/.guix-extra-profiles= and updates each one of them.
+
+#+begin_src sh
+
+update-profiles emacs
+
+#+end_src
+
+*.bin/update-profiles:*
+
+#+begin_src sh :tangle ./.bin/update-profiles :shebang #!/bin/sh
+
+# NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+GREEN='\033[1;32m'
+NC='\033[0m'
+GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
+
+profiles=$*
+if [[ $# -eq 0 ]]; then
+    profiles="$GUIX_EXTRA_PROFILES/*";
+fi
+
+for profile in $profiles; do
+  profileName=$(basename $profile)
+  profilePath=$GUIX_EXTRA_PROFILES/$profileName
+
+  echo
+  echo -e "${GREEN}Updating profile:" $profilePath "${NC}"
+  echo
+
+  guix package --profile="$profilePath/$profileName" --manifest="$HOME/.config/guix/manifests/$profileName.scm"
+done
+
+#+end_src
+
+* Dotfiles Management
+
+Since I keep all of my important configuration files in Org Mode code blocks, I have to ensure that the real configuration files are kept up to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.  I've written a couple of scripts to simplify that process:
+
+** Syncing
+
+When I want to sync my dotfiles repo into my local clone which likely has uncommitted changes, I run =sync-dotfiles=.  This script first makes sure that all Org files are saved in a running Emacs instance and then stashes everything before pulling the latest changes from =origin=.  After pulling, the stash is popped and then the script verifies there are no merge conflicts from the stash before proceeding.  If there are no conflicts, =update-dotfiles= is run, otherwise I'll fix the merge conflicts manually and run =update-dotfiles= myself.
+
+*.bin/sync-dotfiles*
+
+#+begin_src sh :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
+
+# Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
+
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+RED='\033[1;30m'
+NC='\033[0m'
+
+# Navigate to the directory of this script (generally ~/.dotfiles/.bin)
+cd $(dirname $(readlink -f $0))
+cd ..
+
+echo
+echo -e "${BLUE}Saving Org buffers if Emacs is running...${NC}"
+emacsclient -u -e "(org-save-all-org-buffers)" -a "echo 'Emacs is not currently running'"
+
+echo -e "${BLUE}Stashing existing changes...${NC}"
+stash_result=$(git stash push -m "sync-dotfiles: Before syncing dotfiles")
+needs_pop=1
+if [ "$stash_result" = "No local changes to save" ]; then
+    needs_pop=0
+fi
+
+echo -e "${BLUE}Pulling updates from dotfiles repo...${NC}"
+echo
+git pull origin master
+echo
+
+if [[ $needs_pop -eq 1 ]]; then
+    echo -e "${BLUE}Popping stashed changes...${NC}"
+    echo
+    git stash pop
+fi
+
+unmerged_files=$(git diff --name-only --diff-filter=U)
+if [[ ! -z $unmerged_files ]]; then
+   echo -e "${RED}The following files have merge conflicts after popping the stash:${NC}"
+   echo
+   printf %"s\n" $unmerged_files  # Ensure newlines are printed
+else
+    update-dotfiles
+fi
+
+#+end_src
+
+** Updating
+
+Updating my dotfiles requires running a script in Emacs to loop over all of my literate configuration =.org= files and run =org-babel-tangle-file= to make sure all of my configuration files are up to date.
+
+*.bin/update-dotfiles*
+
+#+begin_src sh :tangle ./.bin/update-dotfiles :shebang #!/bin/sh
+
+  # Navigate to the directory of this script (generally ~/.dotfiles/.bin)
+  cd $(dirname $(readlink -f $0))
+  cd ..
+
+  # The heavy lifting is done by an Emacs script
+  emacs -Q --script ./.emacs.d/tangle-dotfiles.el
+
+  # Make sure any running Emacs instance gets updated settings
+  emacsclient -e '(load-file "~/.emacs.d/per-system-settings.el")' -a "echo 'Emacs is not currently running'"
+
+  # Update configuration symlinks
+  stow .
+
+#+end_src
+
+*.emacs.d/tangle-dotfiles.el*
+
+#+begin_src emacs-lisp :tangle ./.emacs.d/tangle-dotfiles.el
+
+  (require 'org)
+  (load-file "~/.dotfiles/.emacs.d/lisp/dw-settings.el")
+
+  ;; Don't ask when evaluating code blocks
+  (setq org-confirm-babel-evaluate nil)
+
+  (let* ((dotfiles-path (expand-file-name "~/.dotfiles"))
+	 (org-files (directory-files dotfiles-path nil "\\.org$")))
+
+    (defun dw/tangle-org-file (org-file)
+      (message "\n\033[1;32mUpdating %s\033[0m\n" org-file)
+      (org-babel-tangle-file (expand-file-name org-file dotfiles-path)))
+
+    ;; Tangle Systems.org first
+    (dw/tangle-org-file "Systems.org")
+
+    (dolist (org-file org-files)
+      (unless (member org-file '("README.org" "Systems.org"))
+      	(dw/tangle-org-file org-file))))
+
+#+end_src
+
+** System Installation
+
+Until I migrate its Markdown contents into Org syntax, consult [[file:.config/guix/systems/README.md][.config/guix/systems/README.md]] for installation instructions.
