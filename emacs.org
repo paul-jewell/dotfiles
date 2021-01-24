@@ -52,11 +52,13 @@ Emacs configuration.
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
-- [[#emacs-profile][Emacs Profile]]
+- [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
 * Preamble
 
 #+begin_src emacs-lisp
+;;-*-buffer-read-only: t;-*-
+
 ;;; init.el --- Startup file for emacs
 
 ;;; Commentary:
@@ -119,8 +121,12 @@ a separate file, but perhaps better if the code fed out to specific
 files for each machine?
 
 #+begin_src  emacs-lisp :tangle ./.emacs.d/site-specific.el
+;; -*-buffer-read-only: t;-*-
 ;;; Site-specific.el --- local variables for each system
-;;; commentary:
+;;; Commentary: Support funtions to enable configuration to be configured
+;;;             for different machines.
+;;;             This code is tangled from .dotfiles/emacs.org, so changes should
+;;;             be made there, and not here.
 ;;; code:
 
 ;; Globals to configure which blocks are loaded
@@ -165,9 +171,9 @@ files for each machine?
 	     (setq *pj/load-site-gentoo* nil)
 	     (setq *pj/enable-auctex* t)
 	     
-	     ;; define the location of the orgmode code
-	     (add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-	     (add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+	     ;; define the location of the orgmode code - currently using the built in version.
+	     ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+	     ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
         (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
         (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/git/org/roam/")
         (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/git/org/org-roam.db")
@@ -177,8 +183,8 @@ files for each machine?
       (setq *pj/load-site-gentoo* t)
       (setq *pj/enable-auctex* t)
 	   ;; define the location of the orgmode code
-	   (add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
-	   (add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
       (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
       (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db"))))
@@ -189,8 +195,8 @@ files for each machine?
     (setq *pj/enable-auctex* nil)
     
     ;; define the location of the orgmode code
-    (add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
-    (add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
+    ;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
+    ;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
     (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/git/org/roam/")
     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
     (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
@@ -199,10 +205,14 @@ files for each machine?
  (t
   (error "Undefined system-type %s" system-type)))
 
+;; Make the output file read-only when loaded into emacs - reduce the chance of accidentally
+;; editing the file outside of emacs.org.
+;; Local Variables:
+;; buffer-read-only: t
+;; End:
+
 (provide 'site-specific)
 ;;; site-specific.el ends here
-
-
 #+end_src
 
 #+begin_src emacs-lisp
@@ -311,7 +321,7 @@ of gentoo is still to be explored...
 (require 'use-package)
 
 ;; In guix system - load packages through the guix package manager.
-(setq use-package-always-ensure (not pj/is-guix-p))
+(setq use-package-always-ensure (not (pj/is-guix-p)))
 
 #+end_src
 
@@ -1844,7 +1854,7 @@ Developed from bbatsov's code on his github.
          (nick   (first (split-string nick "!")))
          (msg    (mapconcat 'identity (rest cmsg) " ")))
     (shell-command-to-string
-     (format "notify-send -t 500 -u normal '%s says:' '%s'" nick msg))))
+     (format "notify-send -t 5000 -u normal '%s says:' '%s'" nick msg))))
 
 (add-hook 'erc-text-matched-hook 'call-libnotify)
 
@@ -1883,7 +1893,7 @@ that can occur between two notifications.  The default is
                (not (erc-is-message-ctcp-and-not-action-p msg))
                (erc-notify-allowed-p nick))
       (shell-command-to-string
-       (format "notify-send -t 500 -u normal '%s says:' '%s'" nick msg))
+       (format "notify-send -t 5000 -u normal '%s says:' '%s'" nick msg))
       nil)))
 
 (add-hook 'erc-server-PRIVMSG-functions 'erc-notify-on-private-msg)
@@ -1973,9 +1983,6 @@ Not yet set up. Website development with org and hugo.
 (use-package ox-hugo
   :after ox)
 
-
-
-
 (provide 'init)
 ;;; init.el ends here
 
@@ -1987,7 +1994,7 @@ Not yet set up. Website development with org and hugo.
 "ox-hugo"
 #+end_src
 
-* Emacs Profile
+* Emacs Manifest for guix
 *.config/guix/manifests/emacs.scm:*
 
 #+begin_src scheme :tangle .config/guix/manifests/emacs.scm :noweb yes

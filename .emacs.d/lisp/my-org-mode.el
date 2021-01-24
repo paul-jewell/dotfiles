@@ -10,6 +10,7 @@
 ;;; Code:
 
 (require 'org)
+(require 'org-contribdir)
 (require 'org-agenda)
 (require 'org-clock)
 (require 'org-archive)
