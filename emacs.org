@@ -8,10 +8,12 @@ Emacs configuration.
 :TOC: :include all :ignore this
 :END:
 - [[#preamble][Preamble]]
+- [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
 - [[#site-specific-code][Site specific code]]
 - [[#general-configuration][General configuration]]
 - [[#package-management][Package Management]]
+- [[#keep-emacsd-clean][Keep .emacs.d Clean]]
 - [[#ivy][Ivy]]
 - [[#swiper][Swiper]]
 - [[#which-key][Which-key]]
@@ -38,7 +40,9 @@ Emacs configuration.
 - [[#eyebrowse][eyebrowse]]
 - [[#projectile][Projectile]]
 - [[#powerline][Powerline]]
+- [[#diminish][Diminish]]
 - [[#paredit][Paredit]]
+- [[#rainbow-delimiters][Rainbow Delimiters]]
 - [[#clojure][Clojure]]
 - [[#lisp][Lisp]]
 - [[#emacs-lisp][emacs-lisp]]
@@ -48,6 +52,7 @@ Emacs configuration.
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
+- [[#emacs-profile][Emacs Profile]]
 
 * Preamble
 
@@ -57,13 +62,35 @@ Emacs configuration.
 ;;; Commentary:
 ;; Initial configuration file loaded by Emacs.
 ;;  - Sets the custom configuration file location
-;; This file is generated from init.org and tangled. Changes should
+;; This file is generated from .dotfiles/emacs.org and tangled. Changes should
 ;; be made to that file; also for more information - see details there.
 ;;
 ;; (c) 2017 - 2021 Paul Jewell
+;; Contributions from many sources, including:
+;; - David Wilson
+;; - bbatsov
+;;
 ;; Licence: BSD
 
 ;;; Code:
+#+end_src
+
+* Startup Performance
+
+#+begin_src emacs-lisp
+;; The default is 800 kb. Measured in bytes.
+(setq gc-cons-threshold (* 50 1000 1000))
+
+;; profile emacs startup
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                     (format "%2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+
 #+end_src
 
 * Machine specific code, and package initialisation
@@ -112,6 +139,15 @@ files for each machine?
 (defun pj/is-linux-p ()
   "True if run in linux environment."
   (string= "gnu/linux" system-type))
+
+(defun pj/is-host-p (name)
+  "True if running on system NAME."
+  (string= (system-name) name))
+
+;; Currently only zeus is a guix system. This may need changing in the future.
+(defun pj/is-guix-p ()
+  "True if system is running guix."
+  (pj/is-host-p "zeus"))
 
 ;; Three possibilities for specifying values:
 
@@ -172,22 +208,17 @@ files for each machine?
 #+begin_src emacs-lisp
 
 ;; To load external version of org-mode, clone the code from git:
-;; > cd <directory below which you want the org code>
-;; > git clone https://code.orgmode.org/bzg/org-mode.git
-;; > cd org-mode
-;; > make autoloads # creates org-loaddefs.el in the lisp directory
+;; - cd <directory below which you want the org code>
+;; - git clone https://code.orgmode.org/bzg/org-mode.git
+;; - cd org-mode
+;; - make autoloads # creates org-loaddefs.el in the lisp directory
 
-(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
-(use-package org
-    :ensure t)
+;; Using the built in version of orgmode - no need to use the git version...
+;;;(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+;;;(use-package org)
 
 (defvar init-dir) ;; Initial directory for emacs configuration
 (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
-
-;; Save emacs customisations in this file:
-(setq custom-file "~/.emacs.d/emacs-custom.el")
-(load custom-file)
-
 #+end_src
 
 * General configuration
@@ -242,10 +273,9 @@ files for each machine?
 
 * Package Management
 
-Packages are currently installed using use-package. With the
-configuration of a guix laptop, there is an opportunity to use guix to
-load the packages into the system. Use of guix on top of gentoo is
-still to be explored...
+Packages are currently installed using use-package. Configuration for
+guix system to use inbuilt manifest for packages. Use of guix on top
+of gentoo is still to be explored...
 
 #+begin_src emacs-lisp
 
@@ -258,55 +288,62 @@ still to be explored...
 (defvar pj/python)
 (setq pj/python (executable-find "python"))
 
-(defvar pj/gnu '("gnu" . "https://elpa.gnu.org/packages/"))
-(defvar pj/melpa '("melpa" . "https://melpa.org/packages/"))
-(defvar pj/melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(defvar pj/org-elpa '("org" . "https://orgmode.org/elpa/"))
-
 ;; Add marmalade to package repos
-(setq package-archives nil)
-(add-to-list 'package-archives pj/melpa-stable t)
-(add-to-list 'package-archives pj/melpa t)
-(add-to-list 'package-archives pj/gnu t)
-(add-to-list 'package-archives pj/org-elpa t)
-
+(setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")))
+      
 (initialise-packages)
 
+;; Not sure if this is necessary for guix system.
+;; Maybe OK, as it only updates the package list, not the installed code.
 (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
              (file-exists-p (concat init-dir "elpa/archives/melpa"))
              (file-exists-p (concat init-dir "elpa/archives/melpa-stable"))
              (file-exists-p (concat init-dir "elpa/archives/org")))
   (package-refresh-contents))
 
-(defun packages-install (&rest packages)
-  "Install PACKAGES."
-  (message "running packages-install")
-  (mapc (lambda (package)
-          (let ((name (car package))
-                (repo (cdr package)))
-            (when (not (package-installed-p name))
-              (let ((package-archives (list repo)))
-                (initialise-packages)
-                (package-install name)))))
-        packages)
-  (initialise-packages)
-  (delete-other-windows))
+;; Initialise use-package on non-guix systems.
+(unless (or (package-installed-p 'use-package)
+            (pj/is-guix-p))
+  (package-install 'use-package))
+(require 'use-package)
 
-;; Install extensions if they're missing
-(defun init--install-packages ()
-  "Install some packages."
-  (message "Lets install some packages")
-  (packages-install
-   ;; Since use-package this is the only entry here
-   ;; ALWAYS try to use use-package!
-   (cons 'use-package pj/melpa)
-   ))
+;; In guix system - load packages through the guix package manager.
+(setq use-package-always-ensure (not pj/is-guix-p))
 
-(condition-case nil
-    (init--install-packages)
-  (error
-   (package-refresh-contents)
-   (init--install-packages)))
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"emacs-use-package"
+#+end_src
+
+* Keep .emacs.d Clean
+
+#+begin_src emacs-lisp
+;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
+(setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
+      url-history-file (expand-file-name "url/history" user-emacs-directory))
+
+;; Use no-littering to automatically set common paths to the new user-emacs-directory
+(use-package no-littering)
+
+;; Keep customization settings in a temporary file (thanks Ambrevar!)
+(setq custom-file
+      (if (boundp 'server-socket-dir)
+          (expand-file-name "custom.el" server-socket-dir)
+        (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+(load custom-file t)
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"emacs-no-littering"
 #+end_src
 
 * Ivy
@@ -317,7 +354,6 @@ still to be explored...
 ;;     ---
 
 (use-package ivy
-  :ensure t
   :diminish
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
@@ -351,7 +387,6 @@ still to be explored...
   :after hydra)
 
 (use-package ivy-rich
-  :ensure t
   :init
   (ivy-rich-mode 1)
   :config
@@ -373,6 +408,13 @@ still to be explored...
                              (not (derived-mode-p 'exwm-mode)))))))))
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"ivy"
+"icy-hydra"
+"ivy-rich"
+#+end_src
 * Swiper
 
 #+begin_src emacs-lisp
@@ -382,7 +424,6 @@ still to be explored...
 
 ;; Counsel - completion package working with ivy.
 (use-package counsel
-  :ensure t
   :bind (("M-x" . counsel-M-x)
          ("C-x b" . counsel-ibuffer)
          :map minibuffer-local-map
@@ -394,11 +435,9 @@ still to be explored...
 
 ;; TODO: Configure counsel-bbdb to work eith email, or configure a different
 ;;       package to manage contacts (synced with cardDAV)
-(use-package counsel-bbdb
-  :ensure t)
+(use-package counsel-bbdb)
 
 (use-package swiper
-  :ensure t
   :bind (("C-s" . swiper)
          ("C-r" . swiper)
          ("C-c C-r" . ivy-resume)
@@ -413,6 +452,14 @@ still to be explored...
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"swiper"
+"counsel-bbdb"
+"counsel"
+#+end_src
+
 * Which-key
 
 #+begin_src emacs-lisp
@@ -422,9 +469,14 @@ still to be explored...
 ;; Key completion - offers the keys which complete the sequence.
 
 (use-package which-key
-  :ensure t
   :config (which-key-mode))
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"which-key"
 #+end_src
 
 * ispell
@@ -449,6 +501,11 @@ still to be explored...
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"ispell"
+#+end_src
 * Ledger
 
 #+begin_src emacs-lisp
@@ -458,7 +515,6 @@ still to be explored...
 ;; Text based accounting program.
 
 (use-package ledger-mode
-  :ensure t
   :init
   (setq ledger-clear-whole-transactions 1)
   
@@ -466,6 +522,11 @@ still to be explored...
   (add-to-list 'auto-mode-alist '("\\.dat$" . ledger-mode))
   (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
 
+#+end_src
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"ledger-mode"
 #+end_src
 
 * Go
@@ -476,10 +537,9 @@ still to be explored...
 ;;     --
 ;; Package for go programming.
 
-(use-package go-autocomplete
-  :ensure t)
+(use-package go-autocomplete)
+
 (use-package go-mode
-   :ensure t
    :config
    (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1)))
    (with-eval-after-load 'go-mode
@@ -487,8 +547,16 @@ still to be explored...
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"go-autocomplete"
+"go-mode"
+#+end_src
+
 * Python
 
+Not working, and not used currently...
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Python
@@ -499,13 +567,13 @@ still to be explored...
 ;;; company mode. company-jedi should be used instead
 
 ;;(use-package jedi
-;;  :ensure t
+;;  
 ;;  :init
 ;;  (add-hook 'python-mode-hook 'jedi:setup)
 ;;  (add-hook 'python-mode-hook 'jedi:ac-setup))
 ;;; Alternative - use elpy - not yet fully configured
 ;;(use-package elpy
-;;  :ensure t
+;;  
 ;;  :init
 ;;  (advice-add 'python-mode :before 'elpy-enable))
 
@@ -527,6 +595,12 @@ still to be explored...
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"sql"
+#+end_src
+
 * C++
 
 #+begin_src emacs-lisp
@@ -546,7 +620,7 @@ still to be explored...
 ;; M-x enhancement - show most recently used commands which match as typing.
 
 ;; (use-package smex
-;; :ensure t
+;; 
 ;; :bind (("M-x" . smex)
 ;;        ("M-X" . smex-major-mode-commands)
 ;;        ("C-c C-c M-x" . 'execute-extended-command)) ;; Original M-x command
@@ -555,7 +629,7 @@ still to be explored...
 (defadvice ido-set-matches-1 (around ido-smex-acronym-matches activate)
   "Filters ITEMS by setting acronynms first."
   (if (and (fboundp 'smex-already-running) (smex-already-running) (> (length ido-text) 1))
-
+      
       ;; We use a hash table for the matches, <type> => <list of items>, where
       ;; <type> can be one of (e.g. `ido-text' is "ff"):
       ;; - strict: strict acronym match (i.e. "^f[^-]*-f[^-]*$");
@@ -623,9 +697,14 @@ still to be explored...
 ;;     ----------------
 
 (use-package multiple-cursors
-  :ensure t
   :config (global-set-key (kbd "C-c m c") 'mc/edit-lines))
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"multiple-cursors"
 #+end_src
 
 * Org-mode
@@ -637,7 +716,7 @@ still to be explored...
 
 (setq org-agenda-files *pj/org-agenda-files*)
 (load "~/.emacs.d/lisp/my-org-mode.el")
-(require 'org-habit)
+(require 'org-habit) ;; org-habit is part of org-mode (not a package)
 (global-set-key (kbd "C-c w") 'org-refile)
 
 #+end_src
@@ -650,9 +729,14 @@ still to be explored...
 ;;     ---------------
 
 (use-package org-bullets
-  :ensure t
   :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"org-bullets"
 #+end_src
 
 * Org-roam
@@ -666,7 +750,6 @@ still to be explored...
 ;; https://org-roam.readthedocs.io/en/master/installation/
 
 (use-package org-roam
-  :ensure t
   :hook
   (after-init . org-roam-mode)
   :custom
@@ -686,7 +769,14 @@ still to be explored...
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"org-roam"
+#+end_src
+
 * Licence Boilerplate
+
 I set this up a long time ago, before I knew emacs-lisp. 
 #+begin_src emacs-lisp
 ;;==============================================================================
@@ -770,7 +860,6 @@ I set this up a long time ago, before I knew emacs-lisp.
 
 (when *pj/enable-auctex*
   (use-package auctex
-    :ensure t
     :mode ("\\.tex\\'" . latex-mode)
     :config
     (setq TeX-auto-save t)
@@ -797,6 +886,12 @@ I set this up a long time ago, before I knew emacs-lisp.
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"auctex"
+#+end_src
+
 * Reftex
 
 I haven't used this yet, so there may be some issues.
@@ -807,7 +902,6 @@ I haven't used this yet, so there may be some issues.
 ;;     ------
 
 (use-package reftex
-  :ensure t
   :defer t
   :config
   (setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
@@ -820,7 +914,7 @@ I haven't used this yet, so there may be some issues.
 ;; TODO: Modify the paths etc in this section:
 
 ;;(use-package ivy-bibtex
-;;  :ensure t
+;;  
 ;;  :bind ("C-c b b" . ivy-bibtex)
 ;;  :config
 ;;  (setq bibtex-completion-bibliography 
@@ -842,6 +936,12 @@ I haven't used this yet, so there may be some issues.
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"reftex"
+#+end_src
+
 * Hydra
 
 #+begin_src emacs-lisp
@@ -850,7 +950,6 @@ I haven't used this yet, so there may be some issues.
 ;;     -----
 
 (use-package hydra 
-  :ensure hydra
   :init 
   (global-set-key
    (kbd "C-x t")
@@ -930,7 +1029,14 @@ I haven't used this yet, so there may be some issues.
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"hydra"
+#+end_src
+
 * Javascript and HTML
+
 
 #+begin_src emacs-lisp
 ;;==============================================================================
@@ -938,13 +1044,12 @@ I haven't used this yet, so there may be some issues.
 ;;     -----------------
 
 (use-package js2-mode
-  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
   (add-hook 'js2-mode-hook #'js2-imenu-extras-mode))
 
 (use-package js2-refactor
-  :ensure t
+  
   :config
   (add-hook 'js2-mode-hook #'js2-refactor-mode)
   ;; (js2-add-keybindings-with-prefix "C-c C-r") ;; Clash with ivy-resume
@@ -956,13 +1061,16 @@ I haven't used this yet, so there may be some issues.
 (add-hook 'js2-mode-hook (lambda ()
                            (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 
-(use-package xref-js2
-  :ensure t)
-
-
+(use-package xref-js2)
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"js2-mode"
+"js2-reflector"
+#+end_src
 * Company mode
 
 #+begin_src emacs-lisp
@@ -971,31 +1079,26 @@ I haven't used this yet, so there may be some issues.
 ;;     ------------
 
 (use-package company
-  :ensure t
   :config
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 3)
   (global-company-mode 1))
 
 (use-package company-irony
-  :ensure t
   :config
   (add-to-list 'company-backends 'company-irony))
 
 (use-package irony
-  :ensure t
   :config
   (add-hook 'c++-mode-hook 'irony-mode)
   (add-hook 'c-mode-hook 'irony-mode)
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
 (use-package irony-eldoc
-  :ensure t
   :config
   (add-hook 'irony-mode-hook #'irony-eldoc))
 
 (use-package company-jedi
-  :ensure t
   :config
   (add-hook 'python-mode-hook 'jedi:setup))
 
@@ -1007,6 +1110,16 @@ I haven't used this yet, so there may be some issues.
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"company"
+"company-irony"
+"irony"
+"irony-eldoc"
+"company-jedi"
+#+end_src
+
 * Magit
 
 #+begin_src emacs-lisp
@@ -1015,23 +1128,21 @@ I haven't used this yet, so there may be some issues.
 ;;     -----
 
 (use-package magit
-  :ensure t
   :init
   (progn
     (bind-key "C-x g" 'magit-status)
     ))
 
 (use-package git-gutter
-  :ensure t
+  
   :init
   (global-git-gutter-mode +1))
 
 (global-set-key (kbd "M-g M-g") 'hydra-git-gutter/body)
 
 
-(use-package git-timemachine
-  :ensure t
-  )
+(use-package git-timemachine)
+
 (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
                                       :hint nil)
   "
@@ -1062,6 +1173,14 @@ Git gutter:
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"magit"
+"git-gutter"
+"git-time-machine"
+#+end_src
+
 * Flycheck
 
 #+begin_src emacs-lisp
@@ -1070,10 +1189,15 @@ Git gutter:
 ;;     --------
 
 (use-package flycheck
-  :ensure t
   :init
   (global-flycheck-mode 1))
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"flycheck"
 #+end_src
 
 * All the icons
@@ -1088,14 +1212,19 @@ Git gutter:
 ;; remember to run M-x all-the-icons-install-fonts
 ;; otherwise nothing will work
 (use-package all-the-icons
-:ensure t
 :config
 (use-package all-the-icons-dired
-    :ensure t
+    
     :config
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"all-the-icons"
 #+end_src
 
 * Themes
@@ -1106,7 +1235,6 @@ Git gutter:
 ;;     ------
 
 (use-package gruvbox-theme
-  :ensure t
   :config
   (load-theme 'gruvbox t))
 ;; Font size is localised in site-local.el
@@ -1118,6 +1246,12 @@ Git gutter:
 ;;(set-default-font my:font)
 ;;(set-frame-font my:font t)
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"gruvbox-theme"
 #+end_src
 
 * eyebrowse
@@ -1144,7 +1278,6 @@ Git gutter:
 ;;     ----------
 
 (use-package projectile
-  :ensure t
   :config
   ;; test fn in hashtable has to be equal because we will use strings as keys
   (defvar my-projects-loaded (make-hash-table :test 'equal))
@@ -1152,6 +1285,12 @@ Git gutter:
   (projectile-mode))
 
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"projectile"
 #+end_src
 
 * Powerline
@@ -1162,7 +1301,6 @@ Git gutter:
 ;;     ---------
 
 (use-package powerline
-  :ensure t
   :config
   (add-hook 'desktop-after-read-hook 'powerline-reset)
   (defun make-rect (color height width)
@@ -1257,10 +1395,26 @@ Git gutter:
                       (powerline-fill face2 (powerline-width rhs))
                       (powerline-render rhs)))))))
 
-(use-package diminish
-  :ensure t)
+#+end_src
 
+*Guix Packages*
 
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"powerline"
+#+end_src
+
+* Diminish
+
+#+begin_src emacs-lisp
+
+(use-package diminish)
+
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"diminish"
 #+end_src
 
 * Paredit
@@ -1271,7 +1425,6 @@ Git gutter:
 ;;     -------
 
 (use-package paredit
-  :ensure t
   :diminish paredit-mode
   :config
   (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
@@ -1281,26 +1434,36 @@ Git gutter:
   (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-  :bind (("C-c d" . paredit-forward-down))
-  )
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  :bind (("C-c d" . paredit-forward-down))) 
 
 ;; Ensure paredit is used EVERYWHERE!
 (use-package paredit-everywhere
-  :ensure t
   :diminish paredit-everywhere-mode
   :config
   (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
-
+;;-------------
 ;; (use-package highlight-parentheses
-;;   :ensure t
+;;   
 ;;   :diminish highlight-parentheses-mode
 ;;   :config
 ;;   (add-hook 'emacs-lisp-mode-hook
 ;;             (lambda()
 ;;               (highlight-parentheses-mode))))
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"paredit"
+"paredit-everywhere"
+#+end_src
+
+* Rainbow Delimiters
+
+#+begin_src emacs-lisp
 
 (use-package rainbow-delimiters
-  :ensure t
   :hook (prog-mode . rainbow-delimiters-mode)
   :config
   (add-hook 'lisp-mode-hook
@@ -1309,6 +1472,12 @@ Git gutter:
 
 ;;(global-highlight-parentheses-mode)
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"rainbow-delimiters"
 #+end_src
 
 * Clojure
@@ -1321,9 +1490,6 @@ Git gutter:
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)
 
 (use-package cider
-  :ensure t
-  ;;:pin melpa-stable
-
   :config
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
@@ -1340,7 +1506,7 @@ Git gutter:
 
 
 ;; (use-package clj-refactor
-;;   :ensure t
+;;   
 ;;   :config
 ;;   (add-hook 'clojure-mode-hook (lambda ()
 ;;                                  (clj-refactor-mode 1)
@@ -1351,10 +1517,16 @@ Git gutter:
 ;;   :bind ("C-c '" . hydra-cljr-help-menu/body)
 ;;   )
 
-(use-package cider-hydra
-  :ensure t)
+(use-package cider-hydra)
 
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"cider"
+"cider-hydra"
 #+end_src
 
 * Lisp
@@ -1370,7 +1542,6 @@ Git gutter:
 
 (use-package slime
 ;;  :load-path (expand-site-lisp "slime")
-  :ensure t
   :commands slime
   :config
 
@@ -1388,7 +1559,6 @@ Git gutter:
     (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
     
     (use-package ac-slime
-      :ensure t
       :init
       (progn
         (add-hook 'slime-mode-hook 'set-up-slime-ac)
@@ -1400,6 +1570,12 @@ Git gutter:
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"slime"
+#+end_src
+
 * emacs-lisp
 
 #+begin_src emacs-lisp
@@ -1408,14 +1584,19 @@ Git gutter:
 ;;     -------------
 
 (use-package elisp-slime-nav
-  :ensure t
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook #'elisp-slime-nav-mode)))
 
 #+end_src
 
-* mu4e - Email 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"elisp-slime-nav"
+#+end_src
+
+* mu4e - Email
 
 #+begin_src emacs-lisp
 ;;==============================================================================
@@ -1425,110 +1606,112 @@ Git gutter:
 (when *pj/enable-mu4e-mode*
   (require 'mu4e)
   (use-package mu4e
-       :ensure nil ;; mu4e comes from mu package - don't download from melpa
-       ;;:defer 10
-       :config
-
-       (auth-source-pass-enable)
-       (setq auth-source-debug t) ;;...temporarily...
-       (setq auth-source-do-cache nil)
-       (setq auth-sources '(password-store))
-
-       (setq message-kill-buffer-on-exit t)
-       ;; Need to be 't' to avoid mail syncing issues
-       (setq mu4e-change-filenames-when-moving t)
+    :ensure nil ;; mu4e comes from mu package - don't download from melpa
+    ;;:defer 10
+    :config
     
-       ;; Refresh mail every 10 minutes - using isync
-       (setq mu4e-update-interval (* 10 60))
-       (setq mu4e-get-mail-command "mbsync -a")
-       (setq mu4e-maildir "~/Mail")
-
-       (setq smtpmail-debug-info t)
-       (setq smtpmail-debug-verb t)
-       (setq smtpmail-stream-type 'tls)
-
-       (defun sign-or-encrypt-message ()
-         "Check whether the message should be encrypted and/or signed."
-         (let ((answer (read-from-minibuffer "Sign or encrypt?\nEmpty to do nothing.\n[s/e]: ")))
-           (cond
-            ((string-equal answer "s") (progn
-                                         (message "Signing message.")
-                                         (mml-secure-message-sign-pgpmime)))
-            ((string-equal answer "e") (progn
-                                         (message "Encrypting and signing message.")
-                                         (mml-secure-message-encrypt-pgpmime)))
-            (t (progn
-                 (message "Don't sign or encrypt message.")
-                 nil)))))
-
-       (add-hook 'message-send-hook 'sign-or-encrypt-message) 
-       
-       (setq mu4e-contexts
-             `(,(make-mu4e-context
-                 ;; Personal account
-                 :name "home"
-                 :enter-func (lambda ()
-                               (mu4e-message "Entering home context")
-                               (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
-                                 (revert-buffer)))
-                 :leave-func (lambda ()
-                               (mu4e-message "Leaving home context")
-                               (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
-                                 (revert-buffer)))
-                 :match-func (lambda (msg)
-                               (when msg
-                                 (string-prefix-p "/teulu.org" (mu4e-message-field msg :maildir))))
-                 :vars
-                 `((user-mail-address . "paul@teulu.org")
-                   (user-full-name . "Paul Jewell")
-                   (mu4e-drafts-folder . "/teulu.org/Drafts")
-                   (mu4e-sent-folder . "/teulu.org/Sent")
-                   (mu4e-refile-folder . ,(concat "/teulu.org/Archive/" (format-time-string "%Y")))
-                   (mu4e-trash-folder . "/teulu.org/Trash")
-                   (smtp-queue-dir . "~/.email/teulu.org/queue/cur")
-                   (smtpmail-smtp-user . "paul@teulu.org")
-                   (smtpmail-smtp-server . "mail.teulu.org")
-                   (smtpmail-smtp-service . 465)
-                   (mu4e-sent-messages-behavior . sent)
-                   (mu4e-bookmarks .
-                                   ((:name "Inbox"
-                                           :query "maildir:/teulu.org/Inbox"
-                                           :key ?a)
-                                    (:name "Unread"
-                                           :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
-                                           :key ?u)))))
-               ,(make-mu4e-context
-                 ;; Applied-jidoka work email
-                 :name "work"
-                 :enter-func (lambda ()
-                               (mu4e-message "Entering work context")
-                               (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
-                                 (revert-buffer)))
-                 :leave-func (lambda ()
-                               (mu4e-message "Leaving work context")
-                               (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
-                                 (revert-buffer)))
-                 :match-func (lambda (msg)
-                               (when msg
-                                 (string-prefix-p "/applied-jidoka.co.uk" (mu4e-message-field msg :maildir))))
-                 :vars
-                 `((user-mail-address . "paul@applied-jidoka.co.uk")
-                   (user-full-name . "Paul Jewell")
-                   (mu4e-drafts-folder . "/applied-jidoka.co.uk/Drafts")
-                   (mu4e-sent-folder . "/applied-jidoka.co.uk/Sent")
-                   (mu4e-refile-folder . ,(concat "/applied-jidoka.co.uk/Archive/" (format-time-string "%Y")))
-                   (mu4e-trash-folder . "/applied-jidoka.co.uk/Trash")
-                   (smtp-queue-dir . "~/.email/applied-jidoka.co.uk/queue/cur")
-                   (smtpmail-smtp-user . "paul@applied-jidoka.co.uk")
-                   (smtp-smtp-service . 465)
-                   (mu4e-sent-messages-behavior . sent)
-                   (mu4e-bookmarks .
-                                   ((:name "Inbox"
-                                           :query "maildir:/applied-jidoka.co.uk/Inbox"
-                                           :key ?a)
-                                    (:name "Unread"
-                                           :query "maildir:/applied-jidoka.co.uk/Inbox AND flag:unread AND NOT flag:trashed"
-                                           :key ?u)))))))))
+    (auth-source-pass-enable)
+    (setq auth-source-debug t) ;;...temporarily...
+    (setq auth-source-do-cache nil)
+    (setq auth-sources '(password-store))
+    
+    (setq message-kill-buffer-on-exit t)
+    ;; Need to be 't' to avoid mail syncing issues
+    (setq mu4e-change-filenames-when-moving t)
+    
+    ;; Refresh mail every 10 minutes - using isync
+    (setq mu4e-update-interval (* 10 60))
+    (setq mu4e-get-mail-command "mbsync -a")
+    (setq mu4e-maildir "~/Mail")
+    
+    (setq smtpmail-debug-info t)
+    (setq smtpmail-debug-verb t)
+    (setq smtpmail-stream-type 'tls)
+    
+    (defun sign-or-encrypt-message ()
+      "Check whether the message should be encrypted and/or signed."
+      (let ((answer (read-from-minibuffer "Sign or encrypt?\nEmpty to do nothing.\n[s/e]: ")))
+        (cond
+         ((string-equal answer "s") (progn
+                                      (message "Signing message.")
+                                      (mml-secure-message-sign-pgpmime)))
+         ((string-equal answer "e") (progn
+                                      (message "Encrypting and signing message.")
+                                      (mml-secure-message-encrypt-pgpmime)))
+         (t (progn
+              (message "Don't sign or encrypt message.")
+              nil)))))
+    
+    (add-hook 'message-send-hook 'sign-or-encrypt-message) 
+    
+    (setq mu4e-contexts
+          `(,(make-mu4e-context
+              ;; Personal account
+              :name "home"
+              :enter-func (lambda ()
+                            (mu4e-message "Entering home context")
+                            (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
+                              (revert-buffer)))
+              :leave-func (lambda ()
+                            (mu4e-message "Leaving home context")
+                            (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
+                              (revert-buffer)))
+              :match-func (lambda (msg)
+                            (when msg
+                              (string-prefix-p "/teulu.org" (mu4e-message-field msg :maildir))))
+              :vars
+              `((user-mail-address . "paul@teulu.org")
+                (user-full-name . "Paul Jewell")
+                (mu4e-drafts-folder . "/teulu.org/Drafts")
+                (mu4e-sent-folder . "/teulu.org/Sent")
+                (mu4e-refile-folder . ,(concat "/teulu.org/Archive/" (format-time-string "%Y")))
+                (mu4e-trash-folder . "/teulu.org/Trash")
+                (smtp-queue-dir . "~/.email/teulu.org/queue/cur")
+                (smtpmail-smtp-server . "mail.teulu.org")
+                (smtpmail-smtp-user . "paul@teulu.org")
+                (smtpmail-smtp-server . "mail.teulu.org")
+                (smtpmail-smtp-service . 465)
+                (mu4e-sent-messages-behavior . sent)
+                (mu4e-bookmarks .
+                                ((:name "Inbox"
+                                        :query "maildir:/teulu.org/Inbox"
+                                        :key ?a)
+                                 (:name "Unread"
+                                        :query "maildir:/teulu.org/Inbox AND flag:unread AND NOT flag:trashed"
+                                        :key ?u)))))
+            ,(make-mu4e-context
+              ;; Applied-jidoka work email
+              :name "work"
+              :enter-func (lambda ()
+                            (mu4e-message "Entering work context")
+                            (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
+                              (revert-buffer)))
+              :leave-func (lambda ()
+                            (mu4e-message "Leaving work context")
+                            (when (string-match-p (buffer-name (current-buffer)) "mu4e-main")
+                              (revert-buffer)))
+              :match-func (lambda (msg)
+                            (when msg
+                              (string-prefix-p "/applied-jidoka.co.uk" (mu4e-message-field msg :maildir))))
+              :vars
+              `((user-mail-address . "paul@applied-jidoka.co.uk")
+                (user-full-name . "Paul Jewell")
+                (mu4e-drafts-folder . "/applied-jidoka.co.uk/Drafts")
+                (mu4e-sent-folder . "/applied-jidoka.co.uk/Sent")
+                (mu4e-refile-folder . ,(concat "/applied-jidoka.co.uk/Archive/" (format-time-string "%Y")))
+                (mu4e-trash-folder . "/applied-jidoka.co.uk/Trash")
+                (smtp-queue-dir . "~/.email/applied-jidoka.co.uk/queue/cur")
+                (smtpmail-smtp-server . "mail.applied-jidoka.co.uk")
+                (smtpmail-smtp-user . "paul@applied-jidoka.co.uk")
+                (smtp-smtp-service . 465)
+                (mu4e-sent-messages-behavior . sent)
+                (mu4e-bookmarks .
+                                ((:name "Inbox"
+                                        :query "maildir:/applied-jidoka.co.uk/Inbox"
+                                        :key ?a)
+                                 (:name "Unread"
+                                        :query "maildir:/applied-jidoka.co.uk/Inbox AND flag:unread AND NOT flag:trashed"
+                                        :key ?u)))))))))
 
 #+end_src
 
@@ -1538,7 +1721,7 @@ Still under development
 #+begin_src emacs-lisp
 
 (use-package org-caldav
-  :ensure t
+  
   :config
   (setq org-caldav-url "https://nextcloud.applied-jidoka.com/remote.php/dav/calendars/paul")
   (setq org-caldav-calendars
@@ -1555,6 +1738,12 @@ Still under development
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"org-caldav"
+#+end_src
+
 * Helpful
 
 #+begin_src emacs-lisp
@@ -1563,7 +1752,7 @@ Still under development
 ;;     -------
 
 (use-package helpful
-  :ensure t
+  
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
@@ -1573,6 +1762,12 @@ Still under development
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"helpful"
 #+end_src
 
 * ERC
@@ -1733,6 +1928,16 @@ that can occur between two notifications.  The default is
 
 #+end_src
 
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"erc"
+"erc-log"
+"erc-notify"
+"erc-spelling"
+"erc-autoaway"
+#+end_src
+
 * toc-org
 Make table of contents when saving org-files.
 
@@ -1742,7 +1947,6 @@ Make table of contents when saving org-files.
 ;;     -------
 
 (use-package toc-org
-  :ensure t
   :config
   (add-hook 'org-mode-hook 'toc-org-mode)
 
@@ -1750,6 +1954,12 @@ Make table of contents when saving org-files.
   (add-hook 'markdown-mode-hook 'toc-org-mode))
 
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"toc-org"
 #+end_src
 
 * ox-hugo
@@ -1761,7 +1971,6 @@ Not yet set up. Website development with org and hugo.
 ;;     -------
 
 (use-package ox-hugo
-  :ensure t
   :after ox)
 
 
@@ -1770,4 +1979,21 @@ Not yet set up. Website development with org and hugo.
 (provide 'init)
 ;;; init.el ends here
 
+#+end_src
+
+*Guix Packages*
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"ox-hugo"
+#+end_src
+
+* Emacs Profile
+*.config/guix/manifests/emacs.scm:*
+
+#+begin_src scheme :tangle .config/guix/manifests/emacs.scm :noweb yes
+
+(specifications->manifest
+ '("emacs"
+   <<packages>>
+))
 #+end_src
