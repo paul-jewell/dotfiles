@@ -136,7 +136,7 @@ files for each machine?
 (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
 (defvar *pj/font-size*        "10"  "Fontsize for this system.")
 
-(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+t(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
 (defun pj/is-windows-p ()
   "True if run in windows environment."
@@ -175,8 +175,8 @@ files for each machine?
 	     ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
 	     ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
         (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-        (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/git/org/roam/")
-        (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/git/org/org-roam.db")
+        (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+        (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
 	     (setq *pj/font-size* "10"))
     (progn
       (setq *pj/enable-mu4e-mode* t)
@@ -186,8 +186,8 @@ files for each machine?
 	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
 	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-      (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
-      (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db"))))
+      (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+      (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db"))))
  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
   (progn
     (setq *pj/enable-mu4e-mode* nil)
@@ -197,10 +197,10 @@ files for each machine?
     ;; define the location of the orgmode code
     ;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
     ;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
-    (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/git/org/roam/")
+    (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-    (defvar *pj/org-roam-directory*   "~/Nextcloud/git/org/roam/")
-    (defvar *pj/org-roam-db-location* "~/Nextcloud/git/org/org-roam.db")
+    (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+    (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
     (setq *pj/font-size* "10")))
  (t
   (error "Undefined system-type %s" system-type)))
@@ -723,6 +723,22 @@ Not working, and not used currently...
 ;;==============================================================================
 ;;.....org mode
 ;;     --------
+
+(require 'org)
+(require 'org-contribdir)
+(require 'org-agenda)
+(require 'org-clock)
+(require 'org-archive)
+(require 'org-checklist)
+(require 'org-crypt)
+(require 'org-protocol)
+(require 'ido)
+(require 'org-id)
+(require 'bbdb-com)
+(require 'ox-html)
+(require 'ox-latex)
+(require 'ox-ascii)
+(require 'org-tempo)
 
 (setq org-agenda-files *pj/org-agenda-files*)
 (load "~/.emacs.d/lisp/my-org-mode.el")
