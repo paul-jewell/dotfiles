@@ -10,9 +10,7 @@
 .emacs.d/per-system-settings.el 
 .emacs.d/tangle-dotfiles.el
 .emacs.d/lisp/my-org-mode.el
-.emacs.d/lisp/dw-desktop.el
-.emacs.d/lisp/dw-workflow.el
-.emacs.d/lisp/dw-mail.el
+.emacs.d/lisp/*
 
 .bin/update-dotfiles
 .bin/sync-dotfiles
