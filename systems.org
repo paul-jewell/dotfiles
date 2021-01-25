@@ -30,7 +30,9 @@
   - [[#base-configuration][Base Configuration]]
   - [[#machines][Machines]]
   - [[#usb-installation-image][USB Installation Image]]
-- [[#profile-management][Profile Management]]
+- [[#profiles][Profiles]]
+  - [[#profile-manifests][Profile Manifests:]]
+  - [[#profile-management][Profile Management]]
   - [[#activating-profiles][Activating Profiles]]
   - [[#updating-profiles][Updating Profiles]]
 - [[#dotfiles-management][Dotfiles Management]]
@@ -110,7 +112,7 @@ sudo -E guix system -L ~/.dotfiles/.config/guix/systems reconfigure ~/.dotfiles/
 *.config/guix/systems/base-system.scm:*
 
 #+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
-
+;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
 (define-module (base-system)
@@ -369,7 +371,7 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
 **** *.config/guix/systems/zeus.scm:*
 
 #+begin_src scheme :tangle ./.config/guix/systems/zeus.scm
-
+;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
 (define-module (zeus)
@@ -423,130 +425,6 @@ System Settings
    (when (equal system-name "tristan"))
 
    (when (pj/is-windows-p))
-#+end_src
-
-*** davinci
-
-David Wilson's system =davinci= is a ThinkPad T480s that I use at my day job.
-
-*.config/guix/systems/davinci.scm:*
-
-#+begin_src scheme :tangle ./.config/guix/systems/davinci.scm
-
-;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
-
-(define-module (davinci)
-  #:use-module (base-system)
-  #:use-module (gnu))
-
-(operating-system
- (inherit base-operating-system)
- (host-name "davinci")
-
- (mapped-devices
-  (list (mapped-device
-         (source (uuid "eaba53d9-d7e5-4129-82c8-df28bfe6527e"))
-         (target "system-root")
-         (type luks-device-mapping))))
-
- (file-systems (cons*
-                (file-system
-                 (device (file-system-label "system-root"))
-                 (mount-point "/")
-                 (type "ext4")
-                 (dependencies mapped-devices))
-                (file-system
-                 (device "/dev/nvme0n1p2")
-                 (mount-point "/boot/efi")
-                 (type "vfat"))
-                %base-file-systems)))
-
-#+end_src
-
-*System Settings*
-
-#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-
-  (when (equal system-name "davinci")
-    '((desktop/dpi . 130)
-      (emacs/default-face-size . 165)
-      (emacs/fixed-face-size . 165)
-      (emacs/variable-face-size . 190)
-      (polybar/height . 25)
-      (polybar/font-0-size . 12)
-      (polybar/font-1-size . 8)
-      (polybar/font-2-size . 14)
-      (polybar/font-3-size . 9)
-      (dunst/font-size . 14)
-      (dunst/max-icon-size . 64)
-      (vimb/default-zoom . 150)
-      (qutebrowser/default-zoom . 150)))
-
-  ;; When booted into Windows
-  (when (equal system-name "daviwil-t480")
-    '((desktop/dpi . 130)
-      (emacs/default-face-size . 110)
-      (emacs/fixed-face-size . 110)
-      (emacs/variable-face-size . 134)
-      (polybar/height . 25)
-      (polybar/font-0-size . 12)
-      (polybar/font-1-size . 8)
-      (polybar/font-2-size . 14)
-      (polybar/font-3-size . 9)
-      (dunst/font-size . 14)
-      (dunst/max-icon-size . 64)
-      (vimb/default-zoom . 150)
-      (qutebrowser/default-zoom . 150)))
-
-#+end_src
-
-*** phantom
-
-=phantom= is a ThinkPad X1 Extreme that I use for music production and video editing.  For whatever reason, loading the =nouveau= driver crashes the machine upon booting so I've blacklisted it for now until I figure out how to get it working correctly.
-
-*.config/guix/systems/phantom.scm:*
-
-#+begin_src scheme :tangle ./.config/guix/systems/phantom.scm
-
-;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
-
-(define-module (phantom)
-  #:use-module (base-system)
-  #:use-module (gnu))
-
-(operating-system
- (inherit base-operating-system)
- (host-name "phantom")
-
- (mapped-devices
-  (list (mapped-device
-         (source (uuid "091b8ad5-efb3-4c5b-8370-7db99c404a30"))
-         (target "system-root")
-         (type luks-device-mapping))))
-
- (file-systems (cons*
-                (file-system
-                 (device (file-system-label "system-root"))
-                 (mount-point "/")
-                 (type "ext4")
-                 (dependencies mapped-devices))
-                (file-system
-                 (device "/dev/nvme0n1p1")
-                 (mount-point "/boot/efi")
-                 (type "vfat"))
-                %base-file-systems)))
-
-#+end_src
-
-*System Settings*
-
-#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-
-(when (equal system-name "phantom")
-  '((desktop/dpi . 240)
-    (polybar/height . 40)
-    (vimb/default-zoom . 200)))
-
 #+end_src
 
 ** USB Installation Image
@@ -603,10 +481,126 @@ installation-os-nonfree
 
 #+end_src
 
-* Profile Management
+* Profiles
+Packages are installed into separate manifests that get installed as
+profiles which can be updated independently.  These profiles get
+installed under the =~/.guix-extra-profiles= path and sourced by
+=~/.profile= when I log in.
+** Profile Manifests:
+*** Browsers
+#+begin_src scheme :tangle .config/guix/manifests/browsers.scm
+(specifications->manifest
+ '("ungoogled-chromium"))
 
-I like to separate my packages into separate manifests that get installed as profiles which can be updated independently.  These profiles get installed under the =~/.guix-extra-profiles= path and sourced by my =~/.profile= when I log in.
+#+end_src
 
+*** Code
+#+begin_src scheme :tangle .config/guix/manifests/code.scm
+;; Various developer tools that I use.  These might be split out into
+;; platform-specific manifests at some point.
+
+(specifications->manifest
+ '(;; C/C++
+   "gcc-toolchain"
+   "make"
+   "pkg-config"
+   "texinfo"
+   "llvm"
+   "lld"
+   "clang"
+
+   ;; Python
+   "python2"
+
+   ;; Docker
+   "docker-cli"
+
+   ;; Java
+   "icedtea"
+
+   ;; SDL
+   "glu"
+   "glfw"
+   "sdl2"
+   "sdl2-image"
+   "sdl2-mixer"
+   "sdl2-gfx"
+   "sdl2-ttf"
+
+   "curl"
+   "virt-manager"))
+   ;; "glibc" ;; For ldd
+#+end_src
+
+*** Games
+#+begin_src scheme  :tangle .config/guix/manifests/games.scm
+(specifications->manifest
+ '("aisleriot"
+   "gnome-mahjongg"))
+
+#+end_src
+
+*** Music Creation
+#+begin_src scheme :tangle .config/guix/manifests/music.scm
+;; Music creation tools
+
+(specifications->manifest
+ '(;; JACK tools
+   "jack"
+   "jack2"
+   "jack-keyboard"
+   "qjackctl"
+   "patchage"
+
+   ;; DAWs
+   "ardour"
+   "zrythm"
+
+   ;; Guitar
+   ;; "guitarix"
+   ;; "guitarix-lv2"
+
+   ;; Effects
+   "calf"
+   "g2reverb"
+   "dragonfly-reverb"
+   "wolf-shaper"
+
+   ;; Synths
+   "helm"
+   "amsynth"
+   "avldrums-lv2"
+   "geonkick"
+   "fluidsynth"
+   "zynaddsubfx"
+
+   ;; Mixing Tools
+   "wolf-spectrum"))
+#+end_src
+
+*** Video Creation Tools
+#+begin_src scheme :tangle .config/guix/manifests/video.scm
+;; Video creation tools
+
+(specifications->manifest
+ '(;; Screen Capture and Streaming
+   "obs"
+   "ffmpeg"    ;; ffmpeg and ffplay
+   "v4l-utils" ;; Get details about webcams: v4l2-ctl --list-devices
+
+   ;; Screen recording with pulseaudio source 0 (-i 0)
+   ;; ffmpeg -y -f x11grab -video_size 2560x1440 -i :0.0+0,0 -f pulse -ac 2 -i 0 -c:v libx264 -pix_fmt yuv420p -crf 0 -preset ultrafast ~/output.mp4 -v 0
+
+   ;; Scaling video down to 1080p
+   ;; ffmpeg -i output2.mp4 -s 1920x1080 ~/output2-scaled.mp4
+
+   ;; Show webcam with specific resolution
+   ;; ffplay -f v4l2 -framerate 60 -video_size hd480 /dev/video2 -v 0
+
+   ;; Video Editing
+   "blender"))
+#+end_src
+** Profile Management
 To make the management of multiple profiles easier, I've created a couple of shell scripts:
 
 ** Activating Profiles
@@ -622,7 +616,7 @@ activate-profiles desktop emacs music
 *.bin/activate-profiles:*
 
 #+begin_src sh :tangle ./.bin/activate-profiles :shebang #!/bin/sh
-
+# -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
 GREEN='\033[1;32m'
@@ -677,7 +671,7 @@ update-profiles emacs
 *.bin/update-profiles:*
 
 #+begin_src sh :tangle ./.bin/update-profiles :shebang #!/bin/sh
-
+# -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
 GREEN='\033[1;32m'
@@ -713,7 +707,7 @@ When I want to sync my dotfiles repo into my local clone which likely has uncomm
 *.bin/sync-dotfiles*
 
 #+begin_src sh :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
-
+# -*- buffer-read-only: t; -*-
 # Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
 
 GREEN='\033[1;32m'
@@ -765,45 +759,44 @@ Updating my dotfiles requires running a script in Emacs to loop over all of my l
 *.bin/update-dotfiles*
 
 #+begin_src sh :tangle ./.bin/update-dotfiles :shebang #!/bin/sh
+# -*- buffer-read-only: t; -*-
+# Navigate to the directory of this script (generally ~/.dotfiles/.bin)
+cd $(dirname $(readlink -f $0))
+cd ..
 
-  # Navigate to the directory of this script (generally ~/.dotfiles/.bin)
-  cd $(dirname $(readlink -f $0))
-  cd ..
+# The heavy lifting is done by an Emacs script
+emacs -Q --script ~/.emacs.d/tangle-dotfiles.el
 
-  # The heavy lifting is done by an Emacs script
-  emacs -Q --script ./.emacs.d/tangle-dotfiles.el
+# Make sure any running Emacs instance gets updated settings
+#  emacsclient -e '(load-file "~/.emacs.d/per-system-settings.el")' -a "echo 'Emacs is not currently running'"
 
-  # Make sure any running Emacs instance gets updated settings
-  emacsclient -e '(load-file "~/.emacs.d/per-system-settings.el")' -a "echo 'Emacs is not currently running'"
-
-  # Update configuration symlinks
-  stow .
+# Update configuration symlinks
+stow .
 
 #+end_src
 
 *.emacs.d/tangle-dotfiles.el*
 
 #+begin_src emacs-lisp :tangle ./.emacs.d/tangle-dotfiles.el
+;; -*- buffer-read-only: t; -*-
+(require 'org)
 
-  (require 'org)
-  (load-file "~/.dotfiles/.emacs.d/lisp/dw-settings.el")
+;; Don't ask when evaluating code blocks
+(setq org-confirm-babel-evaluate nil)
 
-  ;; Don't ask when evaluating code blocks
-  (setq org-confirm-babel-evaluate nil)
+(let* ((dotfiles-path (expand-file-name "~/dotfiles"))
+  (org-files (directory-files dotfiles-path nil "\\.org$")))
 
-  (let* ((dotfiles-path (expand-file-name "~/.dotfiles"))
-	 (org-files (directory-files dotfiles-path nil "\\.org$")))
+  (defun dw/tangle-org-file (org-file)
+    (message "\n\033[1;32mUpdating %s\033[0m\n" org-file)
+    (org-babel-tangle-file (expand-file-name org-file dotfiles-path)))
 
-    (defun dw/tangle-org-file (org-file)
-      (message "\n\033[1;32mUpdating %s\033[0m\n" org-file)
-      (org-babel-tangle-file (expand-file-name org-file dotfiles-path)))
+  ;; Tangle Systems.org first
+  (dw/tangle-org-file "systems.org")
 
-    ;; Tangle Systems.org first
-    (dw/tangle-org-file "Systems.org")
-
-    (dolist (org-file org-files)
-      (unless (member org-file '("README.org" "Systems.org"))
-      	(dw/tangle-org-file org-file))))
+  (dolist (org-file org-files)
+    (unless (member org-file '("README.org" "systems.org"))
+       (dw/tangle-org-file org-file))))
 
 #+end_src
 
