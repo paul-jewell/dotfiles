@@ -122,7 +122,7 @@ sudo -E guix system -L ~/.dotfiles/.config/guix/systems reconfigure ~/.dotfiles/
   #:use-module (gnu services pm)
   #:use-module (gnu services cups)
   #:use-module (gnu services desktop)
-;;  #:use-module (gnu services docker)
+  #:use-module (gnu services docker)
   #:use-module (gnu services networking)
 ;;  #:use-module (gnu services virtualization)
   #:use-module (gnu packages wm)
@@ -145,6 +145,7 @@ sudo -E guix system -L ~/.dotfiles/.config/guix/systems reconfigure ~/.dotfiles/
 
 (use-service-modules nix)
 (use-service-modules desktop xorg)
+(use-service-modules ssh)
 (use-package-modules certs)
 (use-package-modules shells)
 
@@ -278,10 +279,9 @@ Define the =base-operating-system= which will be inherited by all machine config
                         exfat-utils
                         fuse-exfat
                         stow
-                        vim
-                        emacs
+                        neovim
                         i3-wm
-                        i3-status
+                        i3status
                         i3blocks
                         dmenu
                         bluez
@@ -310,6 +310,7 @@ Define the =base-operating-system= which will be inherited by all machine config
                       (pam-limits-entry "@realtime" 'both 'rtprio 99)
                       (pam-limits-entry "@realtime" 'both 'memlock 'unlimited)))
                     (service thermald-service-type)
+                    (service docker-service-type)
                     (service cups-service-type
                              (cups-configuration
                                (web-interface? #t)
@@ -380,12 +381,7 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
  (inherit base-operating-system)
  (host-name "zeus")
 
- (bootloader
-  (bootloader-configuration
-   (bootloader grub-bootloader)
-   (target "/boot/efi")
-   (keyboard-layout keyboard-layout)))
- (swap-devices
+  (swap-devices
   (list (uuid "74a21e0e-5b14-484b-a448-f8a2fc60d308")))
  (file-systems
   (cons* (file-system
@@ -490,6 +486,19 @@ profiles which can be updated independently.  These profiles get
 installed under the =~/.guix-extra-profiles= path and sourced by
 =~/.profile= when I log in.
 ** Profile Manifests:
+*** Base packages
+#+begin_src scheme :tangle .config/giux/manifests/base.scm
+(specifications->manifest
+ '("htop"
+   "
+#+end_src
+*** Window managers
+#+begin_src scheme :tangle .config/guix/manifests/window-managers.scm
+(specifications->manifest
+ '("i3"
+   "i3status"
+   "isblocks"))
+#+end_src
 *** Browsers
 #+begin_src scheme :tangle .config/guix/manifests/browsers.scm
 (specifications->manifest
