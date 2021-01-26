@@ -163,31 +163,43 @@ t(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
 (cond
  ((pj/is-linux-p)
-  (if (string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-      (progn
-        (require 'gnutls)
-        (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-	     (setq *pj/enable-mu4e-mode* t)
-	     (setq *pj/load-site-gentoo* nil)
-	     (setq *pj/enable-auctex* t)
-	     
-	     ;; define the location of the orgmode code - currently using the built in version.
-	     ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-	     ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
-        (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-        (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-        (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-	     (setq *pj/font-size* "10"))
+  (cond
+   ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+    (progn
+      (require 'gnutls)
+      (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+	   (setq *pj/enable-mu4e-mode* t)
+	   (setq *pj/load-site-gentoo* nil)
+	   (setq *pj/enable-auctex* t)
+	   
+	   ;; define the location of the orgmode code - currently using the built in version.
+	   ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+	   ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+      (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+      (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+      (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+	   (setq *pj/font-size* "10")))
+   ((pj/is-guix-p)
     (progn
       (setq *pj/enable-mu4e-mode* t)
-      (setq *pj/load-site-gentoo* t)
+      (setq *pj/load-site-gentoo* nil)
       (setq *pj/enable-auctex* t)
 	   ;; define the location of the orgmode code
 	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
 	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
       (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-      (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db"))))
+      (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))
+   (t (progn
+        (setq *pj/enable-mu4e-mode* t)
+        (setq *pj/load-site-gentoo* t)
+        (setq *pj/enable-auctex* t)
+	     ;; define the location of the orgmode code
+	     ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+	     ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+        (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+        (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+        (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
   (progn
     (setq *pj/enable-mu4e-mode* nil)
