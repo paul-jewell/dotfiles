@@ -511,7 +511,13 @@ generated from [[file+sys:~/.dotfiles/emacs.org][emacs.org]]
 
 #+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
 
-(when (equal system-name "zeus"))
+(when (equal system-name "zeus")
+  '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . nil)
+    (*pj/enable-auctex* . t)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
 
 #+end_src
 
@@ -526,11 +532,43 @@ emacs on both operating systems.
 System Settings
 
 #+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-   (when (equal system-name "tristan"))
+(when (equal system-name "tristan")
+   '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . t)
+    (*pj/enable-auctex* . nil)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
 
-   (when (pj/is-windows-p))
+(when (string= "windows-nt" system-type))
 #+end_src
+*** Rodolfo
 
+=rodolfo= is a lenovo x270 laptop with gentoo linux installed.
+*System settings*
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+(when (equal system-name "rodolfo")
+   '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . t)
+    (*pj/enable-auctex* . t)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
+
+#+end_src
+*** Shingo
+=shingo= is a small computer in the shed. Currently has gentoo, but will
+be the next candidate for guix.
+*System Settings*
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+(when (equal system-name "tristan")
+   '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . t)
+    (*pj/enable-auctex* . t)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
+#+end_src
 ** USB Installation Image
 
 To install Guix on another machine, you first to build need a USB image.  Since I use modern laptops that require non-free components, I have to build a custom installation image with the full Linux kernel.  I also include a few other programs that are useful for the installation process.  I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
