@@ -820,7 +820,10 @@ done
 
 * Dotfiles Management
 
-Since I keep all of my important configuration files in Org Mode code blocks, I have to ensure that the real configuration files are kept up to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.  I've written a couple of scripts to simplify that process:
+Since I keep all of my important configuration files in Org Mode code
+blocks, I have to ensure that the real configuration files are kept up
+to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.  I've
+written a couple of scripts to simplify that process:
 
 ** Syncing
 
@@ -876,31 +879,17 @@ fi
 
 ** Updating
 
-Updating my dotfiles requires running a script in Emacs to loop over all of my literate configuration =.org= files and run =org-babel-tangle-file= to make sure all of my configuration files are up to date.
+Updating my dotfiles requires running a script in Emacs to loop over
+all of my literate configuration =.org= files and run
+=org-babel-tangle-file= to make sure all of my configuration files are
+up to date.
 
 *.bin/update-dotfiles*
-
-#+begin_src sh :tangle ./.bin/update-dotfiles :shebang #!/bin/sh
-# -*- buffer-read-only: t; -*-
-# Navigate to the directory of this script (generally ~/.dotfiles/.bin)
-cd $(dirname $(readlink -f $0))
-cd ..
-
-# The heavy lifting is done by an Emacs script
-emacs -Q --script ~/.emacs.d/tangle-dotfiles.el
-
-# Make sure any running Emacs instance gets updated settings
-#  emacsclient -e '(load-file "~/.emacs.d/per-system-settings.el")' -a "echo 'Emacs is not currently running'"
-
-# Update configuration symlinks
-stow .
-
-#+end_src
-
 *.emacs.d/tangle-dotfiles.el*
 
-This file is already in the .bin directory - otherwise it's not
-straight forward to tangle all of the .org files.
+These two files is already in the .bin and .emacs.d directory
+respectively. Otherwise it's not straight forward to tangle all of the
+.org files.
 
 ** System Installation
 
