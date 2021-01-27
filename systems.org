@@ -1,5 +1,5 @@
 #+TITLE: System Configuration with Guix
-
+#+PROPERTY: :mkdir t
 * Table of Contents                                                     :toc:
 :PROPERTIES:
 :TOC:      :include all :ignore this
@@ -487,10 +487,11 @@ installed under the =~/.guix-extra-profiles= path and sourced by
 =~/.profile= when I log in.
 ** Profile Manifests:
 *** Base packages
-#+begin_src scheme :tangle .config/giux/manifests/base.scm
-(specifications->manifest
- '("htop"
-   "
+#+begin_src scheme :mkdir t :tangle .config/guix/manifests/base.scm
+  (specifications->manifest
+   '("htop"
+     "git"
+     "gnupg"))
 #+end_src
 *** Window managers
 #+begin_src scheme :tangle .config/guix/manifests/window-managers.scm

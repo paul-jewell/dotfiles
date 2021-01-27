@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/init.el 
+#+PROPERTY: header-args:emacs-lisp :mkdir t :tangle ./.emacs.d/init.el 
 
 Emacs configuration.
 
@@ -2025,7 +2025,7 @@ Not yet set up. Website development with org and hugo.
 * Emacs Manifest for guix
 *.config/guix/manifests/emacs.scm:*
 
-#+begin_src scheme :tangle .config/guix/manifests/emacs.scm :noweb yes
+#+begin_src scheme :tangle :mkdir t .config/guix/manifests/emacs.scm :noweb yes
 
 (specifications->manifest
  '("emacs"
