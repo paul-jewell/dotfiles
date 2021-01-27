@@ -641,7 +641,7 @@ installed under the =~/.guix-extra-profiles= path and sourced by
 (specifications->manifest
  '("i3-wm"
    "i3status"
-   "isblocks"))
+   "i3blocks"))
 #+end_src
 *** Browsers
 #+begin_src scheme :tangle .config/guix/manifests/browsers.scm
