@@ -1,29 +1,10 @@
 #+TITLE: System Configuration with Guix
 #+PROPERTY: :mkdir t
+
 * Table of Contents                                                     :toc:
 :PROPERTIES:
 :TOC:      :include all :ignore this
 :END:
-:CONTENTS:
-- [[#channels][Channels]]
-- [[#systems][Systems]]
-  - [[#base-configuration][Base Configuration]]
-  - [[#machines][Machines]]
-    - [[#per-system-settings][Per-System Settings]]
-    - [[#zerocool][zerocool]]
-    - [[#davinci][davinci]]
-    - [[#phantom][phantom]]
-  - [[#usb-installation-image][USB Installation Image]]
-- [[#profile-management][Profile Management]]
-  - [[#activating-profiles][Activating Profiles]]
-  - [[#updating-profiles][Updating Profiles]]
-- [[#dotfiles-management][Dotfiles Management]]
-  - [[#syncing][Syncing]]
-  - [[#updating][Updating]]
-- [[#nix-package-manager][Nix Package Manager]]
-- [[#system-installation][System Installation]]
-:END:
-
 
 - [[#introduction][Introduction]]
 - [[#channels][Channels]]
@@ -343,9 +324,9 @@ I also define a function called =dw/system-settings-get= which can retrieve thes
 (setq dw/system-settings
   (map-merge
     'list
-    '((desktop/dpi . 180)
+    '((desktop/dpi . 180)  ;; Need to check this as well with my settings
       (desktop/background . "samuel-ferrara-uOi3lg8fGl4-unsplash.jpg")
-      ;; David has a 4K monitor - I suspect these font sizes will be a problem on a 1084p monitor
+      ;; David has a 4K monitor - I suspect these font sizes will be a problem on my monitor
       ;; (emacs/default-face-size . 220)
       ;; (emacs/variable-face-size . 245)
       ;; (emacs/fixed-face-size . 200)
@@ -359,6 +340,130 @@ I also define a function called =dw/system-settings-get= which can retrieve thes
       (vimb/default-zoom . 180)
       (qutebrowser/default-zoom . 200))
     <<system-settings>>))
+
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-settings.el
+
+(defun dw/load-system-settings ()
+  (interactive)
+  (load-file "~/.dotfiles/.emacs.d/per-system-settings.el"))
+
+(defun dw/system-settings-get (setting)
+  (alist-get setting dw/system-settings))
+
+(provide 'dw-settings)
+#+end_src
+
+
+**** dw-autorest
+
+#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-autorest.el
+(defvar dw/autorest-last-run nil
+  "Details on the last AutoRest run to use with dw/rerun-autorest-command")
+
+(defun dw/rerun-autorest-command ()
+  (interactive)
+  (if dw/autorest-last-run
+      (apply #'dw/run-autorest-command dw/autorest-last-run)
+      (message "No previous AutoRest run!")))
+
+(defun dw/run-autorest-command (command-string run-name pre-command)
+  (let ((run-message (format "Running AutoRest - %s" command-string)))
+    (setq autorest-buffer (get-buffer-create (format "*AutoRest Output: %s*" run-name)))
+    (with-current-buffer autorest-buffer
+      (ansi-color-for-comint-mode-on)
+      (comint-mode)
+      (display-line-numbers-mode 0)
+      (end-of-buffer)
+      (insert "\n"
+              (format-time-string "[%m/%d/%Y - %I:%M:%S %p]")
+              "\n\n"
+              run-message
+              "\n\n")
+      (when pre-command
+        (insert "Pre-run command: " pre-command "\n\n")))
+
+    ;; TODO: This buffer display function isn't perfect
+    (message run-message)
+    (display-buffer-pop-up-window autorest-buffer '((window-height . 13)))
+
+    (setq dw/autorest-last-run (list command-string run-name pre-command))
+
+    (let ((default-directory "~/Projects/Code/autorest.megarepo/")
+          (full-command
+             (string-join (list (when pre-command
+                                      (format "%s &&" pre-command))
+                                "TERM=xterm-256color"
+                                command-string)
+                          " ")))
+      (setq autorest-process (start-process-shell-command "server" autorest-buffer full-command)))
+
+    (set-process-filter autorest-process 'comint-output-filter)))
+
+(cl-defun dw/run-autorest (&key (run-name "adhoc")
+                                input-file
+                                (use '())
+                                language
+                                version
+                                args
+                                (inspector t)
+                                debug
+                                verbose
+                                pre-command)
+  (let* ((use-param (mapconcat (lambda (u) (format "--use:%s" u)) use " "))
+         (misc-args (mapconcat (lambda (arg) arg) args " "))
+         (args (list "autorest"
+                     (when language (format "--%s" language))
+                     use-param
+                     misc-args
+                     (if (s-ends-with? ".md" input-file)
+                         input-file
+                         (format "--input-file:%s" input-file))
+                     (when inspector (format "--inspector --inspector.output-folder:./outputs/%s --inspector.clear-output-folder" run-name))
+                     (when version (format "--version:%s" version))
+                     (when verbose "--verbose")
+                     (when debug "--debug")))
+         (command-string (string-join args " ")))
+    (message command-string)
+    (dw/run-autorest-command command-string run-name pre-command)))
+
+;; Keybindings to set up:
+;; q - Close panel
+;; C-c o - List output files
+
+;; (dw/run-autorest
+;;  :run-name "body-formdata"
+;;  :language 'python
+;;  :input-file "~/Projects/Code/autorest.megarepo/testserver/swagger/body-formdata.json"
+;;  :use '("./modelerfour/modelerfour")
+;;  :version "./autorest/core"
+;;  :pre-command "pushd ./modelerfour/modelerfour && npm run build && popd")
+
+(provide 'dw-autorest)
+
+#+end_src
+
+**** dw-vimb
+
+#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-vimb.el
+(setq dw/open-url-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<return>") 'ivy-immediate-done)
+    map))
+
+(defun dw/open-url ()
+  (interactive)
+  (let ((history-items
+          (with-temp-buffer
+            (insert-file-contents "~/.config/vimb/history")
+            (split-string (buffer-string) "\n" t))))
+    (ivy-read "Open URL: " (remove-duplicates history-items :test #'string-equal)
+              :keymap dw/open-url-map
+              :action (lambda (item)
+                        (start-process "vimb" nil "vimb" (car (split-string item (string ?\t))))))))
+
 
 #+end_src
 
@@ -487,7 +592,7 @@ installed under the =~/.guix-extra-profiles= path and sourced by
 =~/.profile= when I log in.
 ** Profile Manifests:
 *** Base packages
-#+begin_src scheme :mkdir t :tangle .config/guix/manifests/base.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/base.scm
   (specifications->manifest
    '("htop"
      "git"
