@@ -479,7 +479,7 @@ of gentoo is still to be explored...
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-swiper"
 ;; "counsel-bbdb"
-"counsel"
+"emacs-counsel"
 #+end_src
 
 * Which-key
