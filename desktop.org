@@ -52,6 +52,7 @@ Load system-specific settings from =.emacs.d/per-system-settings.el= and unpack 
 #+NAME: system-settings
 #+begin_src emacs-lisp :session system-settings
 (load-file ".emacs.d/per-system-settings.el")
+(load-file ".emacs.d/lisp/dw-settings.el")
 #+end_src
 
 #+NAME: get-setting
