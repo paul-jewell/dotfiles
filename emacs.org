@@ -433,9 +433,9 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"ivy"
-"icy-hydra"
-"ivy-rich"
+"emacs-ivy"
+;;"icy-hydra" ;; Not yet available
+"emacs-ivy-rich"
 #+end_src
 * Swiper
 
@@ -477,8 +477,8 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"swiper"
-"counsel-bbdb"
+"emacs-swiper"
+;; "counsel-bbdb"
 "counsel"
 #+end_src
 
@@ -498,7 +498,7 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"which-key"
+"emacs-which-key"
 #+end_src
 
 * ispell
@@ -548,7 +548,7 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"ledger-mode"
+"emacs-ledger-mode"
 #+end_src
 
 * Go
@@ -559,7 +559,7 @@ of gentoo is still to be explored...
 ;;     --
 ;; Package for go programming.
 
-(use-package go-autocomplete)
+;; (use-package go-autocomplete)
 
 (use-package go-mode
    :config
@@ -572,8 +572,8 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"go-autocomplete"
-"go-mode"
+;;"go-autocomplete"
+"emacs-go-mode"
 #+end_src
 
 * Python
@@ -620,7 +620,6 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"sql"
 #+end_src
 
 * C++
@@ -726,7 +725,7 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"multiple-cursors"
+"emacs-multiple-cursors"
 #+end_src
 
 * Org-mode
@@ -774,7 +773,7 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"org-bullets"
+"emacs-org-bullets"
 #+end_src
 
 * Org-roam
@@ -810,7 +809,7 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"org-roam"
+"emacs-org-roam"
 #+end_src
 
 * Licence Boilerplate
@@ -927,7 +926,7 @@ I set this up a long time ago, before I knew emacs-lisp.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"auctex"
+"emacs-auctex"
 #+end_src
 
 * Reftex
@@ -939,10 +938,10 @@ I haven't used this yet, so there may be some issues.
 ;;.....reftex
 ;;     ------
 
-(use-package reftex
-  :defer t
-  :config
-  (setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
+;;(use-package reftex
+;;  :defer t
+;;  :config
+;;  (setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
 
 
 ;;==============================================================================
@@ -977,7 +976,7 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"reftex"
+;"reftex"
 #+end_src
 
 * Hydra
@@ -1070,7 +1069,7 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"hydra"
+"emacs-hydra"
 #+end_src
 
 * Javascript and HTML
@@ -1106,8 +1105,8 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"js2-mode"
-"js2-reflector"
+"emacs-js2-mode"
+;;"js2-reflector"
 #+end_src
 * Company mode
 
@@ -1151,11 +1150,11 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"company"
-"company-irony"
-"irony"
-"irony-eldoc"
-"company-jedi"
+"emacs-company"
+"emacs-company-irony"
+"emacs-irony-mode"
+"emacs-irony-eldoc"
+"emacs-company-jedi"
 #+end_src
 
 * Magit
@@ -1214,9 +1213,9 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"magit"
-"git-gutter"
-"git-time-machine"
+"emacs-magit"
+"emacs-git-gutter"
+;;"emacs-git-time-machine"
 #+end_src
 
 * Flycheck
@@ -1235,7 +1234,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"flycheck"
+"emacs-flycheck"
 #+end_src
 
 * All the icons
@@ -1262,7 +1261,8 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"all-the-icons"
+"emacs-all-the-icons"
+"emacs-all-the-icons-dired"
 #+end_src
 
 * Themes
@@ -1289,7 +1289,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"gruvbox-theme"
+"emacs-gruvbox-theme"
 #+end_src
 
 * eyebrowse
@@ -1328,7 +1328,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"projectile"
+"emacs-projectile"
 #+end_src
 
 * Powerline
@@ -1438,7 +1438,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"powerline"
+"emacs-powerline"
 #+end_src
 
 * Diminish
@@ -1452,7 +1452,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"diminish"
+"emacs-diminish"
 #+end_src
 
 * Paredit
@@ -1477,6 +1477,7 @@ Git gutter:
 
 ;; Ensure paredit is used EVERYWHERE!
 (use-package paredit-everywhere
+  :ensure t
   :diminish paredit-everywhere-mode
   :config
   (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
@@ -1493,8 +1494,8 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"paredit"
-"paredit-everywhere"
+"emacs-paredit"
+;;"emacs-paredit-everywhere"
 #+end_src
 
 * Rainbow Delimiters
@@ -1515,7 +1516,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"rainbow-delimiters"
+"emacs-rainbow-delimiters"
 #+end_src
 
 * Clojure
@@ -1563,8 +1564,8 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"cider"
-"cider-hydra"
+"emacs-cider"
+"emacs-cider-hydra"
 #+end_src
 
 * Lisp
@@ -1611,7 +1612,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"slime"
+"emacs-slime"
 #+end_src
 
 * emacs-lisp
@@ -1631,7 +1632,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"elisp-slime-nav"
+"emacs-elisp-slime-nav"
 #+end_src
 
 * mu4e - Email
@@ -1779,7 +1780,7 @@ Still under development
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"org-caldav"
+"emacs-org-caldav"
 #+end_src
 
 * Helpful
@@ -1805,7 +1806,7 @@ Still under development
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"helpful"
+"emacs-helpful"
 #+end_src
 
 * ERC
@@ -1969,11 +1970,11 @@ that can occur between two notifications.  The default is
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"erc"
-"erc-log"
-"erc-notify"
-"erc-spelling"
-"erc-autoaway"
+"emacs-erc"
+"emacs-erc-log"
+"emacs-erc-notify"
+"emacs-erc-spelling"
+"emacs-erc-autoaway"
 #+end_src
 
 * toc-org
@@ -1997,7 +1998,7 @@ Make table of contents when saving org-files.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"toc-org"
+"emacs-toc-org"
 #+end_src
 
 * ox-hugo
@@ -2019,7 +2020,7 @@ Not yet set up. Website development with org and hugo.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"ox-hugo"
+"emacs-ox-hugo"
 #+end_src
 
 * Emacs Manifest for guix
