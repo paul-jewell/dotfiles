@@ -1556,7 +1556,8 @@ Git gutter:
 ;;   :bind ("C-c '" . hydra-cljr-help-menu/body)
 ;;   )
 
-(use-package cider-hydra)
+(use-package cider-hydra
+  :ensure t)
 
 
 #+end_src
@@ -1565,7 +1566,7 @@ Git gutter:
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-cider"
-"emacs-cider-hydra"
+;;"emacs-cider-hydra"
 #+end_src
 
 * Lisp
