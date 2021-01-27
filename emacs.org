@@ -1971,11 +1971,11 @@ that can occur between two notifications.  The default is
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-erc"
-"emacs-erc-log"
-"emacs-erc-notify"
-"emacs-erc-spelling"
-"emacs-erc-autoaway"
+;;"emacs-erc"
+;;"emacs-erc-log"
+;;"emacs-erc-notify"
+;;"emacs-erc-spelling"
+;;"emacs-erc-autoaway"
 #+end_src
 
 * toc-org
