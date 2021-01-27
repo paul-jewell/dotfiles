@@ -639,7 +639,7 @@ installed under the =~/.guix-extra-profiles= path and sourced by
 *** Window managers
 #+begin_src scheme :tangle .config/guix/manifests/window-managers.scm
 (specifications->manifest
- '("i3"
+ '("i3-wm"
    "i3status"
    "isblocks"))
 #+end_src
