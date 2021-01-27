@@ -111,7 +111,9 @@
 
 (defun pj/uuidgen ()
   "Generate a UUID for the ID Property of each task."
-  (shell-command-to-string "uuidgen"))
+  (if (string= "windows-nt" system-type)
+      (shell-command-to-string "powershell -Command \"[guid]::NewGuid().ToString()\" ")
+    (shell-command-to-string "uuidgen")))
 
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 
@@ -379,7 +381,7 @@ If no task is selected set the Organization task as the default task."
       ;;
       ;; We're in the agenda
       ;;
-      (let* ((marker (org-get-at-bol 'org-hd-marker))
+      (let* ((marker (org-get-at-bol 'd-marker))
              (tags (org-with-point-at marker (org-get-tags))))
         (if (and (eq arg 4) tags)
             (org-agenda-clock-in '(16))
