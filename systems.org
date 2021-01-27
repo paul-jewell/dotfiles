@@ -775,8 +775,8 @@ activate-profiles desktop emacs music
 # -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
-if [ $HOSTNAME = "zeus"] # This will need modification when expanding number of guix systems.
-                         # Currently zeus is the only one.
+if [ $HOSTNAME = "zeus" ] # This will need modification when expanding number of guix systems.
+                          # Currently zeus is the only one.
 then
   GREEN='\033[1;32m'
   RED='\033[1;30m'
