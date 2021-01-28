@@ -52,6 +52,7 @@ Emacs configuration.
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
+- [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 - [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
 * Preamble
@@ -2022,6 +2023,22 @@ Not yet set up. Website development with org and hugo.
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-ox-hugo"
+#+end_src
+
+* Auto-tangle Configuration files
+
+#+begin_src emacs-lisp
+(defun pj/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name "~/dotfiles/"))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+
+(add-hook 'org-mode-hook 
+          (lambda () 
+            (add-hook 'after-save-hook
+                      #'pj/org-babel-tangle-config)))
 #+end_src
 
 * Emacs Manifest for guix
