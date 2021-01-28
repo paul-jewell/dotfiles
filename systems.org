@@ -284,6 +284,7 @@ Define the =base-operating-system= which will be inherited by all machine config
                                   (xorg-configuration
                                     (keyboard-layout keyboard-layout)
                                     (extra-config (list %xorg-libinput-config))))))
+                    (service xfce-desktop-service-type)
                     (service tlp-service-type
                              (tlp-configuration
                                 (cpu-boost-on-ac? #t)
