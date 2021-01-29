@@ -441,37 +441,38 @@ of gentoo is still to be explored...
 * Swiper
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....Swiper
-;;     ------
+  ;;==============================================================================
+  ;;.....Swiper
+  ;;     ------
 
-;; Counsel - completion package working with ivy.
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
-  :custom
-  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  :config
-  (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+  ;; Counsel - completion package working with ivy.
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x)
+           ("C-x b" . counsel-ibuffer)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+    :config
+    (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
-;; TODO: Configure counsel-bbdb to work eith email, or configure a different
-;;       package to manage contacts (synced with cardDAV)
-(use-package counsel-bbdb)
+  ;; TODO: Configure counsel-bbdb to work eith email, or configure a different
+  ;;       package to manage contacts (synced with cardDAV)
+  (use-package counsel-bbdb
+    :ensure t)
 
-(use-package swiper
-  :bind (("C-s" . swiper)
-         ("C-r" . swiper)
-         ("C-c C-r" . ivy-resume)
-         ("M-x" . counsel-M-x)
-         ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+  (use-package swiper
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)
+           ("C-c C-r" . ivy-resume)
+           ("M-x" . counsel-M-x)
+           ("C-x C-f" . counsel-find-file))
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-display-style 'fancy)
+      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
 
 #+end_src
 
@@ -555,25 +556,20 @@ of gentoo is still to be explored...
 * Go
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....go
-;;     --
-;; Package for go programming.
+  ;;==============================================================================
+  ;;.....go
+  ;;     --
+  ;; Package for go programming.
 
-;; (use-package go-autocomplete)
-
-(use-package go-mode
-   :config
-   (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1)))
-   (with-eval-after-load 'go-mode
-     (require 'go-autocomplete)))
+  (use-package go-mode
+     :config
+     (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1))))
 
 #+end_src
 
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-;;"go-autocomplete"
 "emacs-go-mode"
 #+end_src
 
@@ -732,30 +728,31 @@ Not working, and not used currently...
 * Org-mode
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....org mode
-;;     --------
+  ;;==============================================================================
+  ;;.....org mode
+  ;;     --------
 
-(require 'org)
-(require 'org-contribdir)
-(require 'org-agenda)
-(require 'org-clock)
-(require 'org-archive)
-(require 'org-checklist)
-(require 'org-crypt)
-(require 'org-protocol)
-(require 'ido)
-(require 'org-id)
-(require 'bbdb-com)
-(require 'ox-html)
-(require 'ox-latex)
-(require 'ox-ascii)
-(require 'org-tempo)
 
-(setq org-agenda-files *pj/org-agenda-files*)
-(load "~/.emacs.d/lisp/my-org-mode.el")
-(require 'org-habit) ;; org-habit is part of org-mode (not a package)
-(global-set-key (kbd "C-c w") 'org-refile)
+  (require 'org)
+;;  (require 'org-contribdir)
+  (require 'org-agenda)
+  (require 'org-clock)
+  (require 'org-archive)
+;;  (require 'org-checklist)
+  (require 'org-crypt)
+  (require 'org-protocol)
+  (require 'ido)
+  (require 'org-id)
+;;  (require 'bbdb-com)
+  (require 'ox-html)
+  (require 'ox-latex)
+  (require 'ox-ascii)
+  (require 'org-tempo)
+
+  (setq org-agenda-files *pj/org-agenda-files*)
+  (load "~/.emacs.d/lisp/my-org-mode.el")
+  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
+  (global-set-key (kbd "C-c w") 'org-refile)
 
 #+end_src
 
