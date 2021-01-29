@@ -1165,15 +1165,16 @@ I haven't used this yet, so there may be some issues.
 (use-package magit
   :init
   (progn
-    (bind-key "C-x g" 'magit-status)
+    (bind-key "C-c g" 'magit-status)
     ))
 
 (use-package git-gutter
-  
   :init
   (global-git-gutter-mode +1))
 
 (global-set-key (kbd "M-g M-g") 'hydra-git-gutter/body)
+
+(use-package forge)
 
 
 (use-package git-timemachine)
@@ -1213,7 +1214,8 @@ Git gutter:
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-magit"
 "emacs-git-gutter"
-;;"emacs-git-time-machine"
+"emacs-git-timemachine"
+"emacs-forge"
 #+end_src
 
 * Flycheck
@@ -1247,11 +1249,15 @@ Git gutter:
 ;; remember to run M-x all-the-icons-install-fonts
 ;; otherwise nothing will work
 (use-package all-the-icons
-:config
+  :if (display-graphic-p)
+  :commands all-the-icons-install-fonts
+  :init
+  (unless (find-font (font-spec :name "all-the-icons"))
+    (all-the-icons-install-fonts t)))
+
 (use-package all-the-icons-dired
-    
-    :config
-    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
+  :if (display-graphic-p)
+  :hook (dired-mode . all-the-icons-dired-mode))
 
 
 #+end_src
@@ -1314,12 +1320,18 @@ Git gutter:
 ;;     ----------
 
 (use-package projectile
-  :config
-  ;; test fn in hashtable has to be equal because we will use strings as keys
-  (defvar my-projects-loaded (make-hash-table :test 'equal))
-  (setq projectile-completion-system 'ivy)
-  (projectile-mode))
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Projects")
+    (setq projectile-project-search-path '("~/Projects")))
+  (setq projectile-switch-project-action #'projectile-dired))
 
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
 
 #+end_src
 
@@ -1327,6 +1339,7 @@ Git gutter:
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-projectile"
+"emacs-counsel-projectile"
 #+end_src
 
 * Powerline
