@@ -1168,7 +1168,7 @@ I haven't used this yet, so there may be some issues.
 (use-package magit
   :init
   (progn
-    (bind-key "C-x g" 'magit-status)
+    (bind-key "C-c g" 'magit-status)
     ))
 
 (use-package git-gutter
