@@ -5,9 +5,10 @@ if [ $HOSTNAME = "zeus" ]
 then 
     # Load the default Guix profile
     GUIX_PROFILE="$HOME/.guix-profile"
-    . "$GULX_PROFILE"/etc/profile
+    . "$GUIX_PROFILE"/etc/profile
 
     # Load additional Guix profiles
+    GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
     for i in $GUIX_EXTRA_PROFILES/*; do
         profile=$i/$(basename "$i")
         if [ -f "$profile"$/etc/profile ]; then
@@ -23,7 +24,7 @@ then
     unset PULSE_CLIENTCONFIG
 
     # Export the path to IcedTea so the tools find it
-    export JAVA_HOME=$(dirname $(dirname $(readlink $(which java))))
+    #export JAVA_HOME=$(dirname $(dirname $(readlink $(which java))))
 
     # Make sure we can reach the GPG agent for SSH auth
     export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
