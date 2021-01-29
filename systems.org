@@ -661,7 +661,7 @@ installed under the =~/.guix-extra-profiles= path and sourced by
    "clang"
 
    ;; Python
-   "python2"
+   "python3"
 
    ;; Docker
    "docker-cli"
