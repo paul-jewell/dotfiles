@@ -1216,7 +1216,7 @@ Git gutter:
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-magit"
 "emacs-git-gutter"
-;;"emacs-git-time-machine"
+"emacs-git-timemachine"
 #+end_src
 
 * Flycheck
