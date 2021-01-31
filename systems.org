@@ -660,8 +660,8 @@ installed under the =~/.guix-extra-profiles= path and sourced by
    "lld"
    "clang"
 
-   ;; Python
-   "python3"
+   ;; Python (3 by default)
+   "python"
 
    ;; Docker
    "docker-cli"
