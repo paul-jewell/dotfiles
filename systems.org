@@ -43,8 +43,7 @@ Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels
 
 (list (channel
        (name 'pj-suckless)
-       (url "https://github.com/paul-jewell/pj-suckless.git")
-       (commit "0737ffc0d89b9ff9fc6aa2b1e8f7309d159fc399")
+       (url "https://github.com/paul-jewell/pj-suckless.git"))
       (channel
        (name 'nonguix)
        (commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
