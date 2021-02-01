@@ -28,3 +28,4 @@
 # Guix Configuration
 .config/guix/systems/*
 .config/guix/manifests/*
+.config/guix/*
