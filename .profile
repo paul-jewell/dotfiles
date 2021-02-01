@@ -2,7 +2,8 @@
 export PATH="$HOME/.bin:$PATH"
 
 if [ $HOSTNAME = "zeus" ] 
-then 
+then
+    echo Setting up profiles on guix system
     # Load the default Guix profile
     GUIX_PROFILE="$HOME/.guix-profile"
     . "$GUIX_PROFILE"/etc/profile
@@ -11,9 +12,9 @@ then
     GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
     for i in $GUIX_EXTRA_PROFILES/*; do
         profile=$i/$(basename "$i")
-        if [ -f "$profile"$/etc/profile ]; then
+        if [ -f "$profile"/etc/profile ]; then
             GUIX_PROFILE="$profile"
-            . "GUIX_PROFILE"/etc/profile
+            . "$GUIX_PROFILE"/etc/profile
         fi
         unset profile
     done

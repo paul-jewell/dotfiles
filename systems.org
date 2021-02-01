@@ -5,7 +5,6 @@
 :PROPERTIES:
 :TOC:      :include all :ignore this
 :END:
-
 - [[#introduction][Introduction]]
 - [[#channels][Channels]]
 - [[#systems][Systems]]
@@ -635,13 +634,6 @@ profiles which can be updated independently.  These profiles get
 installed under the =~/.guix-extra-profiles= path and sourced by
 =~/.profile= when I log in.
 ** Profile Manifests:
-*** Base packages
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/base.scm
-  (specifications->manifest
-   '("htop"
-     "git"
-     "gnupg"))
-#+end_src
 *** Browsers
 #+begin_src scheme :tangle .config/guix/manifests/browsers.scm
 (specifications->manifest
@@ -673,6 +665,13 @@ installed under the =~/.guix-extra-profiles= path and sourced by
    ;; Java
    "icedtea"
 
+   ;;lisp
+   "sbcl"
+
+   ;;clojure
+   "clojure"
+   "leiningen"
+   
    ;; SDL
    "glu"
    "glfw"
@@ -790,9 +789,9 @@ then
   for profile in $profiles; do
     # Remove the path and file extension, if any
     profileName=$(basename $profile)
-    profileName="${profile%.*}"
+    profileName="${profileName%.*}"
     profilePath="$GUIX_EXTRA_PROFILES/$profileName"
-    manifestPath=$HOME/.config/guix/manifests/$profile.scm
+    manifestPath=$HOME/.config/guix/manifests/$profileName.scm
     
     if [ -f $manifestPath ]; then
       echo
