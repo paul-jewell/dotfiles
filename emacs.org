@@ -2031,6 +2031,9 @@ Not yet set up. Website development with org and hugo.
 
 * Guile & guix
 #+begin_src emacs-lisp
+;;==============================================================================
+;;.....Guix and Guile
+;;     --------------
 (use-package flycheck-guile)
 (use-package guix)
 (use-package geiser) ;; Scheme repl
@@ -2048,17 +2051,21 @@ Guix packages
 * Auto-tangle Configuration files
 
 #+begin_src emacs-lisp
-(defun pj/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name "~/dotfiles/"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
+  ;;==============================================================================
+  ;;.....Auto tangle configuration files
+  ;;     -------------------------------
+
+  (defun pj/org-babel-tangle-config ()
+    (when (string-equal (file-name-directory (buffer-file-name))
+                        (expand-file-name "~/dotfiles/"))
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
 
 
-(add-hook 'org-mode-hook 
-          (lambda () 
-            (add-hook 'after-save-hook
-                      #'pj/org-babel-tangle-config)))
+  (add-hook 'org-mode-hook 
+            (lambda () 
+              (add-hook 'after-save-hook
+                        #'pj/org-babel-tangle-config)))
 #+end_src
 
 * Emacs Manifest for guix
