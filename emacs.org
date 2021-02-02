@@ -2031,13 +2031,19 @@ Not yet set up. Website development with org and hugo.
 
 * Guile & guix
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....Guix and Guile
-;;     --------------
-(use-package flycheck-guile)
-(use-package guix)
-(use-package geiser) ;; Scheme repl
-(add-hook 'scheme-mode-hook 'guix-devel-mode)
+  ;;==============================================================================
+  ;;.....Guix and Guile
+  ;;     --------------
+  (use-package flycheck-guile)
+  (use-package guix)
+  (use-package geiser
+      :config 
+      (setf geiser-implementations-alist
+            '(((regexp "\\.scm$") guile)
+              ((regexp "\\.ss$") racket)
+              ((regexp "\\.rkt[dl]?$" racket))))) ;; Scheme repl
+
+  (add-hook 'scheme-mode-hook 'guix-devel-mode)
 #+end_src
 
 Guix packages
