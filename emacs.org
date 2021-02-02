@@ -52,6 +52,7 @@ Emacs configuration.
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
+- [[#guile--guix][Guile & guix]]
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 - [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
@@ -2026,6 +2027,22 @@ Not yet set up. Website development with org and hugo.
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-ox-hugo"
+#+end_src
+
+* Guile & guix
+#+begin_src emacs-lisp
+(use-package flycheck-guile)
+(use-package guix)
+(use-package geiser) ;; Scheme repl
+(add-hook 'scheme-mode-hook 'guix-devel-mode)
+#+end_src
+
+Guix packages
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"emacs-flycheck-guile"
+"emacs-guix"
+"emacs-geiser"
 #+end_src
 
 * Auto-tangle Configuration files
