@@ -108,43 +108,46 @@ can pick them up, though.  You can change the target branch using the
 *.config/guix/systems/base-system.scm:*
 
 #+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
-  ;; -*- buffer-read-only: t; -*-
-  ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+    ;; -*- buffer-read-only: t; -*-
+    ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
-  (define-module (base-system)
-    #:use-module (gnu)
-    #:use-module (srfi srfi-1)
-    #:use-module (gnu system nss)
-    #:use-module (gnu services pm)
-    #:use-module (gnu services cups)
-    #:use-module (gnu services desktop)
-    #:use-module (gnu services docker)
-    #:use-module (gnu services networking)
-  ;;  #:use-module (gnu services virtualization)
-    #:use-module (gnu packages wm)
-    #:use-module (gnu packages cups)
-    #:use-module (gnu packages vim)
-    #:use-module (gnu packages gtk)
-    #:use-module (gnu packages xorg)
-    #:use-module (gnu packages emacs)
-    #:use-module (gnu packages gnome)
-    #:use-module (gnu packages mtools)
-    #:use-module (gnu packages linux)
-    #:use-module (gnu packages audio)
-    #:use-module (gnu packages gnuzilla)
-    #:use-module (gnu packages pulseaudio)
-    #:use-module (gnu packages web-browsers)
-    #:use-module (gnu packages version-control)
-    #:use-module (gnu packages package-management)
-    #:use-module (nongnu packages linux)
-    #:use-module (nongnu system linux-initrd)
-    #:use-module (paulj packages pj-suckless))
+    (define-module (base-system)
+      #:use-module (gnu)
+      #:use-module (srfi srfi-1)
+      #:use-module (gnu system nss)
+      #:use-module (gnu services pm)
+      #:use-module (gnu services cups)
+      #:use-module (gnu services desktop)
+      #:use-module (gnu services docker)
+      #:use-module (gnu services networking)
+    ;;  #:use-module (gnu services virtualization)
+      #:use-module (gnu packages wm)
+      #:use-module (gnu packages cups)
+      #:use-module (gnu packages vim)
+      #:use-module (gnu packages gtk)
+      #:use-module (gnu packages xorg)
+      #:use-module (gnu packages emacs)
+      #:use-module (gnu packages gnome)
+      #:use-module (gnu packages mtools)
+      #:use-module (gnu packages linux)
+      #:use-module (gnu packages audio)
+      #:use-module (gnu packages gnuzilla)
+      #:use-module (gnu packages pulseaudio)
+      #:use-module (gnu packages web-browsers)
+      #:use-module (gnu packages version-control)
+      #:use-module (gnu packages package-management)
+      #:use-module (nongnu packages linux)
+      #:use-module (nongnu system linux-initrd)
+      #:use-module (paulj packages paulj-dwm)
+      #:use-module (paulj packages paulj-st)
+      #:use-module (paulj packages paulj-dmenu)
+      #:use-module (paulj packages paulj-slock))
 
-  (use-service-modules nix)
-  (use-service-modules desktop xorg)
-  (use-service-modules ssh)
-  (use-package-modules certs)
-  (use-package-modules shells)
+    (use-service-modules nix)
+    (use-service-modules desktop xorg)
+    (use-service-modules ssh)
+    (use-package-modules certs)
+    (use-package-modules shells)
 
 #+end_src
 
@@ -283,6 +286,9 @@ Define the =base-operating-system= which will be inherited by all machine config
                           i3status
                           i3blocks
                           paulj-dwm
+                          paulj-st
+                          paulj-dmenu
+                          paulj-slock
                           emacs
                           bluez
                           bluez-alsa
