@@ -2037,12 +2037,8 @@ Not yet set up. Website development with org and hugo.
   (use-package flycheck-guile)
   (use-package guix)
   (use-package geiser
-      :config 
-      (setf geiser-implementations-alist
-            '(((regexp "\\.scm$") guile)
-              ((regexp "\\.ss$") racket)
-              ((regexp "\\.rkt[dl]?$" racket))))) ;; Scheme repl
-
+    :custom
+    (geiser-active-implementations '(guile)))
   (add-hook 'scheme-mode-hook 'guix-devel-mode)
 #+end_src
 
