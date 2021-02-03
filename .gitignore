@@ -14,6 +14,7 @@
 .bin/sync-dotfiles
 .bin/update-profiles
 .bin/activate-profiles
+.bin/update-screens
 
 # Desktop Environment
 .config/mimeapps.list
@@ -21,6 +22,11 @@
 .config/dunst/dunstrc
 .config/xsettingsd/xsettingsd.conf
 .config/fontconfig/fonts.conf
+.config/mpv/*
+.config/polybar/*
+.config/qutebrowser/*
+.config/vimb/*
+.config/zathura/*
 
 # Mail
 .mbsyncrc
