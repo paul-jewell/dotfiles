@@ -118,7 +118,7 @@ can pick them up, though.  You can change the target branch using the
       #:use-module (gnu services pm)
       #:use-module (gnu services cups)
       #:use-module (gnu services desktop)
-      #:use-module (gnu services docker)
+;;      #:use-module (gnu services docker)
       #:use-module (gnu services networking)
     ;;  #:use-module (gnu services virtualization)
       #:use-module (gnu packages wm)
@@ -263,7 +263,7 @@ Define the =base-operating-system= which will be inherited by all machine config
                                             "kvm"
                                             "tty"
                                             "input"
-                                            "docker"
+;;                                            "docker"
                                             "realtime"  ;; Enable realtime scheduling
                                             "lp"        ;; control bluetooth devices
                                             "audio"     ;; control audio devices
@@ -690,7 +690,7 @@ installed under the =~/.guix-extra-profiles= path and sourced by
    "python"
 
    ;; Docker
-   "docker-cli"
+   ;;"docker-cli"
 
    ;; Java
    "icedtea"
