@@ -285,11 +285,11 @@ Define the =base-operating-system= which will be inherited by all machine config
 ;;                          i3-wm
 ;;                          i3status
 ;;                          i3blocks
-;;                          paulj-dwm
-;;                          paulj-st
-;;                          paulj-dmenu
-;;                          paulj-slock
-;;                          emacs
+                          paulj-dwm
+                          paulj-st
+                          paulj-dmenu
+                          paulj-slock
+                          emacs
                           bluez
                           bluez-alsa
                           pulseaudio
@@ -301,12 +301,12 @@ Define the =base-operating-system= which will be inherited by all machine config
 
       ;; Use the "desktop" services, which include the X11 log-in service,
       ;; networking with NetworkManager, and more
-      (services (cons* ;;(service slim-service-type
-                       ;;         (slim-configuration
-                       ;;           (xorg-configuration
-                       ;;             (xorg-configuration
-                       ;;               (keyboard-layout keyboard-layout)
-                       ;;               (extra-config (list %xorg-libinput-config))))))
+      (services (cons* (service slim-service-type
+                                (slim-configuration
+                                  (xorg-configuration
+                                    (xorg-configuration
+                                      (keyboard-layout keyboard-layout)
+                                      (extra-config (list %xorg-libinput-config))))))
  ;;                     (service xfce-desktop-service-type)
                       (service openssh-service-type)
                       (service tlp-service-type
