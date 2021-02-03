@@ -122,7 +122,7 @@ Some opportunity for refactoring here. Currently this code tangles to
 a separate file, but perhaps better if the code fed out to specific
 files for each machine?
 
-#+begin_src  emacs-lisp :tangle ./.emacs.d/site-specific.el
+#+begin_src  emacs-lisp :tangle ~/.emacs.d/site-specific.el
 ;; -*-buffer-read-only: t;-*-
 ;;; Site-specific.el --- local variables for each system
 ;;; Commentary: Support funtions to enable configuration to be configured
