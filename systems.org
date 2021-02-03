@@ -655,6 +655,15 @@ profiles which can be updated independently.  These profiles get
 installed under the =~/.guix-extra-profiles= path and sourced by
 =~/.profile= when I log in.
 ** Profile Manifests:
+*** Window Manager
+#+begin_src scheme :tangle .config/guix/manifests/window-manager.scm
+(specifications->manifest
+ '("paulj-dwm"
+   "paulj-dmenu"
+   "paulj-st"
+   "paulj-slock"))
+#+end_src
+
 *** Browsers
 #+begin_src scheme :tangle .config/guix/manifests/browsers.scm
 (specifications->manifest
