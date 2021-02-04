@@ -1,5 +1,5 @@
 #+TITLE: System Configuration with Guix
-#+PROPERTY: :mkdir t
+#+PROPERTY:  :mkdirp t
 
 * Table of Contents                                                     :toc:
 :PROPERTIES:
@@ -351,21 +351,7 @@ I also define a function called =dw/system-settings-get= which can retrieve thes
 (setq dw/system-settings
   (map-merge
     'list
-    '((desktop/dpi . 180)  ;; Need to check this as well with my settings
-      (desktop/background . "samuel-ferrara-uOi3lg8fGl4-unsplash.jpg")
-      ;; David has a 4K monitor - I suspect these font sizes will be a problem on my monitor
-      ;; (emacs/default-face-size . 220)
-      ;; (emacs/variable-face-size . 245)
-      ;; (emacs/fixed-face-size . 200)
-      (polybar/height . 35)
-      (polybar/font-0-size . 18)
-      (polybar/font-1-size . 14)
-      (polybar/font-2-size . 20)
-      (polybar/font-3-size . 13)
-      (dunst/font-size . 20)
-      (dunst/max-icon-size . 88)
-      (vimb/default-zoom . 180)
-      (qutebrowser/default-zoom . 200))
+    '()
     <<system-settings>>))
 
 #+end_src
@@ -640,7 +626,7 @@ I use [[https://www.gnu.org/software/mcron/][GNU mcron]] for scheduling tasks to
 I am using dwm, installed in the user account. These are the packages
 required for that, and the other support packages for the Xorg desktop
 use. By not having window managers installed at system level, the
-.xsessions code is run by the login manager, so configuration of the
+.xsession code is run by the login manager, so configuration of the
 window manager and associated programs is done there.
 
 #+begin_src scheme :tangle .config/guix/manifests/window-manager.scm
@@ -726,7 +712,7 @@ Gtk/CursorThemeName "Adwaita"
 Xft/Antialias 1
 Xft/Hinting 0
 Xft/HintStyle "hintnone"
-Xft/DPI <<dpi()>> # 1024 * DPI
+Xft/DPI 96 # 1024 * DPI
 
 #+end_src
 
@@ -827,7 +813,7 @@ Languages and tools for programming.
 #+end_src
 
 *** Music Player
-#+begin_src conf :tangle .config/mpd/mpd.conf
+#+begin_src conf :mkdirp t :tangle .config/mpd/mpd.conf
 music_directory   "~/music"
 playlist_directory "~/.config/mpd/playlists"
 
@@ -960,7 +946,7 @@ Also something for future exploration.
   c.content.autoplay = False
 
   # Scale pages and UI better for hidpi
-  c.zoom.default = "<<get-setting(name="qutebrowser/default-zoom")>>%"
+  c.zoom.default = "100%"
   c.fonts.hints = "bold 20pt monospace"
 
   # Better default fonts
@@ -1078,7 +1064,7 @@ set download-path=~/Downloads
 set input-autohide=true
 
 # Set the default zoom
-set default-zoom=<<get-setting(name="vimb/default-zoom")>>
+set default-zoom=100
 
 # Hint sites to use dark themes
 set dark-mode=on
@@ -1229,7 +1215,7 @@ shortcut-add man=https://fanglingsu.github.io/vimb/man.html
 
     ### Text ###
 
-    font = Cantarell <<get-setting(name="dunst/font-size")>>
+    font = Cantarell 20
 
     # The spacing between lines.  If the height is smaller than the
     # font height, it will get raised to the font height.
@@ -1283,7 +1269,7 @@ shortcut-add man=https://fanglingsu.github.io/vimb/man.html
     icon_position = left
 
     # Scale larger icons down to this size, set to 0 to disable
-    max_icon_size = <<get-setting(name="dunst/max-icon-size")>>
+    max_icon_size = 88
 
     # Paths to default icons.
     # TODO: Check the icon path...
