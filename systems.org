@@ -622,10 +622,6 @@ I use [[https://www.gnu.org/software/mcron/][GNU mcron]] for scheduling tasks to
 "mcron"
 #+end_src
 
-**** Mail
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"mu"
-#+end_src
 *** Window Manager
 I am using dwm, installed in the user account. These are the packages
 required for that, and the other support packages for the Xorg desktop

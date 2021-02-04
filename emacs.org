@@ -1650,11 +1650,11 @@ Git gutter:
 ;;     ----
 
 (when *pj/enable-mu4e-mode*
-  (require 'mu4e)
   (use-package mu4e
-    :ensure nil ;; mu4e comes from mu package - don't download from melpa
-    ;;:defer 10
+    :defer 20
     :config
+
+    (require 'org-mu4e)
     
     (auth-source-pass-enable)
     (setq auth-source-debug t) ;;...temporarily...
@@ -1759,6 +1759,23 @@ Git gutter:
                                         :query "maildir:/applied-jidoka.co.uk/Inbox AND flag:unread AND NOT flag:trashed"
                                         :key ?u)))))))))
 
+(use-package mu4e-alert
+  :after mu4e
+  :config
+  ;; Show unread emails from all inboxes
+  (setq mu4e-alert-interesting-mail-query dw/mu4e-inbox-query)
+
+  ;; Show notifications for mails already notified
+  (setq mu4e-alert-notify-repeated-mails nil)
+
+  (mu4e-alert-enable-notifications))
+
+#+end_src
+
+*Guix packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"mu"
+"isync"
 #+end_src
 
 * org-caldav
