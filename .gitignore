@@ -23,10 +23,12 @@
 .config/xsettingsd/xsettingsd.conf
 .config/fontconfig/fonts.conf
 .config/mpv/*
+.config/mpd/*
 .config/polybar/*
 .config/qutebrowser/*
 .config/vimb/*
 .config/zathura/*
+.xsession
 
 # Mail
 .mbsyncrc
