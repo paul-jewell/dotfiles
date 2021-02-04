@@ -546,6 +546,7 @@ additional manifests below.
 "openssh"
 "zip"
 "unzip"
+"htop"
 #+end_src
 
 **** Syncthing
