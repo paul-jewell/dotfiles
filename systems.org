@@ -685,8 +685,8 @@ window manager and associated programs is done there.
 
 *.xsession*
 
-#+begin_src sh :tangle .xsession
-#!/bin/sh
+#+begin_src sh :tangle .xsession :shebang #!/bin/sh
+
 compton &
 # TODO: Make the background changeable, and saved between sessions
 feh --bg-fill ~/backgrounds/mountains-1412683.jpg &
