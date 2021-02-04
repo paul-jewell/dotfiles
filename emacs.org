@@ -531,7 +531,7 @@ of gentoo is still to be explored...
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "ispell"
 "hunspell"
-"hunspell-dict-gb"
+"hunspell-dict-en-gb"
 #+end_src
 * Ledger
 
