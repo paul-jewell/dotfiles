@@ -668,6 +668,7 @@ window manager and associated programs is done there.
    "papirus-icon-theme"
    
    ;; Fonts
+   "font-iosevka"
    "font-fira-mono"
    "font-fira-code"
    "font-abattis-cantarell"
