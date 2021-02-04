@@ -1073,8 +1073,9 @@ I haven't used this yet, so there may be some issues.
 
 * Javascript and HTML
 
-
-#+begin_src emacs-lisp
+Disabling js2 mode. I don't program in javascript at the moment, and I
+want to get other stuff working first.
+#+begin_src emacs-lisp :no-tangle
 ;;==============================================================================
 ;;.....javascript / HTML
 ;;     -----------------
@@ -1104,8 +1105,8 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-js2-mode"
-;;"js2-reflector"
+;;"emacs-js2-mode"
+;;"emacs-js2-reflector-el"
 #+end_src
 * Company mode
 
