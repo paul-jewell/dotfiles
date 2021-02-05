@@ -1651,8 +1651,12 @@ Git gutter:
 ;;.....mu4e
 ;;     ----
 
+
 (when *pj/enable-mu4e-mode*
+  (require 'mu4e)
+  
   (use-package mu4e
+    :ensure nil
     :defer 20
     :config
 
@@ -1760,12 +1764,14 @@ Git gutter:
                                  (:name "Unread"
                                         :query "maildir:/applied-jidoka.co.uk/Inbox AND flag:unread AND NOT flag:trashed"
                                         :key ?u)))))))))
+(setq pj/mu4e-inbox-query
+        "(maildir:/Personal/Inbox OR maildir:/work/inbox) AND flag:unread")
 
 (use-package mu4e-alert
   :after mu4e
   :config
   ;; Show unread emails from all inboxes
-  (setq mu4e-alert-interesting-mail-query dw/mu4e-inbox-query)
+  (setq mu4e-alert-interesting-mail-query pj/mu4e-inbox-query)
 
   ;; Show notifications for mails already notified
   (setq mu4e-alert-notify-repeated-mails nil)
