@@ -28,6 +28,7 @@
 .config/qutebrowser/*
 .config/vimb/*
 .config/zathura/*
+.config/shepherd/*
 .xsession
 
 # Mail
