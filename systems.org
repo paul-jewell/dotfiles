@@ -1503,7 +1503,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
     #:docstring "Run `syncthing' without calling the browser"
     #:start (make-forkexec-constructor
              '("syncthing" "-no-browser")
-             #:log-file (string-append (gentenv "HOME")
+             #:log-file (string-append (getenv "HOME")
                                        "/log/syncthing.log"))
     #:stop (make-kill-destructor)
     #:respawn #t))
