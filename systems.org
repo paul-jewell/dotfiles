@@ -1,5 +1,5 @@
 #+TITLE: System Configuration with Guix
-#+PROPERTY:  :mkdirp t
+#+PROPERTY: :mkdirp t
 
 * Table of Contents                                                     :toc:
 :PROPERTIES:
@@ -43,7 +43,7 @@
 
 *.config/guix/channels.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/channels.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/channels.scm
 
   ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -78,7 +78,7 @@ have to create a branch and commit changes to it before =guix pull=
 can pick them up, though.  You can change the target branch using the
 =branch= field of the =channel=.
 
-#+begin_src scheme :tangle ./.config/guix/channels.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/channels.scm
 
   ;; (list (channel
   ;;         (name 'nonguix)
@@ -115,7 +115,7 @@ can pick them up, though.  You can change the target branch using the
 
 *.config/guix/systems/base-system.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
     ;; -*- buffer-read-only: t; -*-
     ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -161,7 +161,7 @@ can pick them up, though.  You can change the target branch using the
 
 Add a =udev= rule to enable members of the =video= group to control screen brightness.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
   ;; Allow members of the "video" group to change the screen brightness.
   (define %backlight-udev-rule
@@ -179,7 +179,7 @@ Override the default =%desktop-services= to add the =udev= backlight
 configuration and include OpenVPN in the list of NetworkManager
 plugins.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
   (define %my-desktop-services
     (modify-services %desktop-services
@@ -199,7 +199,7 @@ plugins.
 
 Use the =libinput= driver for all input devices since it's a bit more modern than the default.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
   (define %xorg-libinput-config
     "Section \"InputClass\"
@@ -226,7 +226,7 @@ Use the =libinput= driver for all input devices since it's a bit more modern tha
 
 Define the =base-operating-system= which will be inherited by all machine configurations.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
   (define-public base-operating-system
     (operating-system
@@ -344,7 +344,7 @@ Some settings need to be customized on a per-system basis without tweaking indiv
 
 I also define a function called =dw/system-settings-get= which can retrieve these settings appropriately.
 
-#+begin_src emacs-lisp :tangle ./.emacs.d/per-system-settings.el :noweb yes
+#+begin_src emacs-lisp :mkdirp t :tangle ./.emacs.d/per-system-settings.el :noweb yes
 
 (require 'map) ;; Needed for map-merge
 
@@ -357,7 +357,7 @@ I also define a function called =dw/system-settings-get= which can retrieve thes
 #+end_src
 
 
-#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-settings.el
+#+begin_src emacs-lisp :mkdirp t :tangle .emacs.d/lisp/dw-settings.el
 
 (defun dw/load-system-settings ()
   (interactive)
@@ -375,7 +375,7 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
 
 **** *.config/guix/systems/zeus.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/systems/zeus.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/zeus.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 ;; Note - if you re-install, you need to review the uuid entries below.
@@ -476,7 +476,7 @@ To install Guix on another machine, you first to build need a USB image.  Since 
 
 *.config/guix/systems/install.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/systems/install.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/install.scm
 
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -557,7 +557,7 @@ additional manifests below.
 
 **** Document Readers
 
-#+begin_src conf :tangle .config/zathura/zathurarc
+#+begin_src conf :mkdirp t :tangle .config/zathura/zathurarc
 
 # Automatically adjust the document to full width
 set adjust-open width
@@ -599,7 +599,7 @@ map <C-g> abort
 #+end_src
 
 ***** Syncing Passwords
-#+begin_src sh :tangle .bin/sync-passwords :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle .bin/sync-passwords :shebang #!/bin/sh
 
 pass git pull
 pass git push
@@ -610,7 +610,7 @@ notify-send -i "emblem-synchronizing" "Passwords synced!"
 I use [[https://www.gnu.org/software/mcron/][GNU mcron]] for scheduling tasks to run periodically in the background.
 
 *Syncing Passwords*
-#+begin_src scheme :tangle .config/cron/pass-sync.guile
+#+begin_src scheme :mkdirp t :tangle .config/cron/pass-sync.guile
 
 (job
    '(next-hour (range 0 24 4))
@@ -630,7 +630,7 @@ use. By not having window managers installed at system level, the
 .xsession code is run by the login manager, so configuration of the
 window manager and associated programs is done there.
 
-#+begin_src scheme :tangle .config/guix/manifests/window-manager.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/window-manager.scm
 (specifications->manifest
  '("paulj-dwm"
    "paulj-dmenu"
@@ -686,7 +686,7 @@ window manager and associated programs is done there.
 
 *.xsession*
 
-#+begin_src sh :tangle .xsession :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle .xsession :shebang #!/bin/sh
 
 compton &
 # TODO: Make the background changeable, and saved between sessions
@@ -703,7 +703,7 @@ I use [[https://github.com/derat/xsettingsd][xsettingsd]] as a minimal settings 
 
 *.config/xsettingsd/xsettingsd.conf:*
 
-#+begin_src conf :tangle .config/xsettingsd/xsettingsd.conf :noweb yes
+#+begin_src conf :mkdirp t :tangle .config/xsettingsd/xsettingsd.conf :noweb yes
 
 Net/ThemeName "Matcha-dark-azul"
 Net/IconThemeName "Papirus-Dark"
@@ -722,7 +722,7 @@ I also have to do an extra step to make sure Emacs can find the font path from t
 
 *.config/fontconfig/fonts.conf:*
 
-#+begin_src xml :tangle .config/fontconfig/fonts.conf
+#+begin_src xml :mkdirp t :tangle .config/fontconfig/fonts.conf
 
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -744,7 +744,7 @@ I also have to do an extra step to make sure Emacs can find the font path from t
 These are programs which I intend to stop using as time passes. They
 are currently installed to avoid the need to learn new programs while
 working through the system installation and configuration.
-#+begin_src scheme :tangle .config/guix/manifests/transition.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/transition.scm
 (specifications->manifest
  '("firefox"))
 
@@ -752,7 +752,7 @@ working through the system installation and configuration.
 
 *** Browsers
 nyxt is the future!
-#+begin_src scheme :tangle .config/guix/manifests/browsers.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/browsers.scm
 (specifications->manifest
  '("ungoogled-chromium"
    "nyxt"
@@ -761,7 +761,7 @@ nyxt is the future!
 
 *** Code
 Languages and tools for programming.
-#+begin_src scheme :tangle .config/guix/manifests/code.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/code.scm
 ;; Various developer tools that I use.  These might be split out into
 ;; platform-specific manifests at some point.
 
@@ -807,7 +807,7 @@ Languages and tools for programming.
 #+end_src
 
 *** Image viewers and editors
-#+begin_src scheme :tangle .config/guix/manifests/image.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/image.scm
 (specifications->manifest
  '("feh"
    "gimp"
@@ -844,7 +844,7 @@ audio_output {
 #+end_src
 
 *** Games
-#+begin_src scheme  :tangle .config/guix/manifests/games.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/games.scm
 (specifications->manifest
  '("aisleriot"
    "gnome-mahjongg"))
@@ -869,7 +869,7 @@ These packages are needed to enable many video formats to be played in browsers 
 *** Music Creation
 An area of future investigation. This is currently as specified by
 David Wilson in his configuration.
-#+begin_src scheme :tangle .config/guix/manifests/music.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/music.scm
 ;; Music creation tools
 
 (specifications->manifest
@@ -908,7 +908,7 @@ David Wilson in his configuration.
 
 *** Video Creation Tools
 Also something for future exploration.
-#+begin_src scheme :tangle .config/guix/manifests/video.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/video.scm
 ;; Video creation tools
 
 (specifications->manifest
@@ -935,7 +935,7 @@ Also something for future exploration.
 
 [[https://github.com/qutebrowser/qutebrowser][Qutebrowser]] is a great keyboard-centric browser which uses the Chromium rendering engine via QT 5's WebEngine component.  I've configured it to act more like Vimb for window-per-tab behavior that integrates well into Emacs.  One thing I like about this browser is that it does a much better job of remembering what windows you had open when it exits so that you can maintain your session more easily.  I also like that when you reopen a tab/window, the history of that window is still present.
 
-#+begin_src python :tangle .config/qutebrowser/config.py :noweb yes
+#+begin_src python :mkdirp t :tangle .config/qutebrowser/config.py :noweb yes
 
   # Open every tab as a new window, Vimb style
   c.tabs.tabs_are_windows = True
@@ -987,7 +987,7 @@ Also something for future exploration.
   # More binding hints here: https://gitlab.com/Kaligule/qutebrowser-emacs-config/blob/master/config.py
 #+end_src
 
-#+begin_src conf :tangle .config/qutebrowser/quickmarks
+#+begin_src conf :mkdirp t :tangle .config/qutebrowser/quickmarks
 
 1p https://my.1password.com/vaults/kyxq62du37adb3lpjh2sphdq4i/allitems/tkr5tuo4gqyuco4x25upt6iaia
 gn https://github.com/notifications
@@ -1041,7 +1041,7 @@ msw https://microsoft.sharepoint.com
 
 I used [[https://fanglingsu.github.io/vimb/][Vimb]] for a while because the latest Qutebrowser wasn't available in Guix's package repository, but since that problem has since been solved I've switched back to Qutebrowser as primary.  Keeping this configuration around in case I need it again.
 
-#+begin_src conf :tangle .config/vimb/config :noweb yes
+#+begin_src conf :mkdirp t :tangle .config/vimb/config :noweb yes
 
 # Set the home page to a local file
 set home-page=file:///home/daviwil/.config/vimb/home.html
@@ -1164,7 +1164,7 @@ shortcut-add man=https://fanglingsu.github.io/vimb/man.html
 
 *.config/dunst/dunstrc:*
 
-#+begin_src conf :tangle .config/dunst/dunstrc :noweb yes
+#+begin_src conf :mkdirp t :tangle .config/dunst/dunstrc :noweb yes
 
 [global]
     ### Display ###
@@ -1376,7 +1376,7 @@ shortcut-add man=https://fanglingsu.github.io/vimb/man.html
 ** Default Applications
 The file =.config/mimeapps.list= configures default applications for various content types.  Right now I'm using it to control which browser opens URLs from other applications.
 
-#+begin_src conf :tangle .config/mimeapps.list
+#+begin_src conf :mkdirp t :tangle .config/mimeapps.list
 
   [Default Applications]
   text/html=qutebrowser.desktop
@@ -1392,7 +1392,7 @@ The =desktop.scm= manifest holds the list of packages that I use to configure my
 
 *.config/guix/manifests/desktop.scm:*
 
-#+begin_src scheme :tangle .config/guix/manifests/desktop.scm :noweb yes
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/desktop.scm :noweb yes
 
 (specifications->manifest
  '(
@@ -1408,7 +1408,7 @@ The =desktop.scm= manifest holds the list of packages that I use to configure my
 
 *.config/mpv/mpv.conf*
 
-#+begin_src conf :tangle .config/mpv/mpv.conf :noweb yes
+#+begin_src conf :mkdirp t :tangle .config/mpv/mpv.conf :noweb yes
 
 # Configure playback quality
 vo=gpu
@@ -1453,7 +1453,7 @@ keep-open
 after I log in.
 Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 
-#+begin_src scheme :tangle .config/shepherd/init.scm
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.scm
 
 (use-modules (shepherd service)
              ((ice-9 ftw) #:select (scandir)))
@@ -1484,7 +1484,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 
 #+end_src
 
-#+begin_src scheme :tangle .config/shepherd/init.d/mcron.scm
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/mcron.scm
 (define mcron
   (make <service>
     #:provides '(mcron)
@@ -1496,7 +1496,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 (start mcron)
 #+end_src
 
-#+begin_src scheme :tangle .config/shepherd/init.d/syncthing.scm
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/syncthing.scm
 (define syncthing
   (make <service>
     #:provides '(syncthing)
@@ -1513,7 +1513,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 (start syncthing)
 #+end_src
 
-#+begin_src scheme :tangle .config/shepherd/init.d/pulseaudio.scm
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/pulseaudio.scm
 (define pulseaudio
   (make <service>
     #:provides '(pulseaudio)
@@ -1542,7 +1542,7 @@ activate-profiles desktop emacs music
 
 *.bin/activate-profiles:*
 
-#+begin_src sh :tangle ./.bin/activate-profiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle ./.bin/activate-profiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -1571,7 +1571,7 @@ then
       echo -e "${GREEN}Activating profile:" $manifestPath "${NC}"
       echo
       
-      mkdir -p $profilePath
+      mkdirp -p $profilePath
       guix package --manifest=$manifestPath --profile="$profilePath/$profileName"
       
       # Source the new profile
@@ -1601,7 +1601,7 @@ update-profiles emacs
 
 *.bin/update-profiles:*
 
-#+begin_src sh :tangle ./.bin/update-profiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle ./.bin/update-profiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -1640,7 +1640,7 @@ When I want to sync my dotfiles repo into my local clone which likely has uncomm
 
 *.bin/sync-dotfiles*
 
-#+begin_src sh :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
 
