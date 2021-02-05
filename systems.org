@@ -1500,16 +1500,15 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 (define syncthing
   (make <service>
     #:provides '(syncthing)
-    #.docstring "Run 'syncthing' without calling the browser"
+    #:docstring "Run `syncthing' without calling the browser"
     #:start (make-forkexec-constructor
              '("syncthing" "-no-browser")
              #:log-file (string-append (gentenv "HOME")
                                        "/log/syncthing.log"))
-    #:stop  (make-kill-destructor)
+    #:stop (make-kill-destructor)
     #:respawn #t))
 
 (register-services syncthing)
-
 (start syncthing)
 #+end_src
 
