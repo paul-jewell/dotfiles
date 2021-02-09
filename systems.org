@@ -296,7 +296,7 @@ Define the =base-operating-system= which will be inherited by all machine config
                           fuse-exfat
                           stow
                           neovim
-                          emacs
+;;                          emacs
                           bluez
                           bluez-alsa
                           pulseaudio
@@ -1502,15 +1502,15 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 (start mcron)
 #+end_src
 
-#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/emacs.scm
+Currently this isn't working as expected, so set to not tangle.
+#+begin_src scheme :mkdirp t :notangle .config/shepherd/init.d/emacs.scm
 (define emacs
   (make <service>
     #:provides '(emacs)
+    #:requires '()
     #:docstring "Start emacs daemon"
-    #:start (make-forkexec-constructor
-             '("emacs" "--daemon"))
-    #:stop (make-kill-destructor)
-    #:respawn #t))
+    #:start (make-system-constructor "emacs --daemon")
+    #:stop (make-system-destructor "emacsclient --eval \"(kill-emacs)\"")))
 
 (register-services emacs)
 (start emacs)
