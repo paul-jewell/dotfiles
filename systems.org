@@ -1512,7 +1512,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
     #:stop (make-kill-destructor)
     #:respawn #t))
 
-(register-service emacs)
+(register-services emacs)
 (start emacs)
 #+end_src
 
