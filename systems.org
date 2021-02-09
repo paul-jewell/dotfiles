@@ -1502,6 +1502,20 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 (start mcron)
 #+end_src
 
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/emacs.scm
+(define emacs
+  (make <service>
+    #:provides '(emacs)
+    #:docstring "Start emacs daemon"
+    #:start (make-forkexec-constructor
+             '("emacs" "--daemon"))
+    #:stop (make-kill-destructor)
+    #:respawn #t))
+
+(register-service emacs)
+(start emacs)
+#+end_src
+
 #+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/syncthing.scm
 (define syncthing
   (make <service>
