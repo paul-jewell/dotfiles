@@ -44,8 +44,8 @@ then
     # Ensure that font folders are loaded correctly
     xset +fp $(dirname $(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fonts/truetype/fonts.dir))
 
-    # We're in Emacs, yo
-    export VISUAL=emacsclient
+    # nvim for editing system files...
+    export VISUAL=nvim
     export EDITOR="$VISUAL"
 else 
     # .profile setup for gentoo systems
