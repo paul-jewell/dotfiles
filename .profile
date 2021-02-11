@@ -45,7 +45,7 @@ then
     xset +fp $(dirname $(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fonts/truetype/fonts.dir))
 
     # We're in Emacs, yo
-    export VISUAL=emacsclient
+    export VISUAL=emacs
     export EDITOR="$VISUAL"
 else 
     # .profile setup for gentoo systems
@@ -65,4 +65,3 @@ fi
 
 # Load .bashrc to get login environment
 [ -f ~/.bashrc ] && . ~/.bashrc
-
