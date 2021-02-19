@@ -1,5 +1,5 @@
 #+TITLE: org-workflow.org - personalised gtd workflow for org-mode
-#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/lisp/my-org-mode.el
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/lisp/my-org-mode.el :mkdirp t
 
 Org-mode workflow developed over time from the excellent configuration
 shared by Bernt Hansen. Since then I have brought the code up to date
@@ -24,7 +24,7 @@ TODO: Complete the breakdown and documentation in this file.
 
 * Preamble
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/lisp/my-org-mode.el
 ;; -*- buffer-read-only: t; -*-
 ;;; package --- Summary
 
@@ -158,7 +158,7 @@ TODO: Complete the breakdown and documentation in this file.
 
 
 * dw-org.el
-#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-org.el
+#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/lisp/dw-org.el
 (defun dw/time-add-days (time days)
   (let* ((decoded-time (decode-time time))
          (year         (nth 5 decoded-time))
