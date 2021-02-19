@@ -52,6 +52,8 @@ Emacs configuration.
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
+- [[#guile--guix][Guile & guix]]
+- [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 - [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
 * Preamble
@@ -120,7 +122,7 @@ Some opportunity for refactoring here. Currently this code tangles to
 a separate file, but perhaps better if the code fed out to specific
 files for each machine?
 
-#+begin_src  emacs-lisp :tangle ./.emacs.d/site-specific.el
+#+begin_src  emacs-lisp :tangle ~/.emacs.d/site-specific.el
 ;; -*-buffer-read-only: t;-*-
 ;;; Site-specific.el --- local variables for each system
 ;;; Commentary: Support funtions to enable configuration to be configured
@@ -433,53 +435,54 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"ivy"
-"icy-hydra"
-"ivy-rich"
+"emacs-ivy"
+;;"icy-hydra" ;; Not yet available
+"emacs-ivy-rich"
 #+end_src
 * Swiper
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....Swiper
-;;     ------
+  ;;==============================================================================
+  ;;.....Swiper
+  ;;     ------
 
-;; Counsel - completion package working with ivy.
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
-  :custom
-  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  :config
-  (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+  ;; Counsel - completion package working with ivy.
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x)
+           ("C-x b" . counsel-ibuffer)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+    :config
+    (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
-;; TODO: Configure counsel-bbdb to work eith email, or configure a different
-;;       package to manage contacts (synced with cardDAV)
-(use-package counsel-bbdb)
+  ;; TODO: Configure counsel-bbdb to work eith email, or configure a different
+  ;;       package to manage contacts (synced with cardDAV)
+  (use-package counsel-bbdb
+    :ensure t)
 
-(use-package swiper
-  :bind (("C-s" . swiper)
-         ("C-r" . swiper)
-         ("C-c C-r" . ivy-resume)
-         ("M-x" . counsel-M-x)
-         ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+  (use-package swiper
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)
+           ("C-c C-r" . ivy-resume)
+           ("M-x" . counsel-M-x)
+           ("C-x C-f" . counsel-find-file))
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-display-style 'fancy)
+      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
 
 #+end_src
 
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"swiper"
-"counsel-bbdb"
-"counsel"
+"emacs-swiper"
+;; "counsel-bbdb"
+"emacs-counsel"
 #+end_src
 
 * Which-key
@@ -498,7 +501,7 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"which-key"
+"emacs-which-key"
 #+end_src
 
 * ispell
@@ -527,6 +530,8 @@ of gentoo is still to be explored...
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "ispell"
+"hunspell"
+"hunspell-dict-en-gb"
 #+end_src
 * Ledger
 
@@ -548,32 +553,27 @@ of gentoo is still to be explored...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"ledger-mode"
+"emacs-ledger-mode"
 #+end_src
 
 * Go
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....go
-;;     --
-;; Package for go programming.
+  ;;==============================================================================
+  ;;.....go
+  ;;     --
+  ;; Package for go programming.
 
-(use-package go-autocomplete)
-
-(use-package go-mode
-   :config
-   (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1)))
-   (with-eval-after-load 'go-mode
-     (require 'go-autocomplete)))
+  (use-package go-mode
+     :config
+     (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1))))
 
 #+end_src
 
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"go-autocomplete"
-"go-mode"
+"emacs-go-mode"
 #+end_src
 
 * Python
@@ -620,7 +620,6 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"sql"
 #+end_src
 
 * C++
@@ -726,36 +725,37 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"multiple-cursors"
+"emacs-multiple-cursors"
 #+end_src
 
 * Org-mode
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....org mode
-;;     --------
+  ;;==============================================================================
+  ;;.....org mode
+  ;;     --------
 
-(require 'org)
-(require 'org-contribdir)
-(require 'org-agenda)
-(require 'org-clock)
-(require 'org-archive)
-(require 'org-checklist)
-(require 'org-crypt)
-(require 'org-protocol)
-(require 'ido)
-(require 'org-id)
-(require 'bbdb-com)
-(require 'ox-html)
-(require 'ox-latex)
-(require 'ox-ascii)
-(require 'org-tempo)
 
-(setq org-agenda-files *pj/org-agenda-files*)
-(load "~/.emacs.d/lisp/my-org-mode.el")
-(require 'org-habit) ;; org-habit is part of org-mode (not a package)
-(global-set-key (kbd "C-c w") 'org-refile)
+  (require 'org)
+;;  (require 'org-contribdir)
+  (require 'org-agenda)
+  (require 'org-clock)
+  (require 'org-archive)
+;;  (require 'org-checklist)
+  (require 'org-crypt)
+  (require 'org-protocol)
+  (require 'ido)
+  (require 'org-id)
+;;  (require 'bbdb-com)
+  (require 'ox-html)
+  (require 'ox-latex)
+  (require 'ox-ascii)
+  (require 'org-tempo)
+
+  (setq org-agenda-files *pj/org-agenda-files*)
+  (load "~/.emacs.d/lisp/my-org-mode.el")
+  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
+  (global-set-key (kbd "C-c w") 'org-refile)
 
 #+end_src
 
@@ -774,7 +774,7 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"org-bullets"
+"emacs-org-bullets"
 #+end_src
 
 * Org-roam
@@ -810,7 +810,7 @@ Not working, and not used currently...
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"org-roam"
+"emacs-org-roam"
 #+end_src
 
 * Licence Boilerplate
@@ -927,7 +927,7 @@ I set this up a long time ago, before I knew emacs-lisp.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"auctex"
+"emacs-auctex"
 #+end_src
 
 * Reftex
@@ -939,10 +939,10 @@ I haven't used this yet, so there may be some issues.
 ;;.....reftex
 ;;     ------
 
-(use-package reftex
-  :defer t
-  :config
-  (setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
+;;(use-package reftex
+;;  :defer t
+;;  :config
+;;  (setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
 
 
 ;;==============================================================================
@@ -977,7 +977,7 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"reftex"
+;"reftex"
 #+end_src
 
 * Hydra
@@ -1070,44 +1070,45 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"hydra"
+"emacs-hydra"
 #+end_src
 
 * Javascript and HTML
 
-
-#+begin_src emacs-lisp
+Disabling js2 mode. I don't program in javascript at the moment, and I
+want to get other stuff working first.
+#+begin_src emacs-lisp :no-tangle
 ;;==============================================================================
 ;;.....javascript / HTML
 ;;     -----------------
 
-(use-package js2-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode))
+;; (use-package js2-mode
+;;   :config
+;;   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+;;   (add-hook 'js2-mode-hook #'js2-imenu-extras-mode))
 
-(use-package js2-refactor
+;; (use-package js2-refactor
   
-  :config
-  (add-hook 'js2-mode-hook #'js2-refactor-mode)
-  ;; (js2-add-keybindings-with-prefix "C-c C-r") ;; Clash with ivy-resume
-  (define-key js2-mode-map (kbd "C-k") #'js2r-kill)
-  ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
-  ;; unbind it.
-  (define-key js-mode-map (kbd "M-.") nil))
+;;   :config
+;;   (add-hook 'js2-mode-hook #'js2-refactor-mode)
+;;   ;; (js2-add-keybindings-with-prefix "C-c C-r") ;; Clash with ivy-resume
+;;   (define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+;;   ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+;;   ;; unbind it.
+;;   (define-key js-mode-map (kbd "M-.") nil))
   
-(add-hook 'js2-mode-hook (lambda ()
-                           (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+;; (add-hook 'js2-mode-hook (lambda ()
+;;                            (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 
-(use-package xref-js2)
+;; (use-package xref-js2)
 
 #+end_src
 
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"js2-mode"
-"js2-reflector"
+;;"emacs-js2-mode"
+;;"emacs-js2-reflector-el"
 #+end_src
 * Company mode
 
@@ -1151,11 +1152,11 @@ I haven't used this yet, so there may be some issues.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"company"
-"company-irony"
-"irony"
-"irony-eldoc"
-"company-jedi"
+"emacs-company"
+"emacs-company-irony"
+"emacs-irony-mode"
+"emacs-irony-eldoc"
+"emacs-company-jedi"
 #+end_src
 
 * Magit
@@ -1168,7 +1169,7 @@ I haven't used this yet, so there may be some issues.
 (use-package magit
   :init
   (progn
-    (bind-key "C-x g" 'magit-status)
+    (bind-key "C-c g" 'magit-status)
     ))
 
 (use-package git-gutter
@@ -1214,9 +1215,9 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"magit"
-"git-gutter"
-"git-time-machine"
+"emacs-magit"
+"emacs-git-gutter"
+"emacs-git-timemachine"
 #+end_src
 
 * Flycheck
@@ -1235,7 +1236,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"flycheck"
+"emacs-flycheck"
 #+end_src
 
 * All the icons
@@ -1250,9 +1251,8 @@ Git gutter:
 ;; remember to run M-x all-the-icons-install-fonts
 ;; otherwise nothing will work
 (use-package all-the-icons
-:config
-(use-package all-the-icons-dired
-    
+  :config
+  (use-package all-the-icons-dired
     :config
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 
@@ -1262,7 +1262,8 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"all-the-icons"
+"emacs-all-the-icons"
+"emacs-all-the-icons-dired"
 #+end_src
 
 * Themes
@@ -1289,7 +1290,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"gruvbox-theme"
+"emacs-gruvbox-theme"
 #+end_src
 
 * eyebrowse
@@ -1316,19 +1317,26 @@ Git gutter:
 ;;     ----------
 
 (use-package projectile
-  :config
-  ;; test fn in hashtable has to be equal because we will use strings as keys
-  (defvar my-projects-loaded (make-hash-table :test 'equal))
-  (setq projectile-completion-system 'ivy)
-  (projectile-mode))
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Projects")
+    (setq projectile-project-search-path '("~/Projects")))
+  (setq projectile-switch-project-action #'projectile-dired))
 
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
 
 #+end_src
 
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"projectile"
+"emacs-projectile"
+"emacs-counsel-projectile"
 #+end_src
 
 * Powerline
@@ -1438,7 +1446,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"powerline"
+"emacs-powerline"
 #+end_src
 
 * Diminish
@@ -1452,7 +1460,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"diminish"
+"emacs-diminish"
 #+end_src
 
 * Paredit
@@ -1477,6 +1485,7 @@ Git gutter:
 
 ;; Ensure paredit is used EVERYWHERE!
 (use-package paredit-everywhere
+  :ensure t
   :diminish paredit-everywhere-mode
   :config
   (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
@@ -1493,8 +1502,8 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"paredit"
-"paredit-everywhere"
+"emacs-paredit"
+;;"emacs-paredit-everywhere"
 #+end_src
 
 * Rainbow Delimiters
@@ -1515,7 +1524,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"rainbow-delimiters"
+"emacs-rainbow-delimiters"
 #+end_src
 
 * Clojure
@@ -1555,7 +1564,8 @@ Git gutter:
 ;;   :bind ("C-c '" . hydra-cljr-help-menu/body)
 ;;   )
 
-(use-package cider-hydra)
+(use-package cider-hydra
+  :ensure t)
 
 
 #+end_src
@@ -1563,8 +1573,8 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"cider"
-"cider-hydra"
+"emacs-cider"
+;;"emacs-cider-hydra"
 #+end_src
 
 * Lisp
@@ -1611,7 +1621,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"slime"
+"emacs-slime"
 #+end_src
 
 * emacs-lisp
@@ -1631,7 +1641,7 @@ Git gutter:
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"elisp-slime-nav"
+"emacs-elisp-slime-nav"
 #+end_src
 
 * mu4e - Email
@@ -1641,12 +1651,16 @@ Git gutter:
 ;;.....mu4e
 ;;     ----
 
+
 (when *pj/enable-mu4e-mode*
   (require 'mu4e)
+  
   (use-package mu4e
-    :ensure nil ;; mu4e comes from mu package - don't download from melpa
-    ;;:defer 10
+    :ensure nil
+    :defer 20
     :config
+
+    (require 'org-mu4e)
     
     (auth-source-pass-enable)
     (setq auth-source-debug t) ;;...temporarily...
@@ -1750,7 +1764,27 @@ Git gutter:
                                  (:name "Unread"
                                         :query "maildir:/applied-jidoka.co.uk/Inbox AND flag:unread AND NOT flag:trashed"
                                         :key ?u)))))))))
+(setq pj/mu4e-inbox-query
+        "(maildir:/Personal/Inbox OR maildir:/work/inbox) AND flag:unread")
 
+(use-package mu4e-alert
+  :after mu4e
+  :config
+  ;; Show unread emails from all inboxes
+  (setq mu4e-alert-interesting-mail-query pj/mu4e-inbox-query)
+
+  ;; Show notifications for mails already notified
+  (setq mu4e-alert-notify-repeated-mails nil)
+
+  (mu4e-alert-enable-notifications))
+
+#+end_src
+
+*Guix packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"mu"
+"emacs-mu4e-alert"
+"isync"
 #+end_src
 
 * org-caldav
@@ -1779,7 +1813,7 @@ Still under development
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"org-caldav"
+"emacs-org-caldav"
 #+end_src
 
 * Helpful
@@ -1805,7 +1839,7 @@ Still under development
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"helpful"
+"emacs-helpful"
 #+end_src
 
 * ERC
@@ -1969,11 +2003,11 @@ that can occur between two notifications.  The default is
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"erc"
-"erc-log"
-"erc-notify"
-"erc-spelling"
-"erc-autoaway"
+;;"emacs-erc"
+;;"emacs-erc-log"
+;;"emacs-erc-notify"
+;;"emacs-erc-spelling"
+;;"emacs-erc-autoaway"
 #+end_src
 
 * toc-org
@@ -1997,7 +2031,7 @@ Make table of contents when saving org-files.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"toc-org"
+"emacs-toc-org"
 #+end_src
 
 * ox-hugo
@@ -2021,13 +2055,54 @@ Not yet set up. Website development with org and hugo.
 *Guix Packages*
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"ox-hugo"
+"emacs-ox-hugo"
+#+end_src
+
+* Guile & guix
+#+begin_src emacs-lisp
+  ;;==============================================================================
+  ;;.....Guix and Guile
+  ;;     --------------
+  (use-package flycheck-guile)
+  (use-package guix)
+  (use-package geiser
+    :custom
+    (geiser-active-implementations '(guile)))
+  (add-hook 'scheme-mode-hook 'guix-devel-mode)
+#+end_src
+
+Guix packages
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"emacs-flycheck-guile"
+"emacs-guix"
+"emacs-geiser"
+#+end_src
+
+* Auto-tangle Configuration files
+
+#+begin_src emacs-lisp
+  ;;==============================================================================
+  ;;.....Auto tangle configuration files
+  ;;     -------------------------------
+
+  (defun pj/org-babel-tangle-config ()
+    (when (string-equal (file-name-directory (buffer-file-name))
+                        (expand-file-name "~/dotfiles/"))
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
+
+
+  (add-hook 'org-mode-hook 
+            (lambda () 
+              (add-hook 'after-save-hook
+                        #'pj/org-babel-tangle-config)))
 #+end_src
 
 * Emacs Manifest for guix
 *.config/guix/manifests/emacs.scm:*
 
-#+begin_src scheme :tangle :mkdirp t .config/guix/manifests/emacs.scm :noweb yes
+#+begin_src scheme mkdirp t :tangle .config/guix/manifests/emacs.scm :noweb yes
 
 (specifications->manifest
  '("emacs"

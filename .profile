@@ -2,17 +2,19 @@
 export PATH="$HOME/.bin:$PATH"
 
 if [ $HOSTNAME = "zeus" ] 
-then 
+then
+    echo Setting up profiles on guix system
     # Load the default Guix profile
     GUIX_PROFILE="$HOME/.guix-profile"
-    . "$GULX_PROFILE"/etc/profile
+    . "$GUIX_PROFILE"/etc/profile
 
     # Load additional Guix profiles
+    GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
     for i in $GUIX_EXTRA_PROFILES/*; do
         profile=$i/$(basename "$i")
-        if [ -f "$profile"$/etc/profile ]; then
+        if [ -f "$profile"/etc/profile ]; then
             GUIX_PROFILE="$profile"
-            . "GUIX_PROFILE"/etc/profile
+            . "$GUIX_PROFILE"/etc/profile
         fi
         unset profile
     done
@@ -23,7 +25,7 @@ then
     unset PULSE_CLIENTCONFIG
 
     # Export the path to IcedTea so the tools find it
-    export JAVA_HOME=$(dirname $(dirname $(readlink $(which java))))
+    #export JAVA_HOME=$(dirname $(dirname $(readlink $(which java))))
 
     # Make sure we can reach the GPG agent for SSH auth
     export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
@@ -42,8 +44,8 @@ then
     # Ensure that font folders are loaded correctly
     xset +fp $(dirname $(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fonts/truetype/fonts.dir))
 
-    # We're in Emacs, yo
-    export VISUAL=emacsclient
+    # nvim for editing system files...
+    export VISUAL=nvim
     export EDITOR="$VISUAL"
 else 
     # .profile setup for gentoo systems
@@ -63,4 +65,3 @@ fi
 
 # Load .bashrc to get login environment
 [ -f ~/.bashrc ] && . ~/.bashrc
-

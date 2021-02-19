@@ -8,14 +8,13 @@
 .emacs.d/init.el
 .emacs.d/site-specific.el
 .emacs.d/per-system-settings.el 
-.emacs.d/tangle-dotfiles.el
 .emacs.d/lisp/my-org-mode.el
 .emacs.d/lisp/*
 
-.bin/update-dotfiles
 .bin/sync-dotfiles
 .bin/update-profiles
 .bin/activate-profiles
+.bin/update-screens
 
 # Desktop Environment
 .config/mimeapps.list
@@ -23,6 +22,14 @@
 .config/dunst/dunstrc
 .config/xsettingsd/xsettingsd.conf
 .config/fontconfig/fonts.conf
+.config/mpv/*
+.config/mpd/*
+.config/polybar/*
+.config/qutebrowser/*
+.config/vimb/*
+.config/zathura/*
+.config/shepherd/*
+.xsession
 
 # Mail
 .mbsyncrc
@@ -30,3 +37,5 @@
 # Guix Configuration
 .config/guix/systems/*
 .config/guix/manifests/*
+.config/guix/*
+

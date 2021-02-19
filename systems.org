@@ -1,11 +1,10 @@
 #+TITLE: System Configuration with Guix
-#+PROPERTY: :mkdir t
+#+PROPERTY: :mkdirp t
 
 * Table of Contents                                                     :toc:
 :PROPERTIES:
 :TOC:      :include all :ignore this
 :END:
-
 - [[#introduction][Introduction]]
 - [[#channels][Channels]]
 - [[#systems][Systems]]
@@ -14,6 +13,10 @@
   - [[#usb-installation-image][USB Installation Image]]
 - [[#profiles][Profiles]]
   - [[#profile-manifests][Profile Manifests:]]
+  - [[#applications][Applications]]
+  - [[#default-applications][Default Applications]]
+  - [[#desktop][Desktop]]
+  - [[#user-services][User services]]
   - [[#profile-management][Profile Management]]
   - [[#activating-profiles][Activating Profiles]]
   - [[#updating-profiles][Updating Profiles]]
@@ -21,290 +24,320 @@
   - [[#syncing][Syncing]]
   - [[#updating][Updating]]
   - [[#system-installation][System Installation]]
+- [[#notes][Notes]]
+  - [[#bluetooth-setup][Bluetooth Setup]]
+  - [[#exwm-useful-links-for-future-reference][exwm useful links (for future reference):]]
+- [[#provide-the-dw-desktop-package][Provide the dw-desktop package]]
 
 * Introduction
-This file was originally created by David Wilson, and can be seen here:
-https://github.com/daviwil/dotfiles
-My modifications are made to configure the contents for my systems. 
+  This file was originally created by David Wilson, and can be seen here:
+  https://github.com/daviwil/dotfiles
+  My modifications are made to configure the contents for my systems. 
 * Channels
 
-Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which basically amount to Git repositories which contain Guix package definitions that can be installed on your machine.  Aside from the =%default-channels= list, I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't included with Guix by default like the non-free Linux kernel.
+  Guix supports the concept of [[https://guix.gnu.org/manual/en/html_node/Channels.html#Channels][channels]] which basically amount to Git
+  repositories which contain Guix package definitions that can be
+  installed on your machine.  Aside from the =%default-channels= list,
+  I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't
+  included with Guix by default like the non-free Linux kernel.
 
 *.config/guix/channels.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/channels.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/channels.scm
 
-  ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
-  ;; (cons* (channel
-  ;;         (name 'nonguix)
-  ;;         (commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
-  ;;         (url "https://gitlab.com/nonguix/nonguix"))
-  ;;        %default-channels)
+;; (cons* (channel
+;;         (name 'nonguix)
+;;         (commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
+;;         (url "https://gitlab.com/nonguix/nonguix"))
+;;        %default-channels)
 
-  (list (channel
-          (name 'nonguix)
-          (commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
-          (url "https://gitlab.com/nonguix/nonguix"))
-        (channel
-          (name 'guix)
-          (commit "190187326ad7516dd6728eed7bb6ef2d4f92897a")
-          (url "https://git.savannah.gnu.org/git/guix.git")
-          (introduction
-            (make-channel-introduction
-              "9edb3f66fd807b096b48283debdcddccfea34bad"
-            (openpgp-fingerprint
-              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+(list (channel
+       (name 'pj-suckless)
+       (url "https://github.com/paul-jewell/pj-suckless.git"))
+      (channel
+       (name 'nonguix)
+       ;;(commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
+       (url "https://gitlab.com/nonguix/nonguix")
+       ;; enable signature verification
+       (introduction
+        (make-channel-introduction
+         "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+         (openpgp-fingerprint
+          "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+      (channel
+       (name 'guix)
+       ;;(commit "190187326ad7516dd6728eed7bb6ef2d4f92897a")
+       (url "https://git.savannah.gnu.org/git/guix.git")
+       (introduction
+        (make-channel-introduction
+         "9edb3f66fd807b096b48283debdcddccfea34bad"
+         (openpgp-fingerprint
+          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
 
 #+end_src
 
-The following channel list can be used when testing patches to packages and services from a local clone of the Guix repo.  You'll have to create a branch and commit changes to it before =guix pull= can pick them up, though.  You can change the target branch using the =branch= field of the =channel=.
+The following channel list can be used when testing patches to
+packages and services from a local clone of the Guix repo.  You'll
+have to create a branch and commit changes to it before =guix pull=
+can pick them up, though.  You can change the target branch using the
+=branch= field of the =channel=.
 
-#+begin_src scheme :tangle ./.config/guix/channels.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/channels.scm
 
-;; (list (channel
-;;         (name 'nonguix)
-;;         (url "https://gitlab.com/nonguix/nonguix"))
-;;       (channel
-;;         (name 'guix)
-;;         (branch "fix-glu-pkg-config")
-;;         (url "file:///home/daviwil/Projects/Code/guix")
-;;         (introduction
-;;           (make-channel-introduction
-;;             "d06d5db885e4b8399e878708862fbe3a67f0592c"
-;;             (openpgp-fingerprint
-;;               "53C4 1E6E 41AA FE55 335A  CA5E 446A 2ED4 D940 BF14")))))
+  ;; (list (channel
+  ;;         (name 'nonguix)
+  ;;         (url "https://gitlab.com/nonguix/nonguix"))
+  ;;       (channel
+  ;;         (name 'guix)
+  ;;         (branch "fix-glu-pkg-config")
+  ;;         (url "file:///home/daviwil/Projects/Code/guix")
+  ;;         (introduction
+  ;;           (make-channel-introduction
+  ;;             "d06d5db885e4b8399e878708862fbe3a67f0592c"
+  ;;             (openpgp-fingerprint
+  ;;               "53C4 1E6E 41AA FE55 335A  CA5E 446A 2ED4 D940 BF14")))))
 
 #+end_src
 
 * Systems
 ** Base Configuration
 
-This base configuration is shared between all of the machines I manage with Guix.  Since all of my machines are Lenovo ThinkPad laptops, the same basic configuration applies pretty cleanly across all of them.  This may change in the future.
+   This base configuration is shared between all of the machines I
+   manage with Guix.  Since all of my machines are Lenovo ThinkPad
+   laptops, the same basic configuration applies pretty cleanly across
+   all of them.  This may change in the future.
 
-Any configuration that derives from =base-operating-system= must invoke =guix system= in a specific way to ensure it gets loaded correctly:
+   Any configuration that derives from =base-operating-system= must
+   invoke =guix system= in a specific way to ensure it gets loaded
+   correctly:
 
 #+begin_src sh
 
-sudo -E guix system -L ~/.dotfiles/.config/guix/systems reconfigure ~/.dotfiles/.config/guix/systems/davinci.scm
+  sudo -E guix system -L ~/.dotfiles/.config/guix/systems reconfigure ~/.dotfiles/.config/guix/systems/davinci.scm
 
 #+end_src
 
 *.config/guix/systems/base-system.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
-;; -*- buffer-read-only: t; -*-
-;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+    ;; -*- buffer-read-only: t; -*-
+    ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
-(define-module (base-system)
-  #:use-module (gnu)
-  #:use-module (srfi srfi-1)
-  #:use-module (gnu system nss)
-  #:use-module (gnu services pm)
-  #:use-module (gnu services cups)
-  #:use-module (gnu services desktop)
-  #:use-module (gnu services docker)
-  #:use-module (gnu services networking)
-;;  #:use-module (gnu services virtualization)
-  #:use-module (gnu packages wm)
-  #:use-module (gnu packages cups)
-  #:use-module (gnu packages vim)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages emacs)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages mtools)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages audio)
-  #:use-module (gnu packages gnuzilla)
-  #:use-module (gnu packages pulseaudio)
-  #:use-module (gnu packages web-browsers)
-  #:use-module (gnu packages version-control)
-  #:use-module (gnu packages package-management)
-  #:use-module (nongnu packages linux)
-  #:use-module (nongnu system linux-initrd))
+    (define-module (base-system)
+      #:use-module (gnu)
+      #:use-module (srfi srfi-1)
+      #:use-module (gnu system nss)
+      #:use-module (gnu services pm)
+      #:use-module (gnu services cups)
+      #:use-module (gnu services desktop)
+;;      #:use-module (gnu services docker)
+      #:use-module (gnu services networking)
+    ;;  #:use-module (gnu services virtualization)
+      #:use-module (gnu packages wm)
+      #:use-module (gnu packages cups)
+      #:use-module (gnu packages vim)
+      #:use-module (gnu packages gtk)
+      #:use-module (gnu packages xorg)
+      #:use-module (gnu packages emacs)
+      #:use-module (gnu packages gnome)
+      #:use-module (gnu packages mtools)
+      #:use-module (gnu packages linux)
+      #:use-module (gnu packages audio)
+      #:use-module (gnu packages gnuzilla)
+      #:use-module (gnu packages pulseaudio)
+      #:use-module (gnu packages web-browsers)
+      #:use-module (gnu packages version-control)
+      #:use-module (gnu packages package-management)
+      #:use-module (nongnu packages linux)
+      #:use-module (nongnu system linux-initrd)
+      #:use-module (paulj packages paulj-dwm)
+      #:use-module (paulj packages paulj-st)
+      #:use-module (paulj packages paulj-dmenu)
+      #:use-module (paulj packages paulj-slock))
 
-(use-service-modules nix)
-(use-service-modules desktop xorg)
-(use-service-modules ssh)
-(use-package-modules certs)
-(use-package-modules shells)
+    (use-service-modules nix)
+    (use-service-modules desktop xorg)
+    (use-service-modules ssh)
+    (use-package-modules certs)
+    (use-package-modules shells)
 
 #+end_src
 
 Add a =udev= rule to enable members of the =video= group to control screen brightness.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
-;; Allow members of the "video" group to change the screen brightness.
-(define %backlight-udev-rule
-  (udev-rule
-   "90-backlight.rules"
-   (string-append "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
-                  "RUN+=\"/run/current-system/profile/bin/chgrp video /sys/class/backlight/%k/brightness\""
-                  "\n"
-                  "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
-                  "RUN+=\"/run/current-system/profile/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
+  ;; Allow members of the "video" group to change the screen brightness.
+  (define %backlight-udev-rule
+    (udev-rule
+     "90-backlight.rules"
+     (string-append "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                    "RUN+=\"/run/current-system/profile/bin/chgrp video /sys/class/backlight/%k/brightness\""
+                    "\n"
+                    "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                    "RUN+=\"/run/current-system/profile/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
 
 #+end_src
 
-Override the default =%desktop-services= to add the =udev= backlight configuration and include OpenVPN in the list of NetworkManager plugins.
+Override the default =%desktop-services= to add the =udev= backlight
+configuration and include OpenVPN in the list of NetworkManager
+plugins.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
-(define %my-desktop-services
-  (modify-services %desktop-services
-                   (elogind-service-type config =>
-                                         (elogind-configuration (inherit config)
-                                                                (handle-lid-switch-external-power 'suspend)))
-                   (udev-service-type config =>
-                                      (udev-configuration (inherit config)
-                                                          (rules (cons %backlight-udev-rule
-                                                                       (udev-configuration-rules config)))))
-                   (network-manager-service-type config =>
-                                                 (network-manager-configuration (inherit config)
-                                                                                (vpn-plugins
-                                                                                 (list network-manager-openvpn))))))
+  (define %my-desktop-services
+    (modify-services %desktop-services
+                     (elogind-service-type config =>
+                                           (elogind-configuration (inherit config)
+                                                                  (handle-lid-switch-external-power 'suspend)))
+                     (udev-service-type config =>
+                                        (udev-configuration (inherit config)
+                                                            (rules (cons %backlight-udev-rule
+                                                                         (udev-configuration-rules config)))))
+                     (network-manager-service-type config =>
+                                                   (network-manager-configuration (inherit config)
+                                                                                  (vpn-plugins
+                                                                                   (list network-manager-openvpn))))))
 
 #+end_src
 
 Use the =libinput= driver for all input devices since it's a bit more modern than the default.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
-(define %xorg-libinput-config
-  "Section \"InputClass\"
-  Identifier \"Touchpads\"
-  Driver \"libinput\"
-  MatchDevicePath \"/dev/input/event*\"
-  MatchIsTouchpad \"on\"
+  (define %xorg-libinput-config
+    "Section \"InputClass\"
+    Identifier \"Touchpads\"
+    Driver \"libinput\"
+    MatchDevicePath \"/dev/input/event*\"
+    MatchIsTouchpad \"on\"
 
-  Option \"Tapping\" \"on\"
-  Option \"TappingDrag\" \"on\"
-  Option \"DisableWhileTyping\" \"on\"
-  Option \"MiddleEmulation\" \"on\"
-  Option \"ScrollMethod\" \"twofinger\"
-EndSection
-Section \"InputClass\"
-  Identifier \"Keyboards\"
-  Driver \"libinput\"
-  MatchDevicePath \"/dev/input/event*\"
-  MatchIsKeyboard \"on\"
-EndSection
-")
+    Option \"Tapping\" \"on\"
+    Option \"TappingDrag\" \"on\"
+    Option \"DisableWhileTyping\" \"on\"
+    Option \"MiddleEmulation\" \"on\"
+    Option \"ScrollMethod\" \"twofinger\"
+  EndSection
+  Section \"InputClass\"
+    Identifier \"Keyboards\"
+    Driver \"libinput\"
+    MatchDevicePath \"/dev/input/event*\"
+    MatchIsKeyboard \"on\"
+  EndSection
+  ")
 
 #+end_src
 
 Define the =base-operating-system= which will be inherited by all machine configurations.
 
-#+begin_src scheme :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
-(define-public base-operating-system
-  (operating-system
-    (host-name "base")
-    (timezone "Europe/London")
-    (locale "en_GB.utf8")
+  (define-public base-operating-system
+    (operating-system
+      (host-name "base")
+      (timezone "Europe/London")
+      (locale "en_GB.utf8")
 
-    ;; Use non-free Linux and firmware
-    (kernel linux)
-    (firmware (list linux-firmware))
-    (initrd microcode-initrd)
+      ;; Use non-free Linux and firmware
+      (kernel linux)
+      (firmware (list linux-firmware))
+      (initrd microcode-initrd)
 
-    ;; Choose UK English keyboard layout, with the extd layout.
-    (keyboard-layout (keyboard-layout "gb" "extd" #:model "thinkpad"))
+      ;; Choose UK English keyboard layout, with the extd layout.
+      (keyboard-layout (keyboard-layout "gb" "extd" #:model "thinkpad"))
 
-    ;; Use the UEFI variant of GRUB with the EFI System
-    ;; Partition mounted on /boot/efi.
-    (bootloader (bootloader-configuration
-                 (bootloader grub-efi-bootloader)
-                 (target "/boot/efi")
-                 (keyboard-layout keyboard-layout)))
+      ;; Use the UEFI variant of GRUB with the EFI System
+      ;; Partition mounted on /boot/efi.
+      (bootloader (bootloader-configuration
+                   (bootloader grub-efi-bootloader)
+                   (target "/boot/efi")
+                   (keyboard-layout keyboard-layout)))
 
 
-    ;; Guix doesn't like it when there isn't a file-systems
-    ;; entry, so add one that is meant to be overridden
-    (file-systems (cons*
-                   (file-system
-                     (mount-point "/tmp")
-                     (device "none")
-                     (type "tmpfs")
-                     (check? #f))
-                   %base-file-systems))
+      ;; Guix doesn't like it when there isn't a file-systems
+      ;; entry, so add one that is meant to be overridden
+      (file-systems (cons*
+                     (file-system
+                       (mount-point "/tmp")
+                       (device "none")
+                       (type "tmpfs")
+                       (check? #f))
+                     %base-file-systems))
 
-    (users (cons (user-account
-                  (name "paul")
-                  (comment "Paul Jewell")
-                  (group "users")
-                  (home-directory "/home/paul")
-                  (supplementary-groups '(
-                                          "wheel"     ;; sudo
-                                          "netdev"    ;; network devices
-                                          "kvm"
-                                          "tty"
-                                          "input"
-                                          "docker"
-                                          "realtime"  ;; Enable realtime scheduling
-                                          "lp"        ;; control bluetooth devices
-                                          "audio"     ;; control audio devices
-                                          "video")))  ;; control video devices
-                 %base-user-accounts))
+      (users (cons (user-account
+                    (name "paul")
+                    (comment "Paul Jewell")
+                    (group "users")
+                    (home-directory "/home/paul")
+                    (supplementary-groups '(
+                                            "wheel"     ;; sudo
+                                            "netdev"    ;; network devices
+                                            "kvm"
+                                            "tty"
+                                            "input"
+;;                                            "docker"
+                                            "realtime"  ;; Enable realtime scheduling
+                                            "lp"        ;; control bluetooth devices
+                                            "audio"     ;; control audio devices
+                                            "video")))  ;; control video devices
+                   %base-user-accounts))
 
-    ;; Add the 'realtime' group
-    (groups (cons (user-group (system? #t) (name "realtime"))
-                  %base-groups))
+      ;; Add the 'realtime' group
+      (groups (cons (user-group (system? #t) (name "realtime"))
+                    %base-groups))
 
-    ;; Install bare-minimum system packages
-    (packages (append (list
-                        git
-                        ntfs-3g
-                        exfat-utils
-                        fuse-exfat
-                        stow
-                        neovim
-                        i3-wm
-                        i3status
-                        i3blocks
-                        dmenu
-                        bluez
-                        bluez-alsa
-                        pulseaudio
-                        tlp
-                        xf86-input-libinput
-                        nss-certs     ;; for HTTPS access
-                        gvfs)         ;; for user mounts
-                    %base-packages))
+      ;; Install bare-minimum system packages
+      (packages (append (list
+                          git
+                          ntfs-3g
+                          exfat-utils
+                          fuse-exfat
+                          stow
+                          neovim
+;;                          emacs
+                          bluez
+                          bluez-alsa
+                          pulseaudio
+                          tlp
+                          xf86-input-libinput
+                          nss-certs     ;; for HTTPS access
+                          gvfs)         ;; for user mounts
+                      %base-packages))
 
-    ;; Use the "desktop" services, which include the X11 log-in service,
-    ;; networking with NetworkManager, and more
-    (services (cons* (service slim-service-type
-                              (slim-configuration
-                                (xorg-configuration
+      ;; Use the "desktop" services, which include the X11 log-in service,
+      ;; networking with NetworkManager, and more
+      (services (cons* (service slim-service-type
+                                (slim-configuration
                                   (xorg-configuration
-                                    (keyboard-layout keyboard-layout)
-                                    (extra-config (list %xorg-libinput-config))))))
-                    (service tlp-service-type
-                             (tlp-configuration
-                                (cpu-boost-on-ac? #t)
-                                (wifi-pwr-on-bat? #t)))
-                    (pam-limits-service ;; This enables JACK to enter realtime mode
-                     (list
-                      (pam-limits-entry "@realtime" 'both 'rtprio 99)
-                      (pam-limits-entry "@realtime" 'both 'memlock 'unlimited)))
-                    (service thermald-service-type)
-                    (service docker-service-type)
-                    (service cups-service-type
-                             (cups-configuration
-                               (web-interface? #t)
-                               (extensions
-                                 (list cups-filters))))
-                    (bluetooth-service #:auto-enable? #t)
-                    (remove (lambda (service)
-                                (eq? (service-kind service) gdm-service-type))
-                            %my-desktop-services)))
+                                    (xorg-configuration
+                                      (keyboard-layout keyboard-layout)
+                                      (extra-config (list %xorg-libinput-config))))))
+ ;;                     (service xfce-desktop-service-type)
+                      (service openssh-service-type)
+                      (service tlp-service-type
+                               (tlp-configuration
+                                  (cpu-boost-on-ac? #t)
+                                  (wifi-pwr-on-bat? #t)))
+                      (pam-limits-service ;; This enables JACK to enter realtime mode
+                       (list
+                        (pam-limits-entry "@realtime" 'both 'rtprio 99)
+                        (pam-limits-entry "@realtime" 'both 'memlock 'unlimited)))
+                      (service thermald-service-type)
+;;                      (service docker-service-type)
+                      (service cups-service-type
+                               (cups-configuration
+                                 (web-interface? #t)
+                                 (extensions
+                                   (list cups-filters))))
+                      (bluetooth-service #:auto-enable? #t)
+                      (remove (lambda (service)
+                                  (eq? (service-kind service) gdm-service-type))
+                              %my-desktop-services)))
 
-    ;; Allow resolution of '.local' host names with mDNS
-    (name-service-switch %mdns-host-lookup-nss)))
-
+      ;; Allow resolution of '.local' host names with mDNS
+      (name-service-switch %mdns-host-lookup-nss)))
 #+end_src
 
 ** Machines
@@ -317,34 +350,20 @@ Some settings need to be customized on a per-system basis without tweaking indiv
 
 I also define a function called =dw/system-settings-get= which can retrieve these settings appropriately.
 
-#+begin_src emacs-lisp :tangle ./.emacs.d/per-system-settings.el :noweb yes
+#+begin_src emacs-lisp :mkdirp t :tangle ./.emacs.d/per-system-settings.el :noweb yes
 
 (require 'map) ;; Needed for map-merge
 
 (setq dw/system-settings
   (map-merge
     'list
-    '((desktop/dpi . 180)  ;; Need to check this as well with my settings
-      (desktop/background . "samuel-ferrara-uOi3lg8fGl4-unsplash.jpg")
-      ;; David has a 4K monitor - I suspect these font sizes will be a problem on my monitor
-      ;; (emacs/default-face-size . 220)
-      ;; (emacs/variable-face-size . 245)
-      ;; (emacs/fixed-face-size . 200)
-      (polybar/height . 35)
-      (polybar/font-0-size . 18)
-      (polybar/font-1-size . 14)
-      (polybar/font-2-size . 20)
-      (polybar/font-3-size . 13)
-      (dunst/font-size . 20)
-      (dunst/max-icon-size . 88)
-      (vimb/default-zoom . 180)
-      (qutebrowser/default-zoom . 200))
+    '()
     <<system-settings>>))
 
 #+end_src
 
 
-#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-settings.el
+#+begin_src emacs-lisp :mkdirp t :tangle .emacs.d/lisp/dw-settings.el
 
 (defun dw/load-system-settings ()
   (interactive)
@@ -356,124 +375,13 @@ I also define a function called =dw/system-settings-get= which can retrieve thes
 (provide 'dw-settings)
 #+end_src
 
-
-**** dw-autorest
-
-#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-autorest.el
-(defvar dw/autorest-last-run nil
-  "Details on the last AutoRest run to use with dw/rerun-autorest-command")
-
-(defun dw/rerun-autorest-command ()
-  (interactive)
-  (if dw/autorest-last-run
-      (apply #'dw/run-autorest-command dw/autorest-last-run)
-      (message "No previous AutoRest run!")))
-
-(defun dw/run-autorest-command (command-string run-name pre-command)
-  (let ((run-message (format "Running AutoRest - %s" command-string)))
-    (setq autorest-buffer (get-buffer-create (format "*AutoRest Output: %s*" run-name)))
-    (with-current-buffer autorest-buffer
-      (ansi-color-for-comint-mode-on)
-      (comint-mode)
-      (display-line-numbers-mode 0)
-      (end-of-buffer)
-      (insert "\n"
-              (format-time-string "[%m/%d/%Y - %I:%M:%S %p]")
-              "\n\n"
-              run-message
-              "\n\n")
-      (when pre-command
-        (insert "Pre-run command: " pre-command "\n\n")))
-
-    ;; TODO: This buffer display function isn't perfect
-    (message run-message)
-    (display-buffer-pop-up-window autorest-buffer '((window-height . 13)))
-
-    (setq dw/autorest-last-run (list command-string run-name pre-command))
-
-    (let ((default-directory "~/Projects/Code/autorest.megarepo/")
-          (full-command
-             (string-join (list (when pre-command
-                                      (format "%s &&" pre-command))
-                                "TERM=xterm-256color"
-                                command-string)
-                          " ")))
-      (setq autorest-process (start-process-shell-command "server" autorest-buffer full-command)))
-
-    (set-process-filter autorest-process 'comint-output-filter)))
-
-(cl-defun dw/run-autorest (&key (run-name "adhoc")
-                                input-file
-                                (use '())
-                                language
-                                version
-                                args
-                                (inspector t)
-                                debug
-                                verbose
-                                pre-command)
-  (let* ((use-param (mapconcat (lambda (u) (format "--use:%s" u)) use " "))
-         (misc-args (mapconcat (lambda (arg) arg) args " "))
-         (args (list "autorest"
-                     (when language (format "--%s" language))
-                     use-param
-                     misc-args
-                     (if (s-ends-with? ".md" input-file)
-                         input-file
-                         (format "--input-file:%s" input-file))
-                     (when inspector (format "--inspector --inspector.output-folder:./outputs/%s --inspector.clear-output-folder" run-name))
-                     (when version (format "--version:%s" version))
-                     (when verbose "--verbose")
-                     (when debug "--debug")))
-         (command-string (string-join args " ")))
-    (message command-string)
-    (dw/run-autorest-command command-string run-name pre-command)))
-
-;; Keybindings to set up:
-;; q - Close panel
-;; C-c o - List output files
-
-;; (dw/run-autorest
-;;  :run-name "body-formdata"
-;;  :language 'python
-;;  :input-file "~/Projects/Code/autorest.megarepo/testserver/swagger/body-formdata.json"
-;;  :use '("./modelerfour/modelerfour")
-;;  :version "./autorest/core"
-;;  :pre-command "pushd ./modelerfour/modelerfour && npm run build && popd")
-
-(provide 'dw-autorest)
-
-#+end_src
-
-**** dw-vimb
-
-#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-vimb.el
-(setq dw/open-url-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "<return>") 'ivy-immediate-done)
-    map))
-
-(defun dw/open-url ()
-  (interactive)
-  (let ((history-items
-          (with-temp-buffer
-            (insert-file-contents "~/.config/vimb/history")
-            (split-string (buffer-string) "\n" t))))
-    (ivy-read "Open URL: " (remove-duplicates history-items :test #'string-equal)
-              :keymap dw/open-url-map
-              :action (lambda (item)
-                        (start-process "vimb" nil "vimb" (car (split-string item (string ?\t))))))))
-
-
-#+end_src
-
 *** zeus
 
 zeus is a Lenovo X270 being used as a test bed for guix configuration.
 
 **** *.config/guix/systems/zeus.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/systems/zeus.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/zeus.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 ;; Note - if you re-install, you need to review the uuid entries below.
@@ -511,12 +419,17 @@ generated from [[file+sys:~/.dotfiles/emacs.org][emacs.org]]
 
 #+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
 
-(when (equal system-name "zeus"))
+(when (equal system-name "zeus")
+  '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . nil)
+    (*pj/enable-auctex* . t)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
 
 #+end_src
 
 *** tristan
-
 =tristan= is my main desktop AMD Ryzen 9 system, running =gentoo linux=,
 and dual booting into =windows=.
 
@@ -526,18 +439,50 @@ emacs on both operating systems.
 System Settings
 
 #+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-   (when (equal system-name "tristan"))
+(when (equal system-name "tristan")
+   '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . t)
+    (*pj/enable-auctex* . nil)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
 
-   (when (pj/is-windows-p))
+(when (string= "windows-nt" system-type))
 #+end_src
+*** Rodolfo
 
+=rodolfo= is a lenovo x270 laptop with gentoo linux installed.
+*System settings*
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+(when (equal system-name "rodolfo")
+   '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . t)
+    (*pj/enable-auctex* . t)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
+
+#+end_src
+*** Shingo
+=shingo= is a small computer in the shed. Currently has gentoo, but will
+be the next candidate for guix.
+*System Settings*
+#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
+(when (equal system-name "tristan")
+   '((*pj/enable-mu4e-mode* . t)
+    (*pj/load-site-gentoo* . t)
+    (*pj/enable-auctex* . t)
+    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
+    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
+    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
+#+end_src
 ** USB Installation Image
 
 To install Guix on another machine, you first to build need a USB image.  Since I use modern laptops that require non-free components, I have to build a custom installation image with the full Linux kernel.  I also include a few other programs that are useful for the installation process.  I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
 
 *.config/guix/systems/install.scm:*
 
-#+begin_src scheme :tangle ./.config/guix/systems/install.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/install.scm
 
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -591,29 +536,241 @@ profiles which can be updated independently.  These profiles get
 installed under the =~/.guix-extra-profiles= path and sourced by
 =~/.profile= when I log in.
 ** Profile Manifests:
-*** Base packages
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/base.scm
-  (specifications->manifest
-   '("htop"
-     "git"
-     "gnupg"))
+*** Base installation
+Base installation includes the packages required for console based
+computer use, without xorg. This includes system admin tools etc, but
+not additional packages for specific tasks. Those are in the
+additional manifests below.
+**** Printing
+*Guix packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"system-config-printer"
 #+end_src
-*** Window managers
-#+begin_src scheme :tangle .config/guix/manifests/window-managers.scm
-(specifications->manifest
- '("i3"
-   "i3status"
-   "isblocks"))
-#+end_src
-*** Browsers
-#+begin_src scheme :tangle .config/guix/manifests/browsers.scm
-(specifications->manifest
- '("ungoogled-chromium"))
 
+**** System tools
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"openssh"
+"zip"
+"unzip"
+"htop"
+#+end_src
+
+**** Syncthing
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"syncthing"
+"syncthing-gtk"
+#+end_src
+
+**** Document Readers
+
+#+begin_src conf :mkdirp t :tangle .config/zathura/zathurarc
+
+# Automatically adjust the document to full width
+set adjust-open width
+
+# Set the title to the filename
+set window-title-basename true
+
+# Larger scroll steps with j/k
+set scroll-step 150
+
+# Adjusting the document
+map [normal] E adjust_window best-fit
+map [fullscreen] E adjust_window best-fit
+map [normal] e adjust_window width
+map [fullscreen] e adjust_window width
+
+# Toggling the inverted colours
+map <C-i> recolor
+map <C-g> abort
+
+#+end_src
+*Guix packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"zathura"
+"zathura-pdf-mupdf"
+#+end_src
+
+**** Audio controls
+*Guix Packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"alsa-utils"
+"pavucontrol"
+#+end_src
+
+**** Password Management
+*Guix Packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"password-store"
+#+end_src
+
+***** Syncing Passwords
+#+begin_src sh :mkdirp t :tangle .bin/sync-passwords :shebang #!/bin/sh
+
+pass git pull
+pass git push
+
+notify-send -i "emblem-synchronizing" "Passwords synced!"
+#+end_src
+
+I use [[https://www.gnu.org/software/mcron/][GNU mcron]] for scheduling tasks to run periodically in the background.
+
+*Syncing Passwords*
+#+begin_src scheme :mkdirp t :tangle .config/cron/pass-sync.guile
+
+(job
+   '(next-hour (range 0 24 4))
+   "~/.bin/sync-passwords")
+
+#+end_src
+
+*Guix Packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"mcron"
+#+end_src
+
+*** Window Manager
+I am using dwm, installed in the user account. These are the packages
+required for that, and the other support packages for the Xorg desktop
+use. By not having window managers installed at system level, the
+.xsession code is run by the login manager, so configuration of the
+window manager and associated programs is done there.
+
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/window-manager.scm
+(specifications->manifest
+ '("paulj-dwm"
+   "paulj-dmenu"
+   "paulj-st"
+   "paulj-slock"
+   "xev"
+   "xset"
+   "xrdb"
+   "xhost"
+   "xmodmap"
+   "setxkbmap"
+   "xrandr"
+   "arandr"
+   "xss-lock"
+   "libinput"
+   "xinput"
+   "compton"
+   "redshift"
+   "gucharmap"
+   "fontmanager"
+   "brightnessctl"
+   "xdg-utils"      ;; For xdg-open, etc
+   "shared-mime-info"
+   "dunst"
+   "libnotify"
+   "unclutter"
+   ;; Settings Manager
+   "xsettingsd"
+
+   ;; GTK Themes
+   "arc-icon-theme"
+   "matcha-theme"
+   "hicolor-icon-theme"
+   "gnome-icon-theme"
+   "gnome-backgrounds"
+   "papirus-icon-theme"
+   
+   ;; Fonts
+   "font-iosevka"
+   "font-fira-mono"
+   "font-fira-code"
+   "font-abattis-cantarell"
+   "font-dejavu"
+   "font-google-noto"
+   "font-gnu-freefont-ttf"
+   "font-liberation"
+   "font-awesome"
+   "font-google-material-design-icons"
+   "gs-fonts"
+   ))
+
+#+end_src
+
+*.xsession*
+
+#+begin_src sh :mkdirp t :tangle .xsession :shebang #!/bin/sh
+if [ -z "$(pgrep -u paul shepherd)" ]; then
+  shepherd &
+fi
+
+compton &
+# TODO: Make the background changeable, and saved between sessions
+feh --bg-fill ~/backgrounds/mountains-1412683.jpg &
+unclutter &
+exec dwm
+
+#+end_src
+
+
+*** Fonts and Themes
+
+I use [[https://github.com/derat/xsettingsd][xsettingsd]] as a minimal settings daemon for Xorg applications.  It replaces similar daemons from desktop environments like GNOME and XFCE and enables me to use a simple configuration file like the following:
+
+*.config/xsettingsd/xsettingsd.conf:*
+
+#+begin_src conf :mkdirp t :tangle .config/xsettingsd/xsettingsd.conf :noweb yes
+
+Net/ThemeName "Matcha-dark-azul"
+Net/IconThemeName "Papirus-Dark"
+Gtk/DecorationLayout "menu:minimize,maximize,close"
+Gtk/FontName "Cantarell 11"
+Gtk/MonospaceFontName "Fira Mono 10"
+Gtk/CursorThemeName "Adwaita"
+Xft/Antialias 1
+Xft/Hinting 0
+Xft/HintStyle "hintnone"
+Xft/DPI 96 # 1024 * DPI
+
+#+end_src
+
+I also have to do an extra step to make sure Emacs can find the font path from the "desktop" profile.
+
+*.config/fontconfig/fonts.conf:*
+
+#+begin_src xml :mkdirp t :tangle .config/fontconfig/fonts.conf
+
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <dir>~/.dotfiles/fonts</dir>
+  <dir>~/.guix-extra-profiles/window-manager/window-manager/share/fonts</dir>
+  <alias>
+    <family>Apple Color Emoji</family>
+    <prefer>
+      <family>Noto Color Emoji</family>
+    </prefer>
+  </alias>
+</fontconfig>
+
+#+end_src
+
+
+*** Transitional programs
+These are programs which I intend to stop using as time passes. They
+are currently installed to avoid the need to learn new programs while
+working through the system installation and configuration.
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/transition.scm
+(specifications->manifest
+ '("firefox"))
+
+#+end_src
+
+*** Browsers
+nyxt is the future!
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/browsers.scm
+(specifications->manifest
+ '("ungoogled-chromium"
+   "nyxt"
+   "qutebrowser"))
 #+end_src
 
 *** Code
-#+begin_src scheme :tangle .config/guix/manifests/code.scm
+Languages and tools for programming.
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/code.scm
 ;; Various developer tools that I use.  These might be split out into
 ;; platform-specific manifests at some point.
 
@@ -627,15 +784,23 @@ installed under the =~/.guix-extra-profiles= path and sourced by
    "lld"
    "clang"
 
-   ;; Python
-   "python2"
+   ;; Python (3 by default)
+   "python"
+   "python2" ;; needed by gimp tools?
 
    ;; Docker
-   "docker-cli"
+   ;;"docker-cli"
 
    ;; Java
    "icedtea"
 
+   ;;lisp
+   "sbcl"
+
+   ;;clojure
+   "clojure"
+   "leiningen"
+   
    ;; SDL
    "glu"
    "glfw"
@@ -650,16 +815,70 @@ installed under the =~/.guix-extra-profiles= path and sourced by
    ;; "glibc" ;; For ldd
 #+end_src
 
+*** Image viewers and editors
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/image.scm
+(specifications->manifest
+ '("feh"
+   "gimp"
+   "scrot"))
+#+end_src
+
+*** Music Player
+#+begin_src conf :mkdirp t :tangle .config/mpd/mpd.conf
+music_directory   "~/music"
+playlist_directory "~/.config/mpd/playlists"
+
+auto_update "yes"
+bind_to_address "127.0.0.1"
+restore_paused "yes"
+max_output_buffer_size "16384"
+
+audio_output {
+         type "pulse"
+         name "pulse"
+}               
+
+audio_output {
+         type   "fifo"
+         name   "visualiser feed"
+         path   "/tmp/mpd.fifo"
+         format "44100:16:2"
+}
+#+end_src
+
+*Guix packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"mpd"
+"ncmpcpp"
+#+end_src
+
 *** Games
-#+begin_src scheme  :tangle .config/guix/manifests/games.scm
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/games.scm
 (specifications->manifest
  '("aisleriot"
    "gnome-mahjongg"))
 
 #+end_src
 
+*** Codecs and drivers
+These packages are needed to enable many video formats to be played in browsers and video players.  VAAPI drivers are also used to enable hardware-accelerated video decoding.
+
+*Guix Packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"gstreamer"
+"gst-plugins-base"
+"gst-plugins-good"
+"gst-plugins-bad"
+"gst-plugins-ugly"
+"gst-libav"
+"intel-vaapi-driver"
+"libva-utils"
+#+end_src
+
 *** Music Creation
-#+begin_src scheme :tangle .config/guix/manifests/music.scm
+An area of future investigation. This is currently as specified by
+David Wilson in his configuration.
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/music.scm
 ;; Music creation tools
 
 (specifications->manifest
@@ -697,7 +916,8 @@ installed under the =~/.guix-extra-profiles= path and sourced by
 #+end_src
 
 *** Video Creation Tools
-#+begin_src scheme :tangle .config/guix/manifests/video.scm
+Also something for future exploration.
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/video.scm
 ;; Video creation tools
 
 (specifications->manifest
@@ -718,6 +938,617 @@ installed under the =~/.guix-extra-profiles= path and sourced by
    ;; Video Editing
    "blender"))
 #+end_src
+
+** Applications
+*** Qutebrowser
+
+[[https://github.com/qutebrowser/qutebrowser][Qutebrowser]] is a great keyboard-centric browser which uses the Chromium rendering engine via QT 5's WebEngine component.  I've configured it to act more like Vimb for window-per-tab behavior that integrates well into Emacs.  One thing I like about this browser is that it does a much better job of remembering what windows you had open when it exits so that you can maintain your session more easily.  I also like that when you reopen a tab/window, the history of that window is still present.
+
+#+begin_src python :mkdirp t :tangle .config/qutebrowser/config.py :noweb yes
+
+  # Open every tab as a new window, Vimb style
+  c.tabs.tabs_are_windows = True
+  c.tabs.show = "multiple"
+  c.tabs.last_close = "close"
+
+  c.auto_save.session = True
+  c.scrolling.smooth = True
+  c.session.lazy_restore = True
+  c.content.autoplay = False
+
+  # Scale pages and UI better for hidpi
+  c.zoom.default = "100%"
+  c.fonts.hints = "bold 20pt monospace"
+
+  # Better default fonts
+  c.fonts.web.family.standard = "Bitstream Vera Sans"
+  c.fonts.web.family.serif = "Bitstream Vera Serif"
+  c.fonts.web.family.sans_serif = "Bitstream Vera Sans"
+  c.fonts.web.family.fixed = "Fira Mono"
+  c.fonts.statusbar = "18pt Cantarell"
+
+  # Use dark mode where possible
+  c.colors.webpage.darkmode.enabled = True
+  c.colors.webpage.bg = "black"
+
+  # Automatically turn on insert mode when a loaded page focuses a text field
+  c.input.insert_mode.auto_load = True
+
+  # Edit fields in Emacs with Ctrl+E
+  c.editor.command = ["emacsclient", "+{line}:{column}", "{file}"]
+
+  # Make Ctrl+g quit everything like in Emacs
+  config.bind('<Ctrl-g>', 'leave-mode', mode='insert')
+  config.bind('<Ctrl-g>', 'leave-mode', mode='command')
+  config.bind('<Ctrl-g>', 'leave-mode', mode='prompt')
+  config.bind('<Ctrl-g>', 'leave-mode', mode='hint')
+  config.bind('v', 'spawn ~/.dotfiles/bin/umpv {url}')
+  config.bind('V', 'hint links spawn ~/.dotfiles/bin/umpv {hint-url}')
+
+  # Tweak some keybindings
+  config.unbind('d') # Don't close window on lower-case 'd'
+  config.bind('yy', 'yank')
+
+  # Vim-style movement keys in command mode
+  config.bind('<Ctrl-j>', 'completion-item-focus --history next', mode='command')
+  config.bind('<Ctrl-k>', 'completion-item-focus --history prev', mode='command')
+
+  # More binding hints here: https://gitlab.com/Kaligule/qutebrowser-emacs-config/blob/master/config.py
+#+end_src
+
+#+begin_src conf :mkdirp t :tangle .config/qutebrowser/quickmarks
+
+1p https://my.1password.com/vaults/kyxq62du37adb3lpjh2sphdq4i/allitems/tkr5tuo4gqyuco4x25upt6iaia
+gn https://github.com/notifications
+dot https://github.com/daviwil/dotfiles
+efs https://github.com/daviwil/emacs-from-scratch
+sc https://github.com/SystemCrafters
+scv https://github.com/SystemCrafters/video-planning
+ddg https://duckduckgo.com/?q $0
+gh https://github.com/$0
+gm https://www.iro.umontreal.ca/~gambit/doc/gambit.html
+gam https://github.com/gambit/gambit
+zig https://github.com/ziglang/zig
+zigd https://ziglang.org/documentation/master/
+zigl https://ziglang.org/documentation/master/std
+sub https://github.com/substratic/
+sube https://github.com/substratic/engine
+subb https://github.com/substratic/build
+subf https://github.com/substratic/forge
+subc https://github.com/substratic/crash-the-stack
+tspl https://scheme.com/tspl4/
+mail https://fastmail.com
+cups http://localhost:631
+az https://portal.azure.com
+azdo https://dev.azure.com/azure-sdk/
+ajs https://github.com/Azure/azure-sdk-for-js
+dajs https://github.com/daviwil/azure-sdk-for-js
+anet https://github.com/Azure/azure-sdk-for-net
+aja https://github.com/Azure/azure-sdk-for-java
+apy https://github.com/Azure/azure-sdk-for-python
+ats https://github.com/Azure/autorest.typescript
+ats3 https://github.com/Azure/autorest.typescript.v3
+atest https://github.com/Azure/autorest.testserver
+amf https://github.com/Azure/autorest.modelerfour
+ar https://github.com/Azure/autorest
+arpy https://github.com/Azure/autorest.python
+arc https://github.com/Azure/autorest.csharp
+are https://github.com/Azure/autorest/tree/master/docs/extensions
+arp https://github.com/orgs/Azure/projects/48
+ac https://github.com/Azure/autorest.compare
+ap https://github.com/Azure/perks
+specs https://github.com/Azure/azure-rest-api-specs
+oai2 https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+oai3 https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md
+npm https://www.npmjs.com/search?q $0
+oms https://outlook.com/microsoft.com
+msw https://microsoft.sharepoint.com
+
+#+end_src
+
+*** vimb
+
+I used [[https://fanglingsu.github.io/vimb/][Vimb]] for a while because the latest Qutebrowser wasn't available in Guix's package repository, but since that problem has since been solved I've switched back to Qutebrowser as primary.  Keeping this configuration around in case I need it again.
+
+#+begin_src conf :mkdirp t :tangle .config/vimb/config :noweb yes
+
+# Set the home page to a local file
+set home-page=file:///home/daviwil/.config/vimb/home.html
+
+# Use home-row keys for hints
+set hint-keys=asdfg;lkjh
+set hint-match-element=false
+set hint-keys-same-length=true
+set hint-timeout=0
+
+# Enable smooth scrolling
+set smooth-scrolling=true
+
+# Fake a Chromium User-Agent header
+#set user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+set user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36
+
+# Set download directory
+set download-path=~/Downloads
+
+# If enabled the inputbox will be hidden whenever it contains no text
+set input-autohide=true
+
+# Set the default zoom
+set default-zoom=100
+
+# Hint sites to use dark themes
+set dark-mode=on
+
+# Use Emacs as the external editor
+set editor-command=emacsclient
+
+# Enable support for WebGL
+set webgl=true
+
+# While typing a search command, show where the pattern typed so far matches.
+set incsearch=true
+
+# Enable developer tools (binding is gF)
+set webinspector=true
+
+# Turn off dark mode on some sites
+au LoadCommitted https://outlook.office.com/* set dark-mode=off
+
+# Keybindings
+# - 'e' edits URL in current window
+# - 'E' edits URL in new window
+# - 'O' opens URL in new window
+# - 'H' navigates back
+# - 'L' navigates forward
+# - 'D' closes the window
+# - 'C-g' exits command and input mode
+# - 'C-j' and 'C-k' move down and up command selections
+nn e O
+nn E T
+nm O :tabopen<Space>
+nn H <C-O>
+nn L <C-I>
+nm D :q<CR>
+ino <C-G> <Esc>
+cno <C-J> <Tab>
+cno <C-K> <S-Tab>
+
+# Zoom keys
+nmap + zI
+nmap - zO
+nmap = zz
+
+# Shortcuts
+shortcut-add gn=https://github.com/notifications
+shortcut-add dot=https://github.com/daviwil/dotfiles
+shortcut-add ddg=https://duckduckgo.com/?q=$0
+shortcut-add gh=https://github.com/$0
+shortcut-add gm=https://www.iro.umontreal.ca/~gambit/doc/gambit.html
+shortcut-add gam=https://github.com/gambit/gambit
+shortcut-add zig=https://github.com/ziglang/zig
+shortcut-add zigd=https://ziglang.org/documentation/master/
+shortcut-add zigl=https://ziglang.org/documentation/master/std
+shortcut-add sub=https://github.com/substratic/
+shortcut-add sube=https://github.com/substratic/engine
+shortcut-add subb=https://github.com/substratic/build
+shortcut-add subf=https://github.com/substratic/forge
+shortcut-add subc=https://github.com/substratic/crash-the-stack
+shortcut-add tspl=https://scheme.com/tspl4/
+shortcut-add mail=https://fastmail.com
+shortcut-add cups=http://localhost:631
+shortcut-add az=https://portal.azure.com
+shortcut-add azdo=https://dev.azure.com/azure-sdk/
+shortcut-add ajs=https://github.com/Azure/azure-sdk-for-js
+shortcut-add dajs=https://github.com/daviwil/azure-sdk-for-js
+shortcut-add anet=https://github.com/Azure/azure-sdk-for-net
+shortcut-add aja=https://github.com/Azure/azure-sdk-for-java
+shortcut-add apy=https://github.com/Azure/azure-sdk-for-python
+shortcut-add ats=https://github.com/Azure/autorest.typescript
+shortcut-add ats3=https://github.com/Azure/autorest.typescript.v3
+shortcut-add atest=https://github.com/Azure/autorest.testserver
+shortcut-add amf=https://github.com/Azure/autorest.modelerfour
+shortcut-add ar=https://github.com/Azure/autorest
+shortcut-add arpy=https://github.com/Azure/autorest.python
+shortcut-add arc=https://github.com/Azure/autorest.csharp
+shortcut-add are=https://github.com/Azure/autorest/tree/master/docs/extensions
+shortcut-add arp=https://github.com/orgs/Azure/projects/48
+shortcut-add ac=https://github.com/Azure/autorest.compare
+shortcut-add ap=https://github.com/Azure/perks
+shortcut-add specs=https://github.com/Azure/azure-rest-api-specs
+shortcut-add oai2=https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+shortcut-add oai3=https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md
+shortcut-add npm=https://www.npmjs.com/search?q=$0
+shortcut-add oms=https://outlook.com/microsoft.com
+shortcut-add msw=https://microsoft.sharepoint.com
+shortcut-add man=https://fanglingsu.github.io/vimb/man.html
+
+# A newline is needed at EOF because each line is executed like a command as if the user typed it and pressed Enter.
+
+#+end_src
+
+*** Desktop Notifications via Dunst
+
+[[https://dunst-project.org/][Dunst]] is a minimal interface for displaying desktop notifications.  It is quite hackable but I'm not currently taking much advantage of its power.  One useful feature is the ability to recall notification history; the keybinding is =C-`= in my configuration (though I'd prefer if I could invoke it from an Emacs keybinding somehow).
+
+*.config/dunst/dunstrc:*
+
+#+begin_src conf :mkdirp t :tangle .config/dunst/dunstrc :noweb yes
+
+[global]
+    ### Display ###
+    monitor = 0
+
+    # The geometry of the window:
+    #   [{width}]x{height}[+/-{x}+/-{y}]
+    geometry = "500x10-10+50"
+
+    # Show how many messages are currently hidden (because of geometry).
+    indicate_hidden = yes
+
+    # Shrink window if it's smaller than the width.  Will be ignored if
+    # width is 0.
+    shrink = no
+
+    # The transparency of the window.  Range: [0; 100].
+    transparency = 10
+
+    # The height of the entire notification.  If the height is smaller
+    # than the font height and padding combined, it will be raised
+    # to the font height and padding.
+    notification_height = 0
+
+    # Draw a line of "separator_height" pixel height between two
+    # notifications.
+    # Set to 0 to disable.
+    separator_height = 1
+    separator_color = frame
+
+    # Padding between text and separator.
+    padding = 8
+
+    # Horizontal padding.
+    horizontal_padding = 8
+
+    # Defines width in pixels of frame around the notification window.
+    # Set to 0 to disable.
+    frame_width = 2
+
+    # Defines color of the frame around the notification window.
+    frame_color = "#89AAEB"
+
+    # Sort messages by urgency.
+    sort = yes
+
+    # Don't remove messages, if the user is idle (no mouse or keyboard input)
+    # for longer than idle_threshold seconds.
+    idle_threshold = 120
+
+    ### Text ###
+
+    font = Cantarell 20
+
+    # The spacing between lines.  If the height is smaller than the
+    # font height, it will get raised to the font height.
+    line_height = 0
+    markup = full
+
+    # The format of the message.  Possible variables are:
+    #   %a  appname
+    #   %s  summary
+    #   %b  body
+    #   %i  iconname (including its path)
+    #   %I  iconname (without its path)
+    #   %p  progress value if set ([  0%] to [100%]) or nothing
+    #   %n  progress value if set without any extra characters
+    #   %%  Literal %
+    # Markup is allowed
+    format = "<b>%s</b>\n%b"
+
+    # Alignment of message text.
+    # Possible values are "left", "center" and "right".
+    alignment = left
+
+    # Show age of message if message is older than show_age_threshold
+    # seconds.
+    # Set to -1 to disable.
+    show_age_threshold = 60
+
+    # Split notifications into multiple lines if they don't fit into
+    # geometry.
+    word_wrap = yes
+
+    # When word_wrap is set to no, specify where to make an ellipsis in long lines.
+    # Possible values are "start", "middle" and "end".
+    ellipsize = middle
+
+    # Ignore newlines '\n' in notifications.
+    ignore_newline = no
+
+    # Stack together notifications with the same content
+    stack_duplicates = true
+
+    # Hide the count of stacked notifications with the same content
+    hide_duplicate_count = false
+
+    # Display indicators for URLs (U) and actions (A).
+    show_indicators = yes
+
+    ### Icons ###
+
+    # Align icons left/right/off
+    icon_position = left
+
+    # Scale larger icons down to this size, set to 0 to disable
+    max_icon_size = 88
+
+    # Paths to default icons.
+    # TODO: Check the icon path...
+    icon_path = /home/paul/.guix-extra-profiles/desktop/desktop/share/icons/gnome/256x256/status/:/home/daviwil/.guix-extra-profiles/desktop/desktop/share/icons/gnome/256x256/devices/:/home/daviwil/.guix-extra-profiles/desktop/desktop/share/icons/gnome/256x256/emblems/
+
+    ### History ###
+
+    # Should a notification popped up from history be sticky or timeout
+    # as if it would normally do.
+    sticky_history = no
+
+    # Maximum amount of notifications kept in history
+    history_length = 20
+
+    ### Misc/Advanced ###
+
+    # Browser for opening urls in context menu.
+    browser = qutebrowser
+
+    # Always run rule-defined scripts, even if the notification is suppressed
+    always_run_script = true
+
+    # Define the title of the windows spawned by dunst
+    title = Dunst
+
+    # Define the class of the windows spawned by dunst
+    class = Dunst
+
+    startup_notification = false
+    verbosity = mesg
+
+    # Define the corner radius of the notification window
+    # in pixel size. If the radius is 0, you have no rounded
+    # corners.
+    # The radius will be automatically lowered if it exceeds half of the
+    # notification height to avoid clipping text and/or icons.
+    corner_radius = 4
+
+    mouse_left_click = close_current
+    mouse_middle_click = do_action
+    mouse_right_click = close_all
+
+# Experimental features that may or may not work correctly. Do not expect them
+# to have a consistent behaviour across releases.
+[experimental]
+    # Calculate the dpi to use on a per-monitor basis.
+    # If this setting is enabled the Xft.dpi value will be ignored and instead
+    # dunst will attempt to calculate an appropriate dpi value for each monitor
+    # using the resolution and physical size. This might be useful in setups
+    # where there are multiple screens with very different dpi values.
+    per_monitor_dpi = false
+
+[shortcuts]
+
+    # Shortcuts are specified as [modifier+][modifier+]...key
+    # Available modifiers are "ctrl", "mod1" (the alt-key), "mod2",
+    # "mod3" and "mod4" (windows-key).
+    # Xev might be helpful to find names for keys.
+
+    # Close notification.
+    #close = ctrl+space
+
+    # Close all notifications.
+    #close_all = ctrl+shift+space
+
+    # Redisplay last message(s).
+    # On the US keyboard layout "grave" is normally above TAB and left
+    # of "1". Make sure this key actually exists on your keyboard layout,
+    # e.g. check output of 'xmodmap -pke'
+    history = ctrl+grave
+
+    # Context menu.
+    context = ctrl+shift+period
+
+[urgency_low]
+    # IMPORTANT: colors have to be defined in quotation marks.
+    # Otherwise the "#" and following would be interpreted as a comment.
+    background = "#222222"
+    foreground = "#888888"
+    timeout = 10
+    # Icon for notifications with low urgency, uncomment to enable
+    #icon = /path/to/icon
+
+[urgency_normal]
+    background = "#1c1f26"
+    foreground = "#ffffff"
+    timeout = 10
+    # Icon for notifications with normal urgency, uncomment to enable
+    #icon = /path/to/icon
+
+[urgency_critical]
+    background = "#900000"
+    foreground = "#ffffff"
+    frame_color = "#ff0000"
+    timeout = 0
+    # Icon for notifications with critical urgency, uncomment to enable
+    #icon = /path/to/icon
+
+#+end_src
+
+
+** Default Applications
+The file =.config/mimeapps.list= configures default applications for various content types.  Right now I'm using it to control which browser opens URLs from other applications.
+
+#+begin_src conf :mkdirp t :tangle .config/mimeapps.list
+
+  [Default Applications]
+  text/html=qutebrowser.desktop
+  x-scheme-handler/http=qutebrowser.desktop
+  x-scheme-handler/https=qutebrowser.desktop
+  x-scheme-handler/about=qutebrowser.desktop
+  x-scheme-handler/unknown=qutebrowser.desktop
+
+#+end_src
+** Desktop
+
+The =desktop.scm= manifest holds the list of packages that I use to configure my desktop environment.  The package names are pulled from the relevant sections titled *Guix Packages* in this file (=system.org=).
+
+*.config/guix/manifests/desktop.scm:*
+
+#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/desktop.scm :noweb yes
+
+(specifications->manifest
+ '(
+   <<packages>>
+))
+
+#+end_src
+
+
+*** Media Players
+**** mpv
+[[https://mpv.io/][mpv]] is a simple yet powerful video player.  Paired with [[http://ytdl-org.github.io/youtube-dl/][youtube-dl]] it can even stream YouTube videos.  [[https://github.com/hoyon/mpv-mpris][mpv-mpris]] allows playback control via [[https://github.com/altdesktop/playerctl][playerctl]].
+
+*.config/mpv/mpv.conf*
+
+#+begin_src conf :mkdirp t :tangle .config/mpv/mpv.conf :noweb yes
+
+# Configure playback quality
+vo=gpu
+hwdec=vaapi
+profile=gpu-hq
+scale=ewa_lanczossharp
+cscale=ewa_lanczossharp
+
+# Start the window in the upper right screen corner
+geometry=22%-30+20
+
+# Save video position on quit
+save-position-on-quit
+
+# Enable control by MPRIS
+script=~/.guix-extra-profiles/desktop/desktop/lib/mpris.so
+
+# Limit the resolution of YouTube videos
+ytdl=yes
+ytdl-format=bestvideo[height<=?720]+bestaudio/best
+
+# When playing audio files, display the album art
+audio-display=attachment
+
+# Keep the player open after the file finishes
+keep-open
+
+#+end_src
+
+*Guix Packages*
+#+begin_src scheme :noweb-ref packages :noweb-sep ""
+
+"mpv"
+"mpv-mpris"
+"youtube-dl"
+"playerctl"
+
+#+end_src
+
+** User services
+[[https://www.gnu.org/software/shepherd/][GNU Shepherd]] is used to manage services that run in the background
+after I log in.
+Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
+
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.scm
+
+(use-modules (shepherd service)
+             ((ice-9 ftw) #:select (scandir)))
+
+;; Load all the files in the directory 'init.d' with a suffix '.scm'
+
+(for-each
+ (lambda (file)
+   (load (string-append "init.d/" file)))
+ (scandir (string-append (dirname (current-filename)) "/init.d")
+          (lambda (file)
+            (string-suffix? ".scm" file))))
+
+(action 'shepherd 'daemonize)
+
+#+end_src
+
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/gpg-agent.scm
+(define gpg-agent
+  (make <service>
+    #:provides '(gpg-agent)
+    #:respawn? #t
+    #:start (make-system-constructor "gpg-connect-agent /bye")
+    #:stop (make-system-destructor "gpgconf --kill gpg-agent")))
+
+(register-services gpg-agent)
+(start gpg-agent)
+
+#+end_src
+
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/mcron.scm
+(define mcron
+  (make <service>
+    #:provides '(mcron)
+    #:respawn? #t
+    #:start (make-forkexec-constructor '("mcron"))
+    #:stop  (make-kill-destructor)))
+
+(register-services mcron)
+(start mcron)
+#+end_src
+
+Currently this isn't working as expected, so set to not tangle.
+#+begin_src scheme :mkdirp t :notangle .config/shepherd/init.d/emacs.scm
+(define emacs
+  (make <service>
+    #:provides '(emacs)
+    #:requires '()
+    #:docstring "Start emacs daemon"
+    #:start (make-system-constructor "emacs --daemon")
+    #:stop (make-system-destructor "emacsclient --eval \"(kill-emacs)\"")))
+
+(register-services emacs)
+(start emacs)
+#+end_src
+
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/syncthing.scm
+(define syncthing
+  (make <service>
+    #:provides '(syncthing)
+    #:docstring "Run `syncthing' without calling the browser"
+    #:start (make-forkexec-constructor
+             '("syncthing" "-no-browser"
+               "-logflags=3" ; prefix with date and time
+               "logfile=/home/paul/log/syncthing.log"))
+    #:stop (make-kill-destructor)
+    #:respawn #t))
+
+(register-services syncthing)
+(start syncthing)
+#+end_src
+
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/pulseaudio.scm
+(define pulseaudio
+  (make <service>
+    #:provides '(pulseaudio)
+    #:respawn? #t
+    #:start (make-forkexec-constructor '("pulseaudio"))
+    #:stop  (make-kill-destructor)))
+
+(register-services pulseaudio)
+
+(start pulseaudio)
+
+#+end_src
+
 ** Profile Management
 To make the management of multiple profiles easier, I've created a couple of shell scripts:
 
@@ -733,46 +1564,50 @@ activate-profiles desktop emacs music
 
 *.bin/activate-profiles:*
 
-#+begin_src sh :tangle ./.bin/activate-profiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle ./.bin/activate-profiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
-GREEN='\033[1;32m'
-RED='\033[1;30m'
-NC='\033[0m'
-GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
+if [ $HOSTNAME = "zeus" ] # This will need modification when expanding number of guix systems.
+                          # Currently zeus is the only one.
+then
+  GREEN='\033[1;32m'
+  RED='\033[1;30m'
+  NC='\033[0m'
+  GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
 
-profiles=$*
-if [[ $# -eq 0 ]]; then
+  profiles=$*
+  if [[ $# -eq 0 ]]; then
     profiles="$HOME/.config/guix/manifests/*.scm";
-fi
-
-for profile in $profiles; do
-  # Remove the path and file extension, if any
-  profileName=$(basename $profile)
-  profileName="${profile%.*}"
-  profilePath="$GUIX_EXTRA_PROFILES/$profileName"
-  manifestPath=$HOME/.config/guix/manifests/$profile.scm
-
-  if [ -f $manifestPath ]; then
-    echo
-    echo -e "${GREEN}Activating profile:" $manifestPath "${NC}"
-    echo
-
-    mkdir -p $profilePath
-    guix package --manifest=$manifestPath --profile="$profilePath/$profileName"
-
-    # Source the new profile
-    GUIX_PROFILE="$profilePath/$profileName"
-    if [ -f $GUIX_PROFILE/etc/profile ]; then
-        . "$GUIX_PROFILE"/etc/profile
-    else
-        echo -e "${RED}Couldn't find profile:" $GUIX_PROFILE/etc/profile "${NC}"
-    fi
-  else
-    echo "No profile found at path" $profilePath
   fi
-done
+  
+  for profile in $profiles; do
+    # Remove the path and file extension, if any
+    profileName=$(basename $profile)
+    profileName="${profileName%.*}"
+    profilePath="$GUIX_EXTRA_PROFILES/$profileName"
+    manifestPath=$HOME/.config/guix/manifests/$profileName.scm
+    
+    if [ -f $manifestPath ]; then
+      echo
+      echo -e "${GREEN}Activating profile:" $manifestPath "${NC}"
+      echo
+      
+      mkdirp -p $profilePath
+      guix package --manifest=$manifestPath --profile="$profilePath/$profileName"
+      
+      # Source the new profile
+      GUIX_PROFILE="$profilePath/$profileName"
+      if [ -f $GUIX_PROFILE/etc/profile ]; then
+        . "$GUIX_PROFILE"/etc/profile
+      else
+        echo -e "${RED}Couldn't find profile:" $GUIX_PROFILE/etc/profile "${NC}"
+      fi
+    else
+      echo "No profile found at path" $profilePath
+    fi
+  done
+fi
 
 #+end_src
 
@@ -788,7 +1623,7 @@ update-profiles emacs
 
 *.bin/update-profiles:*
 
-#+begin_src sh :tangle ./.bin/update-profiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle ./.bin/update-profiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -816,7 +1651,10 @@ done
 
 * Dotfiles Management
 
-Since I keep all of my important configuration files in Org Mode code blocks, I have to ensure that the real configuration files are kept up to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.  I've written a couple of scripts to simplify that process:
+Since I keep all of my important configuration files in Org Mode code
+blocks, I have to ensure that the real configuration files are kept up
+to date when I sync the latest changes to my [[https://github.com/daviwil/dotfiles][dotfiles]] repo.  I've
+written a couple of scripts to simplify that process:
 
 ** Syncing
 
@@ -824,7 +1662,7 @@ When I want to sync my dotfiles repo into my local clone which likely has uncomm
 
 *.bin/sync-dotfiles*
 
-#+begin_src sh :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp t :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
 
@@ -872,52 +1710,50 @@ fi
 
 ** Updating
 
-Updating my dotfiles requires running a script in Emacs to loop over all of my literate configuration =.org= files and run =org-babel-tangle-file= to make sure all of my configuration files are up to date.
+Updating my dotfiles requires running a script in Emacs to loop over
+all of my literate configuration =.org= files and run
+=org-babel-tangle-file= to make sure all of my configuration files are
+up to date.
 
 *.bin/update-dotfiles*
-
-#+begin_src sh :tangle ./.bin/update-dotfiles :shebang #!/bin/sh
-# -*- buffer-read-only: t; -*-
-# Navigate to the directory of this script (generally ~/.dotfiles/.bin)
-cd $(dirname $(readlink -f $0))
-cd ..
-
-# The heavy lifting is done by an Emacs script
-emacs -Q --script ~/.emacs.d/tangle-dotfiles.el
-
-# Make sure any running Emacs instance gets updated settings
-#  emacsclient -e '(load-file "~/.emacs.d/per-system-settings.el")' -a "echo 'Emacs is not currently running'"
-
-# Update configuration symlinks
-stow .
-
-#+end_src
-
 *.emacs.d/tangle-dotfiles.el*
 
-#+begin_src emacs-lisp :tangle ./.emacs.d/tangle-dotfiles.el
-;; -*- buffer-read-only: t; -*-
-(require 'org)
-
-;; Don't ask when evaluating code blocks
-(setq org-confirm-babel-evaluate nil)
-
-(let* ((dotfiles-path (expand-file-name "~/dotfiles"))
-  (org-files (directory-files dotfiles-path nil "\\.org$")))
-
-  (defun dw/tangle-org-file (org-file)
-    (message "\n\033[1;32mUpdating %s\033[0m\n" org-file)
-    (org-babel-tangle-file (expand-file-name org-file dotfiles-path)))
-
-  ;; Tangle Systems.org first
-  (dw/tangle-org-file "systems.org")
-
-  (dolist (org-file org-files)
-    (unless (member org-file '("README.org" "systems.org"))
-       (dw/tangle-org-file org-file))))
-
-#+end_src
+These two files is already in the .bin and .emacs.d directory
+respectively. Otherwise it's not straight forward to tangle all of the
+.org files.
 
 ** System Installation
 
 Until I migrate its Markdown contents into Org syntax, consult [[file:.config/guix/systems/README.md][.config/guix/systems/README.md]] for installation instructions.
+
+
+* Notes
+** Bluetooth Setup
+
+If you need to manually connect to Bluetooth audio devices using =bluetoothctl=,
+as I currently do in Guix, you'll need to enter these commands at the
+=bluetoothctl= prompt:
+
+#+begin_src shell
+  system-alias "my-hostname" # To configure your laptop's device name
+  default-agent
+  power on
+  scan on
+  # Wait for your device to appear
+  pair 04:52:C7:5E:5C:A8
+  trust 04:52:C7:5E:5C:A8 # To enable auto-connect
+  connect 04:52:C7:5E:5C:A8
+#+end_src
+
+** exwm useful links (for future reference):
+- https://github.com/ch11ng/exwm/wiki
+- https://www.reddit.com/r/emacs/comments/6huok9/exwm_configs/
+- https://ambrevar.xyz/de/index.html
+* Provide the dw-desktop package
+
+#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-desktop.el
+
+  (provide 'dw-desktop)
+
+#+end_src
+
