@@ -681,7 +681,7 @@ window manager and associated programs is done there.
    "font-abattis-cantarell"
    "font-dejavu"
    "font-google-noto"
-   "font-gnu-freefont-ttf"
+   "font-gnu-freefont"
    "font-liberation"
    "font-awesome"
    "font-google-material-design-icons"
