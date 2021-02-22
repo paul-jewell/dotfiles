@@ -2052,6 +2052,8 @@ Not yet set up. Website development with org and hugo.
 (use-package ox-hugo
   :after ox)
 
+(put 'narrow-to-region 'disabled nil)
+
 (provide 'init)
 ;;; init.el ends here
 

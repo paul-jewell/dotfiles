@@ -1,5 +1,5 @@
 #+TITLE: org-workflow.org - personalised gtd workflow for org-mode
-#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/lisp/my-org-mode.el
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/lisp/my-org-mode.el :mkdirp t
 
 Org-mode workflow developed over time from the excellent configuration
 shared by Bernt Hansen. Since then I have brought the code up to date
@@ -24,7 +24,7 @@ TODO: Complete the breakdown and documentation in this file.
 
 * Preamble
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/lisp/my-org-mode.el
 ;; -*- buffer-read-only: t; -*-
 ;;; package --- Summary
 
@@ -149,14 +149,16 @@ TODO: Complete the breakdown and documentation in this file.
 
 (defun pj/uuidgen ()
   "Generate a UUID for the ID Property of each task."
-  (shell-command-to-string "uuidgen"))
+  (if (string= "windows-nt" system-type)
+      (shell-command-to-string "powershell -Command \"[guid]::NewGuid().ToString()\" ")
+    (shell-command-to-string "uuidgen")))
 
 
 #+end_src
 
 
 * dw-org.el
-#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-org.el
+#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/lisp/dw-org.el
 (defun dw/time-add-days (time days)
   (let* ((decoded-time (decode-time time))
          (year         (nth 5 decoded-time))
@@ -522,7 +524,7 @@ If no task is selected set the Organization task as the default task."
       ;;
       ;; We're in the agenda
       ;;
-      (let* ((marker (org-get-at-bol 'org-hd-marker))
+      (let* ((marker (org-get-at-bol 'd-marker))
              (tags (org-with-point-at marker (org-get-tags))))
         (if (and (eq arg 4) tags)
             (org-agenda-clock-in '(16))
