@@ -1,6 +1,6 @@
 #!/bin/sh
 # Navigate to the directory of this script (generally ~/.dotfiles/.bin)
-cd $(dirname $(readlink -f $0))
+cd "$(dirname "$(readlink -f "$0")")" || exit
 cd ..
 
 # The heavy lifting is done by an Emacs script
@@ -10,4 +10,10 @@ emacs -Q --script ~/.emacs.d/tangle-dotfiles.el
 #  emacsclient -e '(load-file "~/.emacs.d/per-system-settings.el")' -a "echo 'Emacs is not currently running'"
 
 # Update configuration symlinks
-stow .
+if [ "$(hostname)" = zeus ]
+then
+  stow . # For guix system - stow everything
+else     # Otherwise - don't stow the pulseaudio stuff
+  stow --ignore=\.config/* -n
+fi
+
