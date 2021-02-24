@@ -1323,6 +1323,18 @@ Currently this isn't working as expected, so set to not tangle.
 
 #+end_src
 
+#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/mpd.scm
+(define mpd
+  (make <service>
+    #:provides '(mpd)
+    #:respawn? #t
+    #:start (make-forkexec-constructor '("mpd"))
+    #:stop (make-kill-destructor)))
+
+(register-services mpd)
+(start mpd)
+
+#+end_src
 ** Profile Management
 To make the management of multiple profiles easier, I've created a couple of shell scripts:
 
