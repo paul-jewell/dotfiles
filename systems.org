@@ -1751,7 +1751,7 @@ as I currently do in Guix, you'll need to enter these commands at the
 - https://ambrevar.xyz/de/index.html
 * Provide the dw-desktop package
 
-#+begin_src emacs-lisp :tangle .emacs.d/lisp/dw-desktop.el
+#+begin_src emacs-lisp :tangle ~/.emacs.d/lisp/dw-desktop.el
 
   (provide 'dw-desktop)
 
