@@ -7,6 +7,7 @@ Emacs configuration.
 :PROPERTIES:
 :TOC: :include all :ignore this
 :END:
+- [[#early-init-file][Early init file]]
 - [[#preamble][Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
@@ -57,6 +58,19 @@ Emacs configuration.
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 - [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
+* Early init file
+#+begin_src emacs-lisp :tangle ~/.emacs.d/early-init.el
+;;; -*-buffer-read-only: t;-*- 
+;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
+;;; Commentary:
+;;; This file is tangled from ~/dotfiles/emacs.org. Any changes should be made there...
+
+;;; Code:
+
+(if (> emacs-major-version 27)
+    (setq package-enable-at-startup nil))
+
+#+end_src
 * Preamble
 
 #+begin_src emacs-lisp
@@ -67,7 +81,7 @@ Emacs configuration.
 ;;; Commentary:
 ;; Initial configuration file loaded by Emacs.
 ;;  - Sets the custom configuration file location
-;; This file is generated from .dotfiles/emacs.org and tangled. Changes should
+;; This file is generated from ~/dotfiles/emacs.org and tangled. Changes should
 ;; be made to that file; also for more information - see details there.
 ;;
 ;; (c) 2017 - 2021 Paul Jewell

@@ -350,7 +350,7 @@ Some settings need to be customized on a per-system basis without tweaking indiv
 
 I also define a function called =dw/system-settings-get= which can retrieve these settings appropriately.
 
-#+begin_src emacs-lisp :mkdirp t :tangle ./.emacs.d/per-system-settings.el :noweb yes
+#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/per-system-settings.el :noweb yes
 
 (require 'map) ;; Needed for map-merge
 
@@ -363,7 +363,7 @@ I also define a function called =dw/system-settings-get= which can retrieve thes
 #+end_src
 
 
-#+begin_src emacs-lisp :mkdirp t :tangle .emacs.d/lisp/dw-settings.el
+#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/lisp/dw-settings.el
 
 (defun dw/load-system-settings ()
   (interactive)

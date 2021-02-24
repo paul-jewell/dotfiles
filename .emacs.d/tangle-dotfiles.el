@@ -1,4 +1,10 @@
-;; -*- buffer-read-only: t; -*-
+;;; tangle-dotfiles --- extract dot files from org files.
+;;; Commentary:
+;;; System configuration files are stored in org files under
+;;; ~/dotfiles and this code will extract them.
+
+;;; Code:
+
 (require 'org)
 
 ;; Don't ask when evaluating code blocks
@@ -7,13 +13,16 @@
 (let* ((dotfiles-path (expand-file-name "~/dotfiles"))
   (org-files (directory-files dotfiles-path nil "\\.org$")))
 
-  (defun dw/tangle-org-file (org-file)
+  (defun pj/tangle-org-file (org-file)
     (message "\n\033[1;32mUpdating %s\033[0m\n" org-file)
     (org-babel-tangle-file (expand-file-name org-file dotfiles-path)))
 
   ;; Tangle Systems.org first
-  (dw/tangle-org-file "systems.org")
+  (pj/tangle-org-file "systems.org")
 
   (dolist (org-file org-files)
     (unless (member org-file '("README.org" "systems.org"))
-       (dw/tangle-org-file org-file))))
+      (pj/tangle-org-file org-file))))
+
+(provide 'tangle-dotfiles)
+;;; tangle-dotfiles.el ends here
