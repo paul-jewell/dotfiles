@@ -553,6 +553,7 @@ additional manifests below.
 "zip"
 "unzip"
 "htop"
+"lf"
 #+end_src
 
 **** Syncthing
