@@ -4,7 +4,7 @@ cd "$(dirname "$(readlink -f "$0")")" || exit
 cd ..
 
 # The heavy lifting is done by an Emacs script
-emacs -Q --script ~/.emacs.d/tangle-dotfiles.el
+emacs -Q --script ~/dotfiles/.emacs.d/tangle-dotfiles.el
 
 # Make sure any running Emacs instance gets updated settings
 #  emacsclient -e '(load-file "~/.emacs.d/per-system-settings.el")' -a "echo 'Emacs is not currently running'"
@@ -12,8 +12,20 @@ emacs -Q --script ~/.emacs.d/tangle-dotfiles.el
 # Update configuration symlinks
 if [ "$(hostname)" = zeus ]
 then
-  stow . # For guix system - stow everything
-else     # Otherwise - don't stow the pulseaudio stuff
-  stow --ignore=\.config/* -n
+  stow .     # For guix system - stow everything
+else         # Otherwise - don't stow the pulseaudio stuff
+  stow . \
+       -R \
+       --ignore=\.config/pulse \
+       --ignore=\.config/mimeapps.list \
+       --ignore=\.config/dunst \
+       --ignore=\.xsession \
+       --ignore=\.config/vimb \
+       --ignore=\.config/mpv \
+       --ignore=\.config/mpd \
+       --ignore=\.config/zathura \
+       --ignore=\.config/polybar \
+       --ignore=\.config/xsettingsd \
+       --ignore=\.config/fontconfig
 fi
 
