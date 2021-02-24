@@ -45,7 +45,7 @@ then
     xset +fp $(dirname $(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fonts/truetype/fonts.dir))
 
     # nvim for editing system files...
-    export VISUAL=nvim
+    export VISUAL=emacs
     export EDITOR="$VISUAL"
 else 
     # .profile setup for gentoo systems
