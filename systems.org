@@ -689,6 +689,13 @@ window manager and associated programs is done there.
    "font-awesome"
    "font-google-material-design-icons"
    "gs-fonts"
+
+   ;; Packages for dwmblocks status bar
+   "bmon"
+   "xbacklight"
+   "pamixer"
+   "lm-sensors"
+   "mpd-mpc"
    ))
 
 #+end_src
