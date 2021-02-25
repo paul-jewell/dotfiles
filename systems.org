@@ -642,7 +642,7 @@ window manager and associated programs is done there.
 (specifications->manifest
  '("paulj-dwm"
    "paulj-dmenu"
-   "paulj-dwmblocks"
+   "dwmblocks"
    "paulj-st"
    "paulj-slock"
    "xev"
