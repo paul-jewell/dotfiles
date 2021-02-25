@@ -48,7 +48,7 @@ then
     export VISUAL="emacs"
     export EDITOR="$VISUAL"
     export BROWSER="nyxt"
-
+    export TERMINAL="st"
 else 
     # .profile setup for gentoo systems
 
