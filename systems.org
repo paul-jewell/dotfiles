@@ -630,7 +630,8 @@ I use [[https://www.gnu.org/software/mcron/][GNU mcron]] for scheduling tasks to
 "mcron"
 #+end_src
 
-*** Window Manager
+*** Window
+Manager
 I am using dwm, installed in the user account. These are the packages
 required for that, and the other support packages for the Xorg desktop
 use. By not having window managers installed at system level, the
@@ -641,6 +642,7 @@ window manager and associated programs is done there.
 (specifications->manifest
  '("paulj-dwm"
    "paulj-dmenu"
+   "paulj-dwmblocks"
    "paulj-st"
    "paulj-slock"
    "xev"
