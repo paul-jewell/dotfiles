@@ -1,5 +1,5 @@
 # Define PATH
-export PATH="${$(find ~/.bin -type d -printf %p:)%%:}:$PATH"
+export PATH=$(find -L  ~/.bin -type d -printf %p:)$PATH
 
 if [ "$(hostname)" = "zeus" ] 
 then
