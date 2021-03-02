@@ -44,7 +44,9 @@ then
     # Ensure that font folders are loaded correctly
     xset +fp "$(dirname "$(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fonts/truetype/fonts.dir)")"
 
-    # nvim for editing system files...
+    export SUDO_ASKPASS="dmenupass"
+    
+    # emacs for editing system files...
     export VISUAL="emacs"
     export EDITOR="$VISUAL"
     export BROWSER="nyxt"
