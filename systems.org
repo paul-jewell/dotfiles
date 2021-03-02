@@ -696,6 +696,11 @@ window manager and associated programs is done there.
    "pamixer"
    "lm-sensors"
    "mpd-mpc"
+
+   ;; Packages for dwm
+   "bc"
+   "maim"
+   "calcurse"
    ))
 
 #+end_src
