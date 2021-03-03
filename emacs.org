@@ -1880,7 +1880,7 @@ Developed from bbatsov's code on his github.
 
 (setq erc-autojoin-channels-alist '(("freenode.net"
                                      "#emacs"
-                                     "#gentoo" "#guix" 
+                                     "#gentoo" "#guix" "#guile"
                                      "#lisp" "#clojure" "#scheme")))
 
 ;; Interpret mIRC-style colour commands in IRC chats
