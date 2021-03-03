@@ -1315,7 +1315,7 @@ Currently this isn't working as expected, so set to not tangle.
     #:start (make-forkexec-constructor
              '("syncthing" "-no-browser"
                "-logflags=3" ; prefix with date and time
-               "logfile=/home/paul/log/syncthing.log"))
+               "-logfile=/home/paul/log/syncthing.log"))
     #:stop (make-kill-destructor)
     #:respawn #t))
 
