@@ -554,6 +554,7 @@ additional manifests below.
 "unzip"
 "htop"
 "lf"
+"gnupg"
 #+end_src
 
 **** Syncthing
