@@ -207,26 +207,25 @@ Use the =libinput= driver for all input devices since it's a bit more modern tha
 
 #+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
-  (define %xorg-libinput-config
-    "Section \"InputClass\"
-    Identifier \"Touchpads\"
-    Driver \"libinput\"
-    MatchDevicePath \"/dev/input/event*\"
-    MatchIsTouchpad \"on\"
+(define %xorg-libinput-config
+  "Section \"InputClass\"
+     Identifier \"Touchpads\"
+     Driver \"libinput\"
+     MatchDevicePath \"/dev/input/event*\"
+     MatchIsTouchpad \"on\"
 
-    Option \"Tapping\" \"on\"
-    Option \"TappingDrag\" \"on\"
-    Option \"DisableWhileTyping\" \"on\"
-    Option \"MiddleEmulation\" \"on\"
-    Option \"ScrollMethod\" \"twofinger\"
-  EndSection
-  Section \"InputClass\"
-    Identifier \"Keyboards\"
-    Driver \"libinput\"
-    MatchDevicePath \"/dev/input/event*\"
-    MatchIsKeyboard \"on\"
-  EndSection
-  ")
+     Option \"Tapping\" \"on\"
+     Option \"TappingDrag\" \"on\"
+     Option \"DisableWhileTyping\" \"on\"
+     Option \"MiddleEmulation\" \"on\"
+     Option \"ScrollMethod\" \"twofinger\"
+   EndSection
+   Section \"InputClass\"
+     Identifier \"Keyboards\"
+     Driver \"libinput\"
+     MatchDevicePath \"/dev/input/event*\"
+     MatchIsKeyboard \"on\"
+   EndSection")
 
 #+end_src
 
