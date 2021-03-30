@@ -3,7 +3,6 @@ export PATH=$(find -L  ~/.bin -type d -printf %p:)$PATH
 
 if [ "$(hostname)" = "zeus" ] 
 then
-    echo Setting up profiles on guix system
     # Load the default Guix profile
     GUIX_PROFILE="$HOME/.guix-profile"
     . "$GUIX_PROFILE"/etc/profile
