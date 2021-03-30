@@ -41,9 +41,11 @@ then
     export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.guix-extra-profiles/video/video/share"
     export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.guix-extra-profiles/browsers/browsers/share"
 
-    # Ensure that font folders are loaded correctly
-    xset +fp "$(dirname "$(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fonts/truetype/fonts.dir)")"
-
+    # Ensure that font folders are loaded correctly if running xserver
+    if xset q >/dev/null 2>&1; then
+      xset +fp "$(dirname "$(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fonts/truetype/fonts.dir)")"
+    fi
+    
     export SUDO_ASKPASS="dmenupass"
     
     # emacs for editing system files...
