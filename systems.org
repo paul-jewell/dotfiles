@@ -788,6 +788,8 @@ nyxt is the future!
 (specifications->manifest
  '("ungoogled-chromium"
    "nyxt"
+   "gsettings-desktop-schemas"
+   "gnome-icon-theme"
    ))
 #+end_src
 
@@ -1401,7 +1403,7 @@ then
       echo -e "${GREEN}Activating profile:" $manifestPath "${NC}"
       echo
       
-      mkdirp -p $profilePath
+      mkdir -p $profilePath
       guix package --manifest=$manifestPath --profile="$profilePath/$profileName"
       
       # Source the new profile
