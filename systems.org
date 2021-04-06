@@ -195,9 +195,9 @@ plugins.
                                                                 (handle-lid-switch-external-power 'suspend)))
                    (udev-service-type config =>
                                       (udev-configuration (inherit config)
-                                                          (rules (cons %backlight-udev-rule
-                                                                       %touchpad-udev-rule
-                                                                       (udev-configuration-rules config)))))
+                                                          (rules (cons* %backlight-udev-rule
+                                                                        %touchpad-udev-rule
+                                                                        (udev-configuration-rules config)))))
                    (network-manager-service-type config =>
                                                  (network-manager-configuration (inherit config)
                                                                                 (vpn-plugins
