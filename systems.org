@@ -47,12 +47,6 @@
 
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
-;; (cons* (channel
-;;         (name 'nonguix)
-;;         (commit "c34fa8bfacdce5fa45b2a684c2b27309c09a9056")
-;;         (url "https://gitlab.com/nonguix/nonguix"))
-;;        %default-channels)
-
 (list (channel
        (name 'pj-suckless)
        (url "https://github.com/paul-jewell/pj-suckless.git"))
@@ -84,7 +78,7 @@ have to create a branch and commit changes to it before =guix pull=
 can pick them up, though.  You can change the target branch using the
 =branch= field of the =channel=.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/channels.scm
+#+begin_src scheme :mkdirp t :notangle ./.config/guix/channels.scm
 
   ;; (list (channel
   ;;         (name 'nonguix)
