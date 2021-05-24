@@ -1878,10 +1878,20 @@ Developed from bbatsov's code on his github.
 (require 'erc-spelling)
 (require 'erc-autoaway)
 
-(setq erc-autojoin-channels-alist '(("freenode.net"
+
+;; (setq erc-autojoin-channels-alist '(("freenode.net"
+;;                                     "#emacs"
+;;                                     "#gentoo" "#guile"
+;;                                     "#lisp" "#clojure" "#scheme"))
+
+(setq erc-autojoin-channels-alist '(("libera.chat"
+                                     "#guix"
                                      "#emacs"
-                                     "#gentoo" "#guix" "#guile"
-                                     "#lisp" "#clojure" "#scheme")))
+                                     "#gentoo"
+                                     "#guile"
+                                     "#lisp"
+                                     "#clojure"
+                                     "#scheme")))
 
 ;; Interpret mIRC-style colour commands in IRC chats
 (setq erc-interpret-mirc-color t)
@@ -2002,7 +2012,7 @@ that can occur between two notifications.  The default is
   "Connect to IRC."
   (interactive)
   (when (y-or-n-p "Do you want to start IRC? ")
-    (erc :server "irc.freenode.net" :port 6667 :nick "paulj")))
+    (erc :server "irc.libera.chat" :port 6667 :nick "paul_j")))
 
 (defun filter-server-buffers ()
   (delq nil
