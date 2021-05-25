@@ -1872,6 +1872,9 @@ Still under development
                                                             (replace-regexp-in-string "%0A" "\n" desc)) 
                                   prompt ": "))))
     str))
+(require 'emacs-pinentry)
+(pinentry-start)
+
 #+end_src
 
 Guix Packages
