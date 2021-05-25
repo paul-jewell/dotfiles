@@ -51,6 +51,7 @@ Emacs configuration.
 - [[#mu4e---email][mu4e - Email]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
+- [[#gnupg---key-management][gnupg - Key management]]
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
@@ -1863,6 +1864,20 @@ Still under development
 "emacs-helpful"
 #+end_src
 
+* gnupg - Key management
+
+#+begin_src emacs-lisp
+(defun pinentry-emacs (desc prompt ok error)
+  (let ((str (read-passwd (concat (replace-regexp-in-string "%22" "\"" 
+                                                            (replace-regexp-in-string "%0A" "\n" desc)) 
+                                  prompt ": "))))
+    str))
+#+end_src
+
+Guix Packages
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"emacs-pinentry"
+#+end_src
 * ERC
 Developed from bbatsov's code on his github.
 
