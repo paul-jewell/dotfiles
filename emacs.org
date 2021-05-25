@@ -1876,6 +1876,7 @@ Still under development
 
 Guix Packages
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"pinentry"
 "emacs-pinentry"
 #+end_src
 * ERC
