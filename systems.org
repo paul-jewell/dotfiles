@@ -562,6 +562,7 @@ additional manifests below.
 "htop"
 "lf"
 "gnupg"
+"screen"
 #+end_src
 
 **** Syncthing
