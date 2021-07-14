@@ -51,6 +51,7 @@ Emacs configuration.
 - [[#mu4e---email][mu4e - Email]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
+- [[#gnupg---key-management][gnupg - Key management]]
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
@@ -1863,6 +1864,19 @@ Still under development
 "emacs-helpful"
 #+end_src
 
+* gnupg - Key management
+
+#+begin_src emacs-lisp
+;; Following the ELPA instructions didn't work as expected - came across
+;; this approach, which does work. See also changes in gpg-agent.conf
+(setq epa-pinentry-mode 'loopback)
+#+end_src
+
+Guix Packages
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+"pinentry"
+"emacs-pinentry"
+#+end_src
 * ERC
 Developed from bbatsov's code on his github.
 
