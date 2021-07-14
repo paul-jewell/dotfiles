@@ -135,6 +135,7 @@ can pick them up, though.  You can change the target branch using the
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages file-systems)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages mtools)
   #:use-module (gnu packages linux)
