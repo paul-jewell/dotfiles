@@ -778,9 +778,9 @@ I also have to do an extra step to make sure Emacs can find the font path from t
 These are programs which I intend to stop using as time passes. They
 are currently installed to avoid the need to learn new programs while
 working through the system installation and configuration.
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/transition.scm
+#+begin_src scheme :mkdirp t :notangle .config/guix/manifests/transition.scm
 (specifications->manifest
- '("firefox"))
+ '())
 
 #+end_src
 
