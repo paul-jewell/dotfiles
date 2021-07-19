@@ -248,7 +248,9 @@ Define the =base-operating-system= which will be inherited by all machine config
     (initrd microcode-initrd)
     
     ;; Choose UK English keyboard layout, with the extd layout.
-    (keyboard-layout (keyboard-layout "gb" "extd" #:model "thinkpad"))
+    (keyboard-layout (keyboard-layout "gb" "extd"
+                                      #:model "thinkpad"
+                                      #:options '("ctrl:swapcaps")))
     
     ;; Use the UEFI variant of GRUB with the EFI System
     ;; Partition mounted on /boot/efi.
