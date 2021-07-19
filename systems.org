@@ -792,6 +792,7 @@ nyxt is the future!
 (specifications->manifest
  '("ungoogled-chromium"
    "nyxt"
+   "lagrange"
    "gsettings-desktop-schemas"
    "gnome-icon-theme"
    ))
@@ -1100,7 +1101,7 @@ Also something for future exploration.
     ### Misc/Advanced ###
 
     # Browser for opening urls in context menu.
-    browser = qutebrowser
+    browser = nyxt
 
     # Always run rule-defined scripts, even if the notification is suppressed
     always_run_script = true
