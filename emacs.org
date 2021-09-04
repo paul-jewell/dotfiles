@@ -816,6 +816,7 @@ Not working, and not used currently...
   (org-roam-db-location *pj/org-roam-db-location*)
   (org-roam-directory *pj/org-roam-directory*)
   (org-roam-index-file "index.org")
+  (setq org-roam-v2-ack t)
   ;; (setq org-roam-link-title-format "R:%s")
   :bind (:map org-roam-mode-map
               (("C-c n l" . org-roam)
