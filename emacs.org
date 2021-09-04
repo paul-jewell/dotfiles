@@ -810,6 +810,7 @@ Not working, and not used currently...
 ;; https://org-roam.readthedocs.io/en/master/installation/
 
 (use-package org-roam
+  :ensure t
   :hook
   (after-init . org-roam-mode)
   :custom
@@ -825,9 +826,11 @@ Not working, and not used currently...
                ("C-c n b" . org-roam-switch-to-buffer)
                ("C-c n g" . org-roam-graph))
               :map org-mode-map
-              (("C-c n i" . org-roam-insert))))
+              (("C-c n i" . org-roam-node-insert)))
+  :config
+  (org-roam-db-autosync-mode))
 
-  (setq org-roam-v2-ack t) ;; Silence version 2 update message
+(setq org-roam-v2-ack t) ;; Silence version 2 update message
 #+end_src
 
 *Guix Packages*
