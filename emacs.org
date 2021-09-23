@@ -853,7 +853,7 @@ Not working, and not used currently...
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-org-roam"
-"emacs-org-roam-dailies"
+;; "emacs-org-roam-dailies" ;; package not available under guix
 #+end_src
 
 * Licence Boilerplate
