@@ -566,6 +566,8 @@ additional manifests below.
 "lf"
 "gnupg"
 "screen"
+"stress"
+"glances"
 #+end_src
 
 **** Syncthing
