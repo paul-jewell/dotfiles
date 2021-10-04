@@ -401,24 +401,24 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
   (host-name "zeus")
   
   (swap-devices
-   (list (uuid "0702ac4e-8a6d-4072-9ddd-9c366383fe48")))
+   (list (uuid "a0a103a5-cef2-446b-a2ff-8ffbee6890de")))
   (file-systems
    (cons* (file-system
             (mount-point "/boot/efi")
-            (device (uuid "139E-0B7E" 'fat32))
+            (device (uuid "F21D-F4AF" 'fat32))
             (type "vfat"))
           (file-system
             (mount-point "/")
-            (device                       
-             (uuid "375a7481-90a2-4503-ae3c-eace6f21dddd"
-                   'btrfs))
-            (type "btrfs"))
-          (file-system
-            (mount-point "/home")
             (device
-             (uuid "68ff6c63-3ae9-4d77-81f8-e22efefb7537"
+             (uuid "dbac54d4-4507-4205-bc72-8b1e7abc3c8f"
                    'btrfs))
             (type "btrfs"))
+          ;; (file-system
+          ;;   (mount-point "/home")
+          ;;   (device
+          ;;    (uuid "68ff6c63-3ae9-4d77-81f8-e22efefb7537"
+          ;;          'btrfs))
+          ;;   (type "btrfs"))
           %base-file-systems)))
 
 
@@ -619,6 +619,7 @@ map <C-g> abort
 *Guix Packages*
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "password-store"
+"keepassxc"
 #+end_src
 
 ***** Syncing Passwords
