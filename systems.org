@@ -169,9 +169,11 @@ Add a =udev= rule to enable members of the =video= group to control screen brigh
   (udev-rule
    "90-backlight.rules"
    (string-append "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                  "KERNEL==\"intel_backlight\", "
                   "RUN+=\"/run/current-system/profile/bin/chgrp video /sys/class/backlight/%k/brightness\""
                   "\n"
                   "ACTION==\"add\", SUBSYSTEM==\"backlight\", "
+                  "KERNEL==\"intel_backlight\", "
                   "RUN+=\"/run/current-system/profile/bin/chmod g+w /sys/class/backlight/%k/brightness\"")))
 
 (define %touchpad-udev-rule
