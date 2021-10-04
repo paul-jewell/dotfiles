@@ -41,11 +41,11 @@
   I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't
   included with Guix by default like the non-free Linux kernel.
 
-*.config/guix/channels.scm:*
+*~/dotfiles/channels.scm:*
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/channels.scm
+#+begin_src scheme :mkdirp t :tangle ./channels.scm
 
-;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+;; NOTE: This file is generated from ~/dotfiles/System.org.  Please see commentary there.
 
 (list (channel
        (name 'pj-suckless)
