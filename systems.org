@@ -619,6 +619,7 @@ map <C-g> abort
 *Guix Packages*
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "password-store"
+"keepassxc"
 #+end_src
 
 ***** Syncing Passwords
