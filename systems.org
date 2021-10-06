@@ -11,6 +11,8 @@
   - [[#base-configuration][Base Configuration]]
   - [[#machines][Machines]]
   - [[#usb-installation-image][USB Installation Image]]
+- [[#home-configuration][Home Configuration]]
+  - [[#configuration-using-guix-home][Configuration using guix home]]
 - [[#profiles][Profiles]]
   - [[#profile-manifests][Profile Manifests:]]
   - [[#applications][Applications]]
@@ -98,24 +100,26 @@ can pick them up, though.  You can change the target branch using the
 * Systems
 ** Base Configuration
 
-   This base configuration is shared between all of the machines I
-   manage with Guix.  Since all of my machines are Lenovo ThinkPad
-   laptops, the same basic configuration applies pretty cleanly across
-   all of them.  This may change in the future.
+This base configuration is shared between all of the machines I
+manage with Guix.  Since all of my machines are Lenovo ThinkPad
+laptops, the same basic configuration applies pretty cleanly across
+all of them.  This may change in the future.
 
-   Any configuration that derives from =base-operating-system= must
-   invoke =guix system= in a specific way to ensure it gets loaded
-   correctly:
+Any configuration that derives from =base-operating-system= must
+invoke =guix system= in a specific way to ensure it gets loaded
+correctly:
 
 #+begin_src sh
 
-  sudo -E guix system -L ~/.dotfiles/.config/guix/systems reconfigure ~/.dotfiles/.config/guix/systems/davinci.scm
+  sudo -E guix system -L ~/dotfiles/systems reconfigure ~/dotfiles/system/davinci.scm
 
 #+end_src
 
-*.config/guix/systems/base-system.scm:*
+This is also executed by running Make $(system)-system in the dotfiles directory
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+*dotfiles/system/base-system.scm:*
+
+#+begin_src scheme :mkdirp t :tangle ./system/base-system.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -162,7 +166,7 @@ can pick them up, though.  You can change the target branch using the
 
 Add a =udev= rule to enable members of the =video= group to control screen brightness.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./system/base-system.scm
 
 ;; Allow members of the "video" group to change the screen brightness.
 (define %backlight-udev-rule
@@ -189,7 +193,7 @@ Override the default =%desktop-services= to add the =udev= backlight
 configuration and include OpenVPN in the list of NetworkManager
 plugins.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./system/base-system.scm
 
 (define %my-desktop-services
   (modify-services %desktop-services
@@ -210,7 +214,7 @@ plugins.
 
 Use the =libinput= driver for all input devices since it's a bit more modern than the default.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./system/base-system.scm
 
 (define %xorg-libinput-config
   "Section \"InputClass\"
@@ -236,7 +240,7 @@ Use the =libinput= driver for all input devices since it's a bit more modern tha
 
 Define the =base-operating-system= which will be inherited by all machine configurations.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./system/base-system.scm
 
 (define-public base-operating-system
   (operating-system
@@ -354,13 +358,11 @@ Machines are named after opera stars and greek gods (during initial setup!).
 
 Some settings need to be customized on a per-system basis without tweaking individual configuration files.  Thanks to org-mode's =noweb= functionality, I can define a set of variables that can be tweaked for each system and applied across these configuration files when they get generated.
 
-I also define a function called =dw/system-settings-get= which can retrieve these settings appropriately.
-
 #+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/per-system-settings.el :noweb yes
 
 (require 'map) ;; Needed for map-merge
 
-(setq dw/system-settings
+(setq pj/system-settings
   (map-merge
     'list
     '()
@@ -368,26 +370,13 @@ I also define a function called =dw/system-settings-get= which can retrieve thes
 
 #+end_src
 
-
-#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/lisp/dw-settings.el
-
-(defun dw/load-system-settings ()
-  (interactive)
-  (load-file "~/.dotfiles/.emacs.d/per-system-settings.el"))
-
-(defun dw/system-settings-get (setting)
-  (alist-get setting dw/system-settings))
-
-(provide 'dw-settings)
-#+end_src
-
 *** zeus
 
 zeus is a Lenovo X270 being used as a test bed for guix configuration.
 
-**** *.config/guix/systems/zeus.scm:*
+**** *./system/zeus.scm:*
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/zeus.scm
+#+begin_src scheme :mkdirp t :tangle ./system/zeus.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 ;; Note - if you re-install, you need to review the uuid entries below.
@@ -413,12 +402,6 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
              (uuid "dbac54d4-4507-4205-bc72-8b1e7abc3c8f"
                    'btrfs))
             (type "btrfs"))
-          ;; (file-system
-          ;;   (mount-point "/home")
-          ;;   (device
-          ;;    (uuid "68ff6c63-3ae9-4d77-81f8-e22efefb7537"
-          ;;          'btrfs))
-          ;;   (type "btrfs"))
           %base-file-systems)))
 
 
@@ -448,46 +431,14 @@ and dual booting into =windows=.
 Currently, there is no guix installation on this system, but there is
 emacs on both operating systems.
 
-System Settings
-
-#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-(when (equal system-name "tristan")
-   '((*pj/enable-mu4e-mode* . t)
-    (*pj/load-site-gentoo* . t)
-    (*pj/enable-auctex* . nil)
-    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
-    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
-    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
-
-(when (string= "windows-nt" system-type))
-#+end_src
 *** Rodolfo
 
 =rodolfo= is a lenovo x270 laptop with gentoo linux installed.
-*System settings*
-#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-(when (equal system-name "rodolfo")
-   '((*pj/enable-mu4e-mode* . t)
-    (*pj/load-site-gentoo* . t)
-    (*pj/enable-auctex* . t)
-    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
-    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
-    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
 
-#+end_src
 *** Shingo
 =shingo= is a small computer in the shed. Currently has gentoo, but will
 be the next candidate for guix.
-*System Settings*
-#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-(when (equal system-name "tristan")
-   '((*pj/enable-mu4e-mode* . t)
-    (*pj/load-site-gentoo* . t)
-    (*pj/enable-auctex* . t)
-    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
-    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
-    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
-#+end_src
+
 ** USB Installation Image
 
 To install Guix on another machine, you first to build need a USB image.  Since I use modern laptops that require non-free components, I have to build a custom installation image with the full Linux kernel.  I also include a few other programs that are useful for the installation process.  I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
@@ -541,6 +492,41 @@ To install Guix on another machine, you first to build need a USB image.  Since 
 installation-os-nonfree
 
 #+end_src
+
+* Home Configuration
+** Configuration using guix home
+*** Zeus
+#+begin_src scheme :mkdirp t :tangle ./home/zeus/core.scm
+(define-module (home zeus core)
+  #:use-module (gnu home)
+  #:use-module ((home zeus gnupg) #:prefix gnupg:)
+  #:use-module ((home zeus version-control) #:prefix vc:)
+  #:use-module ((home zeus wm) #:prefix wm:)
+  #:use-module ((home zeus emacs) #:prefix emacs:)
+  #:use-module ((home zeus shell) #:prefix shell:)
+  #:use-module ((home zeus password-utils) #:prefix pass:)
+  #:use-module ((home zeus xdg) #:prefix xdg:)
+  #:use-module ((home zeus ssh) #:prefix ssh:)
+  #:use-module ((home zeus pipewire) #:prefix pw:)
+  #:use-module ((home zeus terminals) #:prefix term:)
+  #:use-module ((home zeus packages) #:select (packages)))
+
+(home-environment
+ (packages packages)
+ (services
+  (append
+   wm:services
+   vc:services
+   gnupg:services
+   emacs:services
+   pass:services
+   shell:services
+   xdg:services
+   ssh:services
+   pw:services
+   term:services)))
+#+end_src
+
 
 * Profiles
 Packages are installed into separate manifests that get installed as
