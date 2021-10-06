@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./home/zeus/files/init.el 
+#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./home/files/emacs/init.el 
 
 Emacs configuration.
 
@@ -60,7 +60,7 @@ Emacs configuration.
 - [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
 * Early init file
-#+begin_src emacs-lisp :tangle ./home/zeus/files/early-init.el
+#+begin_src emacs-lisp :tangle ./home/files/emacs/early-init.el
 ;;; -*-buffer-read-only: t;-*- 
 ;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
 ;;; Commentary:
@@ -2192,9 +2192,9 @@ Guix packages
                ;; systems, I load them up directly. They are generated when
                ;; the emacs.org file is tangled.
                (init-el
-                `(,(slurp-file-gexp (local-file "files/init.el"))))
+                `(,(slurp-file-gexp (local-file "../files/emacs/init.el"))))
                (early-init-el
-                `(,(slurp-file-gexp (local-file "files/early-init.el"))))
+                `(,(slurp-file-gexp (local-file "../files/emacs/early-init.el"))))
                (elisp-packages packages))))))
 
            
