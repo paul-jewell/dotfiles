@@ -377,7 +377,6 @@ of gentoo is still to be explored...
           (expand-file-name "custom.el" server-socket-dir)
         (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
 (load custom-file t)
-q
 #+end_src
 
 *Guix Packages*
