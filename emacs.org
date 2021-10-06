@@ -11,7 +11,6 @@ Emacs configuration.
 - [[#preamble][Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
-- [[#site-specific-code][Site specific code]]
 - [[#general-configuration][General configuration]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
@@ -117,44 +116,13 @@ Emacs configuration.
 
 #+begin_src emacs-lisp
 ;; Load machine local definitions
-(load-file "~/.emacs.d/site-specific.el")
-
-(require 'site-specific "~/.emacs.d/site-specific.el")
-
-(defvar *packages-initialised* nil)
-
-(defun initialise-packages ()
-  "Ensure `package-initialize' is called only once."
-  (unless *packages-initialised*
-    (package-initialize)
-    (setq *packages-initialised* t)))
-
-(initialise-packages)
-
-#+end_src
-
-* Site specific code
-Some opportunity for refactoring here. Currently this code tangles to
-a separate file, but perhaps better if the code fed out to specific
-files for each machine?
-
-#+begin_src  emacs-lisp :tangle ./home/zeus/files/site-specific.el
-;; -*-buffer-read-only: t;-*-
-;;; Site-specific.el --- local variables for each system
-;;; Commentary: Support funtions to enable configuration to be configured
-;;;             for different machines.
-;;;             This code is tangled from .dotfiles/emacs.org, so changes should
-;;;             be made there, and not here.
-;;; code:
-
-;; Globals to configure which blocks are loaded
 
 (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
 (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
 (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
 (defvar *pj/font-size*        "10"  "Fontsize for this system.")
 
-t(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
 (defun pj/is-windows-p ()
   "True if run in windows environment."
@@ -235,14 +203,19 @@ t(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
  (t
   (error "Undefined system-type %s" system-type)))
 
-;; Make the output file read-only when loaded into emacs - reduce the chance of accidentally
-;; editing the file outside of emacs.org.
-;; Local Variables:
-;; buffer-read-only: t
-;; End:
 
-(provide 'site-specific)
-;;; site-specific.el ends here
+(require 'site-specific "~/.emacs.d/site-specific.el")
+
+(defvar *packages-initialised* nil)
+
+(defun initialise-packages ()
+  "Ensure `package-initialize' is called only once."
+  (unless *packages-initialised*
+    (package-initialize)
+    (setq *packages-initialised* t)))
+
+(initialise-packages)
+
 #+end_src
 
 #+begin_src emacs-lisp
