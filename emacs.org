@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ~/.emacs.d/init.el 
+#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./home/zeus/files/init.el 
 
 Emacs configuration.
 
@@ -60,7 +60,7 @@ Emacs configuration.
 - [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
 * Early init file
-#+begin_src emacs-lisp :tangle ~/.emacs.d/early-init.el
+#+begin_src emacs-lisp :tangle ./home/zeus/files/early-init.el
 ;;; -*-buffer-read-only: t;-*- 
 ;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
 ;;; Commentary:
@@ -138,7 +138,7 @@ Some opportunity for refactoring here. Currently this code tangles to
 a separate file, but perhaps better if the code fed out to specific
 files for each machine?
 
-#+begin_src  emacs-lisp :tangle ~/.emacs.d/site-specific.el
+#+begin_src  emacs-lisp :tangle ./home/zeus/files/site-specific.el
 ;; -*-buffer-read-only: t;-*-
 ;;; Site-specific.el --- local variables for each system
 ;;; Commentary: Support funtions to enable configuration to be configured
@@ -377,7 +377,7 @@ of gentoo is still to be explored...
           (expand-file-name "custom.el" server-socket-dir)
         (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
 (load custom-file t)
-
+q
 #+end_src
 
 *Guix Packages*
@@ -2161,12 +2161,41 @@ Guix packages
 #+end_src
 
 * Emacs Manifest for guix
-*.config/guix/manifests/emacs.scm:*
+*./home/zeus/emacs.scm:*
 
-#+begin_src scheme mkdirp t :tangle .config/guix/manifests/emacs.scm :noweb yes
+#+begin_src scheme mkdirp t :tangle ./home/zeus/emacs.scm :noweb yes
+(define-module (home zeus emacs)
+  #:use-module (guix gexp)
+  #:use-module (guix transformations)
 
-(specifications->manifest
- '("emacs"
-   <<packages>>
-))
+  #:use-module (gnu packages)
+
+  #:use-module (gnu home-services)
+  #:use-module (gnu home-services emacs)
+  #:use-module (gnu home-services-utils)
+
+  (define packages
+    (map specification->package
+          '(
+            <<packages>>
+            )))
+
+  (define-public services
+    (list
+     (service home-emacs-service-type
+              (home-emacs-configuration
+               (package emacs)
+               ;;Useful for native-comp - not for emacs27
+               ;;(rebuild-elisp-packages? #t)
+
+               ;; Because the init.el and early-init.el are used in my gentoo
+               ;; systems, I load them up directly. They are generated when
+               ;; the emacs.org file is tangled.
+               (init-el
+                `(,(slurp-file-gexp (local-file "files/init.el"))))
+               (early-init-el
+                `(,(slurp-file-gexp (local-file "files/early-init.el"))))
+               (elisp-packages packages))))))
+
+           
 #+end_src
