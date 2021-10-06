@@ -458,7 +458,7 @@ of gentoo is still to be explored...
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-ivy"
-;;"icy-hydra" ;; Not yet available
+"ivy-hydra"
 "emacs-ivy-rich"
 #+end_src
 * Swiper
@@ -503,7 +503,7 @@ of gentoo is still to be explored...
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-swiper"
-;; "counsel-bbdb"
+"emacs-counsel-bbdb"
 "emacs-counsel"
 #+end_src
 
@@ -637,11 +637,6 @@ Not working, and not used currently...
   '(progn (sql-set-product 'mysql)))
 
 
-#+end_src
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 #+end_src
 
 * C++
@@ -853,7 +848,6 @@ Not working, and not used currently...
 
 #+begin_src scheme :noweb-ref packages :noweb-sep "\n"
 "emacs-org-roam"
-;; "emacs-org-roam-dailies" ;; package not available under guix
 #+end_src
 
 * Licence Boilerplate
