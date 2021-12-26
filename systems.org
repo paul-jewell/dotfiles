@@ -265,7 +265,6 @@ Define the =base-operating-system= which will be inherited by all machine config
                  (targets '("/boot/efi"))
                  (keyboard-layout keyboard-layout)))
     
-    
     ;; Guix doesn't like it when there isn't a file-systems
     ;; entry, so add one that is meant to be overridden
     (file-systems (cons*
@@ -389,10 +388,9 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
   (inherit base-operating-system)
   (host-name "zeus")
 
-  (swap-space
-   (target (uuid "a0a103a5-cef2-446b-a2ff-8ffbee6890de")))
-;  (swap-devices
-;   (list (uuid "a0a103a5-cef2-446b-a2ff-8ffbee6890de")))
+  (swap-devices
+   (list (swap-space
+          (target (uuid "a0a103a5-cef2-446b-a2ff-8ffbee6890de")))))
   (file-systems
    (cons* (file-system
             (mount-point "/boot/efi")
