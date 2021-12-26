@@ -166,7 +166,7 @@ This is also executed by running Make $(system)-system in the dotfiles directory
 
 Add a =udev= rule to enable members of the =video= group to control screen brightness.
 
-#+begin_src scheme :mkdirp t :tangle ./config/guix/system/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/system/base-system.scm
 
 ;; Allow members of the "video" group to change the screen brightness.
 (define %backlight-udev-rule
@@ -193,7 +193,7 @@ Override the default =%desktop-services= to add the =udev= backlight
 configuration and include OpenVPN in the list of NetworkManager
 plugins.
 
-#+begin_src scheme :mkdirp t :tangle ./config/guix/system/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/system/base-system.scm
 
 (define %my-desktop-services
   (modify-services %desktop-services
@@ -214,7 +214,7 @@ plugins.
 
 Use the =libinput= driver for all input devices since it's a bit more modern than the default.
 
-#+begin_src scheme :mkdirp t :tangle ./config/guix/system/base-system.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/system/base-system.scm
 
 (define %xorg-libinput-config
   "Section \"InputClass\"
@@ -376,7 +376,7 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
 
 **** *./config/guix/system/zeus.scm:*
 
-#+begin_src scheme :mkdirp t :tangle ./config/guix/system/zeus.scm
+#+begin_src scheme :mkdirp t :tangle ./.config/guix/system/zeus.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 ;; Note - if you re-install, you need to review the uuid entries below.
