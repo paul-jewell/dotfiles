@@ -344,6 +344,12 @@ Define the =base-operating-system= which will be inherited by all machine config
                      (remove (lambda (service)
                                (eq? (service-kind service) gdm-service-type))
                              %my-desktop-services)))
+
+    ;; Add nmtui to the setuid program list
+    (setuid-programs
+     (append (list (setuid-program
+                    (program (file-append network-manager "/bin/nmtui"))))
+             %setuid-programs))
     
     ;; Allow resolution of '.local' host names with mDNS
     (name-service-switch %mdns-host-lookup-nss)))
