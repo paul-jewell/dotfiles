@@ -127,6 +127,7 @@ This is also executed by running Make $(system)-system in the dotfiles directory
   #:use-module (gnu)
   #:use-module (srfi srfi-1)
   #:use-module (gnu system nss)
+  #:use-module (gnu system setuid)
   #:use-module (gnu services pm)
   #:use-module (gnu services cups)
   #:use-module (gnu services desktop)
