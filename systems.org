@@ -28,7 +28,6 @@
   - [[#system-installation][System Installation]]
 - [[#notes][Notes]]
   - [[#bluetooth-setup][Bluetooth Setup]]
-  - [[#exwm-useful-links-for-future-reference][exwm useful links (for future reference):]]
 - [[#provide-the-dw-desktop-package][Provide the dw-desktop package]]
 
 * Introduction
@@ -1558,10 +1557,6 @@ as I currently do in Guix, you'll need to enter these commands at the
   connect 04:52:C7:5E:5C:A8
 #+end_src
 
-** exwm useful links (for future reference):
-- https://github.com/ch11ng/exwm/wiki
-- https://www.reddit.com/r/emacs/comments/6huok9/exwm_configs/
-- https://ambrevar.xyz/de/index.html
 * Provide the dw-desktop package
 
 #+begin_src emacs-lisp :tangle ~/.emacs.d/lisp/dw-desktop.el
@@ -1569,4 +1564,3 @@ as I currently do in Guix, you'll need to enter these commands at the
   (provide 'dw-desktop)
 
 #+end_src
-
