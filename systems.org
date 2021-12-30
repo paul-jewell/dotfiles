@@ -14,16 +14,16 @@
   - [[#emacs-mail][Emacs mail]]
 - [[#introduction][Introduction]]
 - [[#channels][Channels]]
+  - [[#dotfilesconfigguixchannelsscm][~/dotfiles/.config/guix/channels.scm:*]]
 - [[#systems][Systems]]
   - [[#base-configuration][Base Configuration]]
+  - [[#configguixsystembase-systemscm][.config/guix/system/base-system.scm:*]]
   - [[#machines][Machines]]
-  - [[#usb-installation-image][USB Installation Image]]
 - [[#home-configuration][Home Configuration]]
   - [[#configuration-using-guix-home][Configuration using guix home]]
 - [[#profiles][Profiles]]
   - [[#profile-manifests][Profile Manifests:]]
   - [[#applications][Applications]]
-  - [[#default-applications][Default Applications]]
   - [[#desktop][Desktop]]
   - [[#user-services][User services]]
   - [[#profile-management][Profile Management]]
@@ -62,10 +62,10 @@ with mu4e across all linux systems.
   I also use the [[https://gitlab.com/nonguix/nonguix][Nonguix]] channel to install packages that aren't
   included with Guix by default like the non-free Linux kernel.
 
-*~/dotfiles/channels.scm:*
+** ~/dotfiles/.config/guix/channels.scm:*
 
-#+begin_src scheme :mkdirp t :tangle ./channels.scm
-
+#+begin_src scheme :mkdirp t :tangle ./dotfiles/.config/guix/channels.scm
+;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/dotfiles/System.org.  Please see commentary there.
 
 (list (channel
@@ -136,7 +136,7 @@ correctly:
 
 This is also executed by running Make $(system)-system in the dotfiles directory
 
-*.config/guix/system/base-system.scm:*
+** .config/guix/system/base-system.scm:*
 
 #+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 ;; -*- buffer-read-only: t; -*-
@@ -150,9 +150,7 @@ This is also executed by running Make $(system)-system in the dotfiles directory
   #:use-module (gnu services pm)
   #:use-module (gnu services cups)
   #:use-module (gnu services desktop)
-  ;;      #:use-module (gnu services docker)
   #:use-module (gnu services networking)
-  ;;  #:use-module (gnu services virtualization)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages vim)
@@ -216,19 +214,18 @@ plugins.
 #+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
 
 (define %my-desktop-services
-  (modify-services %desktop-services
-                   (elogind-service-type config =>
-                                         (elogind-configuration (inherit config)
-                                                                (handle-lid-switch-external-power 'suspend)))
-                   (udev-service-type config =>
-                                      (udev-configuration (inherit config)
-                                                          (rules (cons* %backlight-udev-rule
-                                                                        %touchpad-udev-rule
-                                                                        (udev-configuration-rules config)))))
-                   (network-manager-service-type config =>
-                                                 (network-manager-configuration (inherit config)
-                                                                                (vpn-plugins
-                                                                                 (list network-manager-openvpn))))))
+  (modify-services
+   %desktop-services
+   (elogind-service-type config =>
+                         (elogind-configuration
+                          (inherit config)
+                          (handle-lid-switch-external-power 'suspend)))
+   (udev-service-type config =>
+                      (udev-configuration
+                       (inherit config)
+                       (rules (cons* %backlight-udev-rule
+                                     %touchpad-udev-rule
+                                     (udev-configuration-rules config)))))))
 
 #+end_src
 
@@ -306,7 +303,6 @@ Define the =base-operating-system= which will be inherited by all machine config
                                           "kvm"
                                           "tty"
                                           "input"
-                                          ;;                                            "docker"
                                           "realtime"  ;; Enable realtime scheduling
                                           "lp"        ;; control bluetooth devices
                                           "audio"     ;; control audio devices
@@ -325,7 +321,6 @@ Define the =base-operating-system= which will be inherited by all machine config
                        fuse-exfat
                        stow
                        neovim
-                       ;;                          emacs
                        bluez
                        bluez-alsa
                        pulseaudio
@@ -343,7 +338,7 @@ Define the =base-operating-system= which will be inherited by all machine config
                                 (xorg-configuration
                                  (keyboard-layout keyboard-layout)
                                  (extra-config (list %xorg-libinput-config))))))
-                     ;;                     (service xfce-desktop-service-type)
+
                      (service openssh-service-type)
                      (service tlp-service-type
                               (tlp-configuration
@@ -353,8 +348,9 @@ Define the =base-operating-system= which will be inherited by all machine config
                       (list
                        (pam-limits-entry "@realtime" 'both 'rtprio 99)
                        (pam-limits-entry "@realtime" 'both 'memlock 'unlimited)))
+
                      (service thermald-service-type)
-                     ;;                      (service docker-service-type)
+
                      (service cups-service-type
                               (cups-configuration
                                (web-interface? #t)
@@ -369,10 +365,7 @@ Define the =base-operating-system= which will be inherited by all machine config
     (setuid-programs
      (append (list (setuid-program
                     (program (file-append network-manager "/bin/nmtui"))))
-             %setuid-programs))
-    
-    ;; Allow resolution of '.local' host names with mDNS
-    (name-service-switch %mdns-host-lookup-nss)))
+             %setuid-programs))))
 #+end_src
 
 ** Machines
@@ -414,6 +407,7 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
   (inherit base-operating-system)
   (host-name "zeus")
 
+;; TODO: Move from uuid to drive labels - makes it easier to install the system afresh
   (swap-devices
    (list (swap-space
           (target (uuid "a0a103a5-cef2-446b-a2ff-8ffbee6890de")))))
@@ -433,23 +427,6 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
 
 #+end_src
 
-**** *System Settings*
-These are the emacs configuration settings specific to this
-system. Currently they are managed through the site-specific.el file,
-generated from [[file+sys:~/.dotfiles/emacs.org][emacs.org]]
-
-#+begin_src emacs-lisp :noweb-ref system-settings :noweb-sep ""
-
-(when (equal system-name "zeus")
-  '((*pj/enable-mu4e-mode* . t)
-    (*pj/load-site-gentoo* . nil)
-    (*pj/enable-auctex* . t)
-    (*pj/org-agenda-files* . '("~/Nextcloud/org"))
-    (*pj/org-roam-directory* . "~/Nextcloud/org/roam/")
-    (*pj/org-roam-db-location* . "~/Nextcloud/org/org-roam.db")))
-
-#+end_src
-
 *** tristan
 =tristan= is my main desktop AMD Ryzen 9 system, running =gentoo linux=,
 and dual booting into =windows=.
@@ -464,60 +441,6 @@ emacs on both operating systems.
 *** Shingo
 =shingo= is a small computer in the shed. Currently has gentoo, but will
 be the next candidate for guix.
-
-** USB Installation Image
-
-To install Guix on another machine, you first to build need a USB image.  Since I use modern laptops that require non-free components, I have to build a custom installation image with the full Linux kernel.  I also include a few other programs that are useful for the installation process.  I adapted this image from [[https://gitlab.com/nonguix/nonguix/blob/master/nongnu/system/install.scm][one found on the Nonguix repository]], hence the copyright header.
-
-*.config/guix/systems/install.scm:*
-
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/install.scm
-
-;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 David Wilson <david@daviwil.com>
-;;;
-;;; This program is free software: you can redistribute it and/or modify
-;;; it under the terms of the GNU General Public License as published by
-;;; the Free Software Foundation, either version 3 of the License, or
-;;; (at your option) any later version.
-;;;
-;;; This program is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;; GNU General Public License for more details.
-;;;
-;;; You should have received a copy of the GNU General Public License
-;;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-;; Generate a bootable image (e.g. for USB sticks, etc.) with:
-;; $ guix system disk-image nongnu/system/install.scm
-
-(define-module (nongnu system install)
-  #:use-module (gnu system)
-  #:use-module (gnu system install)
-  #:use-module (gnu packages version-control)
-  #:use-module (gnu packages vim)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages mtools)
-  #:use-module (gnu packages package-management)
-  #:use-module (nongnu packages linux)
-  #:export (installation-os-nonfree))
-
-(define installation-os-nonfree
-  (operating-system
-    (inherit installation-os)
-    (kernel linux)
-    (firmware (list linux-firmware))
-
-    ;; Add some extra packages useful for the installation process
-    (packages
-     (append (list git exfat-utils fuse-exfat stow vim)
-             (operating-system-packages installation-os)))))
-
-installation-os-nonfree
-
-#+end_src
 
 * Home Configuration
 ** Configuration using guix home
@@ -741,6 +664,8 @@ if [ -z "$(pgrep -u paul shepherd)" ]; then
   shepherd &
 fi
 
+xsettingsd &
+
 compton &
 # TODO: Make the background changeable, and saved between sessions
 feh --bg-fill ~/backgrounds/mountains-1412683.jpg &
@@ -789,17 +714,6 @@ I also have to do an extra step to make sure Emacs can find the font path from t
     </prefer>
   </alias>
 </fontconfig>
-
-#+end_src
-
-
-*** Transitional programs
-These are programs which I intend to stop using as time passes. They
-are currently installed to avoid the need to learn new programs while
-working through the system installation and configuration.
-#+begin_src scheme :mkdirp t :notangle .config/guix/manifests/transition.scm
-(specifications->manifest
- '())
 
 #+end_src
 
@@ -1202,19 +1116,6 @@ Also something for future exploration.
 #+end_src
 
 
-** Default Applications
-The file =.config/mimeapps.list= configures default applications for various content types.
-Currently disabled - I don't use qutebrowser...
-#+begin_src conf :mkdirp t :notangle .config/mimeapps.list
-
-  [Default Applications]
-  text/html=qutebrowser.desktop
-  x-scheme-handler/http=qutebrowser.desktop
-  x-scheme-handler/https=qutebrowser.desktop
-  x-scheme-handler/about=qutebrowser.desktop
-  x-scheme-handler/unknown=qutebrowser.desktop
-
-#+end_src
 ** Desktop
 
 The =desktop.scm= manifest holds the list of packages that I use to configure my desktop environment.  The package names are pulled from the relevant sections titled *Guix Packages* in this file (=system.org=).
