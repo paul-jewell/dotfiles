@@ -5,6 +5,13 @@
 :PROPERTIES:
 :TOC:      :include all :ignore this
 :END:
+- [[#update-strategy][Update strategy]]
+  - [[#remove-all-the-sections-currently-not-in-use][Remove all the sections currently not in use]]
+  - [[#move-the-target-filenames-to-one-directory-tree][Move the target filenames to one directory tree]]
+  - [[#build-guix-home-configuration-and-copy-the-files-from-the-target-directory-tree][Build guix home configuration and copy the files from the target directory tree]]
+  - [[#once-working---reconfigure-with-idiomatic-guix-home-approach][Once working - reconfigure with idiomatic guix home approach]]
+  - [[#emacs][Emacs]]
+  - [[#emacs-mail][Emacs mail]]
 - [[#introduction][Introduction]]
 - [[#channels][Channels]]
 - [[#systems][Systems]]
@@ -28,7 +35,20 @@
   - [[#system-installation][System Installation]]
 - [[#notes][Notes]]
   - [[#bluetooth-setup][Bluetooth Setup]]
-- [[#provide-the-dw-desktop-package][Provide the dw-desktop package]]
+
+* Update strategy
+** Remove all the sections currently not in use
+** Move the target filenames to one directory tree
+** Build guix home configuration and copy the files from the target directory tree
+** Once working - reconfigure with idiomatic guix home approach
+
+** Emacs
+- The config for emacs is common to all systems
+- A list of modules is generated as a manifest for guix installation
+** Emacs mail
+Review the approach by Andrew Tropin - either adopt or standardise
+with mu4e across all linux systems.
+
 
 * Introduction
   This file was originally created by David Wilson, and can be seen here:
@@ -1557,10 +1577,3 @@ as I currently do in Guix, you'll need to enter these commands at the
   connect 04:52:C7:5E:5C:A8
 #+end_src
 
-* Provide the dw-desktop package
-
-#+begin_src emacs-lisp :tangle ~/.emacs.d/lisp/dw-desktop.el
-
-  (provide 'dw-desktop)
-
-#+end_src
