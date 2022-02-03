@@ -1613,6 +1613,7 @@ standard modeline.
             slime-repl
             slime-fuzzy))))
     (setq slime-net-coding-system 'utf-8-unix)
+
     (setq inferior-lisp-program "/usr/bin/sbcl")
     (load (expand-file-name "~/.emacs.d/lisp/new-slime-helper.el"))
     ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
