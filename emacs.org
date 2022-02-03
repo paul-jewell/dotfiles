@@ -1,3 +1,4 @@
+
 #+TITLE: Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./home/files/emacs/init.el 
 
@@ -304,8 +305,7 @@ of gentoo is still to be explored...
 ;; Add marmalade to package repos
 (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")))
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")))
       
 (initialise-packages)
 
@@ -313,8 +313,7 @@ of gentoo is still to be explored...
 ;; Maybe OK, as it only updates the package list, not the installed code.
 (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
              (file-exists-p (concat init-dir "elpa/archives/melpa"))
-             (file-exists-p (concat init-dir "elpa/archives/melpa-stable"))
-             (file-exists-p (concat init-dir "elpa/archives/org")))
+             (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
   (package-refresh-contents))
 
 ;; Initialise use-package on non-guix systems.
