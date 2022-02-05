@@ -1,4 +1,3 @@
-
 #+TITLE: Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./home/files/emacs/init.el 
 
@@ -1085,7 +1084,7 @@ I haven't used this yet, so there may be some issues.
 
 Disabling js2 mode. I don't program in javascript at the moment, and I
 want to get other stuff working first.
-#+begin_src emacs-lisp :no-tangle
+#+begin_src emacs-lisp :tangle no
 ;;==============================================================================
 ;;.....javascript / HTML
 ;;     -----------------
@@ -1303,7 +1302,7 @@ Git gutter:
 
 * eyebrowse
 
-#+begin_src emacs-lisp :no-tangle
+#+begin_src emacs-lisp :tangle no
 ;;==============================================================================
 ;;.....eyebrowse
 ;;     ---------
@@ -1348,8 +1347,11 @@ Git gutter:
 #+end_src
 
 * Powerline
+Currently not being used, as it is no longer actively maintained, and
+there were some issues with errors being generated. Now using the bog
+standard modeline.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;;==============================================================================
 ;;.....powerline
 ;;     ---------
@@ -1461,7 +1463,8 @@ Git gutter:
 
 #+begin_src emacs-lisp
 
-(use-package diminish)
+(use-package diminish
+  :demand t)
 
 #+end_src
 
@@ -1611,7 +1614,8 @@ Git gutter:
             slime-fuzzy))))
     (setq slime-net-coding-system 'utf-8-unix)
     (setq inferior-lisp-program "/usr/bin/sbcl")
-    (load (expand-file-name "~/quicklisp/slime-helper.el"))
+    (load (expand-file-name "~/.emacs.d/lisp/new-slime-helper.el"))
+    ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
     (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
     
     (use-package ac-slime
