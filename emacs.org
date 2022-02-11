@@ -120,7 +120,7 @@ Emacs configuration.
 (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
 (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
 (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
-(defvar *pj/font-size*        "10"  "Fontsize for this system.")
+(defvar *pj/font-size*        "14"  "Fontsize for this system.")
 
 (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
@@ -164,7 +164,7 @@ Emacs configuration.
       (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
       (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
       (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-	   (setq *pj/font-size* "10")))
+	   (setq *pj/font-size* "14")))
    ((pj/is-guix-p)
     (progn
       (setq *pj/enable-mu4e-mode* t)
