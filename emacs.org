@@ -1619,15 +1619,16 @@ standard modeline.
     ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
     (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
     
-    (use-package ac-slime
-      :init
-      (progn
-        (add-hook 'slime-mode-hook 'set-up-slime-ac)
-        (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))
-      :config
-      (progn
-        (eval-after-load "auto-complete"
-          '(add-to-list 'ac-modes 'slime-repl-mode))))))
+    (if (not (pj/is-guix-p))
+        (use-package ac-slime
+          :init
+          (progn
+            (add-hook 'slime-mode-hook 'set-up-slime-ac)
+            (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))
+          :config
+          (progn
+            (eval-after-load "auto-complete"
+              '(add-to-list 'ac-modes 'slime-repl-mode)))))))
 
 #+end_src
 
