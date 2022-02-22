@@ -1590,6 +1590,19 @@ standard modeline.
 
 * Lisp
 
+Investigating the correct way to setup slime, swank, lisp and
+quicklisp leads to the following:
+- Option 1: Install slime from quicklisp, and not from emacs elpa
+  (etc), and execute the slime-helper.el script provided by quicklisp.
+- Option 2: Install slime/swank from elpa, then:
+  - Configure ~/.config/common-lisp/source-registry.conf.d/swank.conf
+    with the following contents:
+    (:tree "//home/paul//.emacs.d/elpa/")
+    This will make quicklisp search for swank in the installed
+    directory in the emacs.d tree.
+  - 
+    
+
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....lisp - slime
@@ -1602,7 +1615,8 @@ standard modeline.
 (use-package slime
   :commands slime
   :init
-  (load (expand-file-name "~/.emacs.d/lisp/new-slime-helper.el"))
+  ;; Not needed...
+  ;; (load (expand-file-name "~/.emacs.d/lisp/new-slime-helper.el"))
   :config
   (progn
     (add-hook
@@ -1613,13 +1627,10 @@ standard modeline.
             slime-repl
             slime-fuzzy))))
     (setq slime-net-coding-system 'utf-8-unix)
-
-    (setq inferior-lisp-program "/usr/bin/sbcl")
-  
-    ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
-    (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
+    (setq inferior-lisp-program "sbcl")
+    (setq slime-lisp-implementations '((sbcl ("sbcl"))))
     
-    (if (not (pj/is-guix-p))
+    (if (not (pj/is-guix-p)) ;; ac-slime is currently not working in guix
         (use-package ac-slime
           :init
           (progn
