@@ -1600,10 +1600,10 @@ standard modeline.
 ;; 17/11/2018
 
 (use-package slime
-;;  :load-path (expand-site-lisp "slime")
   :commands slime
+  :init
+  (load (expand-file-name "~/.emacs.d/lisp/new-slime-helper.el"))
   :config
-
   (progn
     (add-hook
      'slime-load-hook
@@ -1615,7 +1615,7 @@ standard modeline.
     (setq slime-net-coding-system 'utf-8-unix)
 
     (setq inferior-lisp-program "/usr/bin/sbcl")
-    (load (expand-file-name "~/.emacs.d/lisp/new-slime-helper.el"))
+  
     ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
     (setq slime-lisp-implementations '((sbcl ("/usr/bin/sbcl"))))
     
