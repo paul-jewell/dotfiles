@@ -616,8 +616,6 @@ be the next candidate for guix.
                            ,(local-file "~/dotfiles/home/files/emacs/early-init.el"))
                          `("emacs.d/init.el"
                            ,(local-file "~/dotfiles/home/files/emacs/init.el"))
-                         `("emacs.d/site-specific.el"
-                           ,(local-file "~/dotfiles/home/files/emacs/site-specific.el"))
                          `("emacs.d/lisp/my-org-mode.el"
                            ,(local-file "~/dotfiles/home/files/emacs/lisp/my-org-mode.el")))))))
 #+end_src
