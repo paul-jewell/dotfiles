@@ -452,7 +452,11 @@ be the next candidate for guix.
  (gnu home services)
  (gnu home services shells)
  (gnu home services shepherd)
- (gnu services))
+ (gnu services)
+ (gnu gexp)
+ (gnu packages emacs)
+ (gnu packages syncthing)
+ (gnu packages admin))
 
 (define %inputrc
   (plain-file
