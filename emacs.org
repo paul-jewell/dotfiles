@@ -204,7 +204,7 @@ Emacs configuration.
   (error "Undefined system-type %s" system-type)))
 
 
-(require 'site-specific "~/.emacs.d/site-specific.el")
+;;(require 'site-specific "~/.emacs.d/site-specific.el")
 
 (defvar *packages-initialised* nil)
 
