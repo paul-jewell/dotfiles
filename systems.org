@@ -613,11 +613,11 @@ be the next candidate for guix.
    (simple-service 'emacs-config
                    home-files-service-type
                    (list `("emacs.d/early-init.el"
-                           ,(local-file "~/dotfiles/home/files/emacs/early-init.el"))
+                           ,(local-file "/home/paul/dotfiles/home/files/emacs/early-init.el"))
                          `("emacs.d/init.el"
-                           ,(local-file "~/dotfiles/home/files/emacs/init.el"))
+                           ,(local-file "/home/paul/dotfiles/home/files/emacs/init.el"))
                          `("emacs.d/lisp/my-org-mode.el"
-                           ,(local-file "~/dotfiles/home/files/emacs/lisp/my-org-mode.el")))))))
+                           ,(local-file "/home/paul/dotfiles/home/files/emacs/lisp/my-org-mode.el")))))))
 #+end_src
 *** Zeus
 
