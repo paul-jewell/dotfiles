@@ -24,7 +24,7 @@ TODO: Complete the breakdown and documentation in this file.
 
 * Preamble
 
-#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/lisp/my-org-mode.el
+#+begin_src emacs-lisp :mkdirp t :tangle ~/home/files/emacs/lisp/my-org-mode.el
 ;; -*- buffer-read-only: t; -*-
 ;;; package --- Summary
 
