@@ -130,7 +130,7 @@ correctly:
 
 #+begin_src sh
 
-  sudo -E guix system -L ~/.config/guix/systems reconfigure ~/.config/guix/systems/davinci.scm
+  sudo guix system -L ~/.config/guix/systems reconfigure ~/.config/guix/systems/davinci.scm
 
 #+end_src
 
