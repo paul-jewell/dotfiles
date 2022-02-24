@@ -453,7 +453,7 @@ be the next candidate for guix.
  (gnu home services shells)
  (gnu home services shepherd)
  (gnu services)
- (gnu gexp)
+ (guix gexp)
  (gnu packages emacs)
  (gnu packages syncthing)
  (gnu packages admin))
