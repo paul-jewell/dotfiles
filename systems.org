@@ -454,6 +454,7 @@ be the next candidate for guix.
  (gnu home services shepherd)
  (gnu services)
  (guix gexp)
+ (gnu packages)
  (gnu packages emacs)
  (gnu packages syncthing)
  (gnu packages admin))
