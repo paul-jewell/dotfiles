@@ -1,5 +1,5 @@
 #+TITLE: System Configuration with Guix
-#+PROPERTY: :mkdirp t
+#+PROPERTY: :mkdirp yes
 
 * Table of Contents                                                     :toc:
 :PROPERTIES:
@@ -19,6 +19,7 @@
   - [[#base-configuration][Base Configuration]]
   - [[#configguixsystembase-systemscm][.config/guix/system/base-system.scm:*]]
   - [[#machines][Machines]]
+- [[#mpd-configuration][mpd Configuration]]
 - [[#home-configuration][Home Configuration]]
   - [[#configuration-using-guix-home][Configuration using guix home]]
 - [[#profiles][Profiles]]
@@ -64,7 +65,7 @@ with mu4e across all linux systems.
 
 ** ~/dotfiles/.config/guix/channels.scm:*
 
-#+begin_src scheme :mkdirp t :tangle ./dotfiles/.config/guix/channels.scm
+#+begin_src scheme :mkdirp yes :tangle ./dotfiles/.config/guix/channels.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/dotfiles/System.org.  Please see commentary there.
 
@@ -99,7 +100,7 @@ have to create a branch and commit changes to it before =guix pull=
 can pick them up, though.  You can change the target branch using the
 =branch= field of the =channel=.
 
-#+begin_src scheme :mkdirp t :notangle ./.config/guix/channels.scm
+#+begin_src scheme :mkdirp yes :notangle ./.config/guix/channels.scm
 
   ;; (list (channel
   ;;         (name 'nonguix)
@@ -138,7 +139,7 @@ This is also executed by running Make $(system)-system in the dotfiles directory
 
 ** .config/guix/system/base-system.scm:*
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp yes :tangle ./.config/guix/systems/base-system.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -184,7 +185,7 @@ This is also executed by running Make $(system)-system in the dotfiles directory
 
 Add a =udev= rule to enable members of the =video= group to control screen brightness.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp yes :tangle ./.config/guix/systems/base-system.scm
 
 ;; Allow members of the "video" group to change the screen brightness.
 (define %backlight-udev-rule
@@ -211,7 +212,7 @@ Override the default =%desktop-services= to add the =udev= backlight
 configuration and include OpenVPN in the list of NetworkManager
 plugins.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp yes :tangle ./.config/guix/systems/base-system.scm
 
 (define %my-desktop-services
   (modify-services
@@ -231,7 +232,7 @@ plugins.
 
 Use the =libinput= driver for all input devices since it's a bit more modern than the default.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp yes :tangle ./.config/guix/systems/base-system.scm
 
 (define %xorg-libinput-config
   "Section \"InputClass\"
@@ -257,7 +258,7 @@ Use the =libinput= driver for all input devices since it's a bit more modern tha
 
 Define the =base-operating-system= which will be inherited by all machine configurations.
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/base-system.scm
+#+begin_src scheme :mkdirp yes :tangle ./.config/guix/systems/base-system.scm
 
 (define-public base-operating-system
   (operating-system
@@ -376,7 +377,7 @@ Machines are named after opera stars and greek gods (during initial setup!).
 
 Some settings need to be customized on a per-system basis without tweaking individual configuration files.  Thanks to org-mode's =noweb= functionality, I can define a set of variables that can be tweaked for each system and applied across these configuration files when they get generated.
 
-#+begin_src emacs-lisp :mkdirp t :tangle ~/.emacs.d/per-system-settings.el :noweb yes
+#+begin_src emacs-lisp :mkdirp yes :tangle ~/.emacs.d/per-system-settings.el :noweb yes
 
 (require 'map) ;; Needed for map-merge
 
@@ -394,7 +395,7 @@ zeus is a Lenovo X270 being used as a test bed for guix configuration.
 
 **** *./config/guix/systems/zeus.scm:*
 
-#+begin_src scheme :mkdirp t :tangle ./.config/guix/systems/zeus.scm
+#+begin_src scheme :mkdirp yes :tangle ./.config/guix/systems/zeus.scm
 ;; -*- buffer-read-only: t; -*-
 ;; NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 ;; Note - if you re-install, you need to review the uuid entries below.
@@ -442,11 +443,35 @@ emacs on both operating systems.
 =shingo= is a small computer in the shed. Currently has gentoo, but will
 be the next candidate for guix.
 
+* mpd Configuration
+
+#+begin_src cli :mkdirp yes :tangle ./home/files/mpd/mpd.conf
+music_directory   "~/music"
+playlist_directory "~/.config/mpd/playlists"
+
+auto_update "yes"
+bind_to_address "127.0.0.1"
+restore_paused "yes"
+max_output_buffer_size "16384"
+
+audio_output {
+         type "pulse"
+         name "pulse"
+}               
+
+audio_output {
+         type   "fifo"
+         name   "visualiser feed"
+         path   "/tmp/mpd.fifo"
+         format "44100:16:2"
+}
+
+#+end_src
 * Home Configuration
 ** Configuration using guix home
 
 *** Basic Version - get it working, then develop it later
-#+begin_src scheme :mkdirp t :tangle ./home/zeus/core.scm
+#+begin_src scheme :mkdirp yes :tangle ./home/zeus/core.scm
 (use-modules
  (gnu home)
  (gnu home services)
@@ -458,6 +483,8 @@ be the next candidate for guix.
  (gnu packages emacs)
  (gnu packages syncthing)
  (gnu packages gnupg)
+ (gnu packages mpd)
+ (gnu packages pulseaudio)
  (gnu packages admin))
 
 (define %inputrc
@@ -610,13 +637,30 @@ be the next candidate for guix.
                 (start #~(make-system-constructor
                           #$(file-append gnupg "/bin/gpg-connect-agent /bye")))
                 (stop #~(make-system-destructor
-                         #$(file-append gnupg "/bin/gpgconf --kill gpg-agent"))))))))
+                         #$(file-append gnupg "/bin/gpgconf --kill gpg-agent"))))
+               (shepherd-service
+                (provision '(pulseaudio))
+                (documentation "Run pulseaudio")
+                (start #~(make-forkexec-constructor
+                          (list #$(file-append pulseaudio "/bin/pulseaudio"))))
+                (stop #~(make-kill-destructor)))
+               (shepherd-service
+                (provision '(mpd))
+                (documentation "Run 'mpd' server")
+                (start #~(make-forkexec-constructor
+                          (list #$(file-append mpd "/bin/mpd"))))
+                (stop #~(make-kill-destructor)))))))
                            
              
    (simple-service 'inputrc-config
                    home-files-service-type
                    (list `("inputrc"
                            ,%inputrc)))
+
+   (simple-service 'mpd-config
+                   home-files-service-type
+                   (list `(".config/mpd/mpd.conf"
+                           ,(local-file "/home/paul/dotfiles/home/files/mpd/mpd.conf"))))
    
    (simple-service 'emacs-config
                    home-files-service-type
@@ -629,7 +673,7 @@ be the next candidate for guix.
 #+end_src
 *** Zeus
 
-#+begin_src scheme :mkdirp t :no-tangle ./home/zeus/core.scm
+#+begin_src scheme :mkdirp yes :no-tangle ./home/zeus/core.scm
 (define-module (home zeus core)
   #:use-module (gnu home)
   #:use-module ((home zeus gnupg) #:prefix gnupg:)
@@ -699,7 +743,7 @@ additional manifests below.
 
 **** Document Readers
 
-#+begin_src conf :mkdirp t :tangle .config/zathura/zathurarc
+#+begin_src conf :mkdirp yes :tangle .config/zathura/zathurarc
 
 # Automatically adjust the document to full width
 set adjust-open width
@@ -742,7 +786,7 @@ map <C-g> abort
 #+end_src
 
 ***** Syncing Passwords
-#+begin_src sh :mkdirp t :tangle .bin/sync-passwords :shebang #!/bin/sh
+#+begin_src sh :mkdirp yes :tangle .bin/sync-passwords :shebang #!/bin/sh
 
 pass git pull
 pass git push
@@ -753,7 +797,7 @@ notify-send -i "emblem-synchronizing" "Passwords synced!"
 I use [[https://www.gnu.org/software/mcron/][GNU mcron]] for scheduling tasks to run periodically in the background.
 
 *Syncing Passwords*
-#+begin_src scheme :mkdirp t :tangle .config/cron/pass-sync.guile
+#+begin_src scheme :mkdirp yes :tangle .config/cron/pass-sync.guile
 
 (job
    '(next-hour (range 0 24 4))
@@ -774,7 +818,7 @@ use. By not having window managers installed at system level, the
 .xsession code is run by the login manager, so configuration of the
 window manager and associated programs is done there.
 
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/window-manager.scm
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/window-manager.scm
 (specifications->manifest
  '("paulj-dwm"
    "paulj-dmenu"
@@ -843,7 +887,7 @@ window manager and associated programs is done there.
 
 *.xsession*
 
-#+begin_src sh :mkdirp t :tangle .xsession :shebang #!/bin/sh
+#+begin_src sh :mkdirp yes :tangle .xsession :shebang #!/bin/sh
 if [ -z "$(pgrep -u paul shepherd)" ]; then
   shepherd &
 fi
@@ -865,7 +909,7 @@ I use [[https://github.com/derat/xsettingsd][xsettingsd]] as a minimal settings 
 
 *.config/xsettingsd/xsettingsd.conf:*
 
-#+begin_src conf :mkdirp t :tangle .config/xsettingsd/xsettingsd.conf :noweb yes
+#+begin_src conf :mkdirp yes :tangle .config/xsettingsd/xsettingsd.conf :noweb yes
 
 Net/ThemeName "Matcha-dark-azul"
 Net/IconThemeName "Papirus-Dark"
@@ -884,7 +928,7 @@ I also have to do an extra step to make sure Emacs can find the font path from t
 
 *.config/fontconfig/fonts.conf:*
 
-#+begin_src xml :mkdirp t :tangle .config/fontconfig/fonts.conf
+#+begin_src xml :mkdirp yes :tangle .config/fontconfig/fonts.conf
 
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -903,7 +947,7 @@ I also have to do an extra step to make sure Emacs can find the font path from t
 
 *** Browsers
 nyxt is the future!
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/browsers.scm
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/browsers.scm
 (specifications->manifest
  '("ungoogled-chromium"
    "nyxt"
@@ -915,7 +959,7 @@ nyxt is the future!
 
 *** Code
 Languages and tools for programming.
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/code.scm
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/code.scm
 ;; Various developer tools that I use.  These might be split out into
 ;; platform-specific manifests at some point.
 
@@ -961,7 +1005,7 @@ Languages and tools for programming.
 #+end_src
 
 *** Image viewers and editors
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/image.scm
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/image.scm
 (specifications->manifest
  '("feh"
    "gimp"
@@ -969,7 +1013,7 @@ Languages and tools for programming.
 #+end_src
 
 *** Music Player
-#+begin_src conf :mkdirp t :tangle .config/mpd/mpd.conf
+#+begin_src conf :mkdirp yes :tangle .config/mpd/mpd.conf
 music_directory   "~/music"
 playlist_directory "~/.config/mpd/playlists"
 
@@ -998,7 +1042,7 @@ audio_output {
 #+end_src
 
 *** Games
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/games.scm
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/games.scm
 (specifications->manifest
  '("aisleriot"
    "gnome-mahjongg"))
@@ -1023,7 +1067,7 @@ These packages are needed to enable many video formats to be played in browsers 
 *** Music Creation
 An area of future investigation. This is currently as specified by
 David Wilson in his configuration.
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/music.scm
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/music.scm
 ;; Music creation tools
 
 (specifications->manifest
@@ -1062,7 +1106,7 @@ David Wilson in his configuration.
 
 *** Video Creation Tools
 Also something for future exploration.
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/video.scm
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/video.scm
 ;; Video creation tools
 
 (specifications->manifest
@@ -1091,7 +1135,7 @@ Also something for future exploration.
 
 *.config/dunst/dunstrc:*
 
-#+begin_src conf :mkdirp t :tangle .config/dunst/dunstrc :noweb yes
+#+begin_src conf :mkdirp yes :tangle .config/dunst/dunstrc :noweb yes
 
 [global]
     ### Display ###
@@ -1306,7 +1350,7 @@ The =desktop.scm= manifest holds the list of packages that I use to configure my
 
 *.config/guix/manifests/desktop.scm:*
 
-#+begin_src scheme :mkdirp t :tangle .config/guix/manifests/desktop.scm :noweb yes
+#+begin_src scheme :mkdirp yes :tangle .config/guix/manifests/desktop.scm :noweb yes
 
 (specifications->manifest
  '(
@@ -1322,7 +1366,7 @@ The =desktop.scm= manifest holds the list of packages that I use to configure my
 
 *.config/mpv/mpv.conf*
 
-#+begin_src conf :mkdirp t :tangle .config/mpv/mpv.conf :noweb yes
+#+begin_src conf :mkdirp yes :tangle .config/mpv/mpv.conf :noweb yes
 
 # Configure playback quality
 vo=gpu
@@ -1367,7 +1411,7 @@ keep-open
 after I log in.
 Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 
-#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.scm
+#+begin_src scheme :mkdirp yes :tangle .config/shepherd/init.scm
 
 (use-modules (shepherd service)
              ((ice-9 ftw) #:select (scandir)))
@@ -1385,7 +1429,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 
 #+end_src
 
-#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/gpg-agent.scm
+#+begin_src scheme :mkdirp yes :tangle .config/shepherd/init.d/gpg-agent.scm
 (define gpg-agent
   (make <service>
     #:provides '(gpg-agent)
@@ -1398,7 +1442,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 
 #+end_src
 
-#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/mcron.scm
+#+begin_src scheme :mkdirp yes :tangle .config/shepherd/init.d/mcron.scm
 (define mcron
   (make <service>
     #:provides '(mcron)
@@ -1411,7 +1455,7 @@ Documentation: https://guix.gnu.org/en/blog/2020/gnu-shepherd-user-services/
 #+end_src
 
 Currently this isn't working as expected, so set to not tangle.
-#+begin_src scheme :mkdirp t :notangle .config/shepherd/init.d/emacs.scm
+#+begin_src scheme :mkdirp yes :notangle .config/shepherd/init.d/emacs.scm
 (define emacs
   (make <service>
     #:provides '(emacs)
@@ -1424,7 +1468,7 @@ Currently this isn't working as expected, so set to not tangle.
 (start emacs)
 #+end_src
 
-#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/syncthing.scm
+#+begin_src scheme :mkdirp yes :tangle .config/shepherd/init.d/syncthing.scm
 (define syncthing
   (make <service>
     #:provides '(syncthing)
@@ -1440,7 +1484,7 @@ Currently this isn't working as expected, so set to not tangle.
 (start syncthing)
 #+end_src
 
-#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/pulseaudio.scm
+#+begin_src scheme :mkdirp yes :tangle .config/shepherd/init.d/pulseaudio.scm
 (define pulseaudio
   (make <service>
     #:provides '(pulseaudio)
@@ -1454,7 +1498,7 @@ Currently this isn't working as expected, so set to not tangle.
 
 #+end_src
 
-#+begin_src scheme :mkdirp t :tangle .config/shepherd/init.d/mpd.scm
+#+begin_src scheme :mkdirp yes :tangle .config/shepherd/init.d/mpd.scm
 (define mpd
   (make <service>
     #:provides '(mpd)
@@ -1481,7 +1525,7 @@ activate-profiles desktop emacs music
 
 *.bin/activate-profiles:*
 
-#+begin_src sh :mkdirp t :tangle ./.bin/activate-profiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp yes :tangle ./.bin/activate-profiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -1540,7 +1584,7 @@ update-profiles emacs
 
 *.bin/update-profiles:*
 
-#+begin_src sh :mkdirp t :tangle ./.bin/update-profiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp yes :tangle ./.bin/update-profiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
 
@@ -1579,7 +1623,7 @@ When I want to sync my dotfiles repo into my local clone which likely has uncomm
 
 *.bin/sync-dotfiles*
 
-#+begin_src sh :mkdirp t :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
+#+begin_src sh :mkdirp yes :tangle ./.bin/sync-dotfiles :shebang #!/bin/sh
 # -*- buffer-read-only: t; -*-
 # Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
 
