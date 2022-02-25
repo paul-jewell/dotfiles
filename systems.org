@@ -457,6 +457,7 @@ be the next candidate for guix.
  (gnu packages)
  (gnu packages emacs)
  (gnu packages syncthing)
+ (gnu packages gnupg)
  (gnu packages admin))
 
 (define %inputrc
@@ -606,12 +607,10 @@ be the next candidate for guix.
                (shepherd-service
                 (provision '(gpg-agent))
                 (documentation "Run 'gpg-agent'")
-                (start #~(make-forkexec-constructor
-                           (list #$(file-append gpg-agent "gpg-connect-agent")
-                                 "/bye")))
-                (stop #~(make-forkexec-destructor
-                         (list #$(file-append gpg-agent "gpgconf")
-                               "--kill gpg-agent"))))))))
+                (start #~(make-system-constructor
+                          #$(file-append gnupg "/bin/gpg-connect-agent /bye")))
+                (stop #~(make-system-destructor
+                         #$(file-append gnupg "/bin/gpgconf --kill gpg-agent"))))))))
                            
              
    (simple-service 'inputrc-config
