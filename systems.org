@@ -602,7 +602,16 @@ be the next candidate for guix.
                                 "-no-browser"
                                 "-logflags=3" ; prefix with date and time
                                 "-logfile=/home/paul/log/syncthing.log")))
-                (stop #~(make-kill-destructor)))))))
+                (stop #~(make-kill-destructor)))
+               (shepherd-service
+                (provision '(gpg-agent))
+                (documentation "Run 'gpg-agent'")
+                (start #~(make-forkexec-constructor
+                           (list #$(file-append gpg-agent "gpg-connect-agent")
+                                 "/bye")))
+                (stop #~(make-forkexec-destructor
+                         (list #$(file-append gpg-agent "gpgconf")
+                               "--kill gpg-agent"))))))))
                            
              
    (simple-service 'inputrc-config
