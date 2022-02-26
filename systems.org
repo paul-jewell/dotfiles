@@ -472,204 +472,222 @@ audio_output {
 
 *** Basic Version - get it working, then develop it later
 #+begin_src scheme :mkdirp yes :tangle ./home/zeus/core.scm
-(use-modules
- (gnu home)
- (gnu home services)
- (gnu home services shells)
- (gnu home services shepherd)
- (gnu services)
- (guix gexp)
- (gnu packages)
- (gnu packages emacs)
- (gnu packages syncthing)
- (gnu packages gnupg)
- (gnu packages mpd)
- (gnu packages pulseaudio)
- (gnu packages admin))
+  (use-modules
+   (gnu home)
+   (gnu home services)
+   (gnu home services shells)
+   (gnu home services shepherd)
+   (gnu services)
+   (guix gexp)
+   (gnu packages)
+   (gnu packages emacs)
+   (gnu packages syncthing)
+   (gnu packages gnupg)
+   (gnu packages mpd)
+   (gnu packages pulseaudio)
+   (gnu packages admin))
 
-(define %inputrc
-  (plain-file
-   "inputrc"
-   (string-append
-    "set input-meta on\n"
-    "set convert-meta off\n"
-    "set output-meta on\n\n"
-    "set editing-mode emacs\n\n"
-    
-    "$if mode=emacs\n"
-    "# Allow the use of the home/end keys\n"
-    "\"\\e[1~\": beginning-of-line\n"
-    "\"\\e[4~\": end-of-line\n\n"
-    "# Map 'page up' and 'page down' to search history based on current cmdline\n"
-    "\"\\e[5~\": history-search-backward\n"
-    "\"\\e[6~\": history-search-forward\n"
-    "$endif\n")))
+  (define %inputrc
+    (plain-file
+     "inputrc"
+     (string-append
+      "set input-meta on\n"
+      "set convert-meta off\n"
+      "set output-meta on\n\n"
+      "set editing-mode emacs\n\n"
+      "set enable-keypad on\n\n"
 
-;; emacs-packages
-;; - emacs and packages required for the fully functioning emacs editor with my
-;;   configuration.
-;; TODO: Link the configuration snippets with the package names and tangle the
-;;       result, either in emacs, or with guile
+      "$if mode=emacs\n"
+      "# Allow the use of the home/end keys\n"
+      "\"\\e[1~\": beginning-of-line\n"
+      "\"\\e[4~\": end-of-line\n\n"
+      "# Map 'page up' and 'page down' to search history based on current cmdline\n"
+      "\"\\e[5~\": history-search-backward\n"
+      "\"\\e[6~\": history-search-forward\n"
+      "$endif\n")))
 
-(define %emacs-packages
-  ;;  (map specification->package
-  (list
-   "emacs"
-   "emacs-use-package"
-   "emacs-no-littering"
-   "emacs-popup"
-   "emacs-ivy"
-   "emacs-ivy-hydra"
-   "emacs-ivy-rich"
-   "emacs-swiper"
-   "emacs-counsel-bbdb"
-   "emacs-counsel"
-   "emacs-which-key"
-   "ispell"
-   "hunspell"
-   "hunspell-dict-en-gb"
-   "emacs-ledger-mode"
-    "emacs-go-mode"
-    
-    "emacs-multiple-cursors"
-    "emacs-org-bullets"
-    "emacs-org-roam"
-    ;; "emacs-org-roam-dailies" ;; package not available under guix
-    "emacs-auctex"
-    ;;"reftex" ;; included in emacs
-    "emacs-hydra"
-    ;;"emacs-js2-mode"
-    ;;"emacs-js2-reflector-el"
-    "emacs-company"
-    "emacs-company-irony"
-    "emacs-irony-mode"
-    "emacs-irony-eldoc"
-    "emacs-jedi"
-    "emacs-magit"
-    "emacs-git-gutter"
-    "emacs-git-timemachine"
-    "emacs-flycheck"
-    "emacs-all-the-icons"
-    "emacs-all-the-icons-dired"
-    "emacs-gruvbox-theme"
-    "emacs-projectile"
-    "emacs-counsel-projectile"
-    "emacs-powerline"
-    "emacs-diminish"
-    "emacs-paredit"
-    ;;"emacs-paredit-everywhere"
-    ;; "emacs-rainbow-delimiters"
+  ;; emacs-packages
+  ;; - emacs and packages required for the fully functioning emacs editor with my
+  ;;   configuration.
+  ;; TODO: Link the configuration snippets with the package names and tangle the
+  ;;       result, either in emacs, or with guile
 
-    "emacs-clojure-mode"
-    "emacs-cider"
-    ;; "emacs-cider-hydra"
-    "emacs-slime"
-    "emacs-elisp-slime-nav"
-    "mu"
-    "emacs-mu4e-alert"
-    "isync"
-    "emacs-org-caldav"
-    "emacs-helpful"
-    "pinentry"
-    "emacs-pinentry"
-    ;;"emacs-erc"
-    ;;"emacs-erc-log"
-    ;;"emacs-erc-notify"
-    ;;"emacs-erc-spelling"
-    ;;"emacs-erc-autoaway"
-    "emacs-toc-org"
-    "emacs-ox-hugo"
-    "emacs-flycheck-guile"
-    "emacs-guix"
-    "emacs-geiser"))
+  (define %emacs-packages
+    ;;  (map specification->package
+    (list
+     "emacs"
+     "emacs-use-package"
+     "emacs-no-littering"
+     "emacs-popup"
+     "emacs-ivy"
+     "emacs-ivy-hydra"
+     "emacs-ivy-rich"
+     "emacs-swiper"
+     "emacs-counsel-bbdb"
+     "emacs-counsel"
+     "emacs-which-key"
+     "ispell"
+     "hunspell"
+     "hunspell-dict-en-gb"
+     "emacs-ledger-mode"
+      "emacs-go-mode"
 
-(define %programming-apps
-  (list
-   "gcc-toolchain"
-   "make"
-   "pkg-config"
-   "texinfo"
-   "sbcl"
-   "curl"))
+      "emacs-multiple-cursors"
+      "emacs-org-bullets"
+      "emacs-org-roam"
+      ;; "emacs-org-roam-dailies" ;; package not available under guix
+      "emacs-auctex"
+      ;;"reftex" ;; included in emacs
+      "emacs-hydra"
+      ;;"emacs-js2-mode"
+      ;;"emacs-js2-reflector-el"
+      "emacs-company"
+      "emacs-company-irony"
+      "emacs-irony-mode"
+      "emacs-irony-eldoc"
+      "emacs-jedi"
+      "emacs-epc"
+      "emacs-company-jedi"
+      "emacs-magit"
+      "emacs-git-gutter"
+      "emacs-git-timemachine"
+      "emacs-flycheck"
+      "emacs-all-the-icons"
+      "emacs-all-the-icons-dired"
+      "emacs-gruvbox-theme"
+      "emacs-projectile"
+      "emacs-counsel-projectile"
+      "emacs-powerline"
+      "emacs-diminish"
+      "emacs-paredit"
+      ;; "emacs-paredit-everywhere"
+      "emacs-rainbow-delimiters"
 
-;; Home-apps
-;; - The applications I want to have installed even for the base case
+      "emacs-clojure-mode"
+      "emacs-cider"
+      ;; "emacs-cider-hydra"
+      "emacs-slime"
+      "emacs-macrostep"
+      "emacs-elisp-slime-nav"
+      "mu"
+      "emacs-mu4e-alert"
+      "isync"
+      "emacs-org-caldav"
+      "emacs-helpful"
+      "pinentry"
+      "emacs-pinentry"
+      ;;"emacs-erc"
+      ;;"emacs-erc-log"
+      ;;"emacs-erc-notify"
+      ;;"emacs-erc-spelling"
+      ;;"emacs-erc-autoaway"
+      "emacs-toc-org"
+      "emacs-ox-hugo"
+      "emacs-flycheck-guile"
+      "emacs-guix"
+      "emacs-geiser"))
 
-(define %home-apps
-  (append
-   (list
-    "htop"
-    "syncthing"
-    "nyxt")
-   %emacs-packages))
+  (define %programming-apps
+    (list
+     "gcc-toolchain"
+     "make"
+     "pkg-config"
+     "texinfo"
+     "sbcl"
+     "curl"))
 
-(home-environment
- (packages (map specification->package+output
-                %home-apps))
- (services
-  (list
-   (service home-bash-service-type
-            (home-bash-configuration
-             (guix-defaults? #t)
-             (environment-variables
-              '(("XDG_CACHE_HOME" . "~/.cache")
-                ("INPUTRC" . "~/.inputrc")
-                ("HISTFILE" . "$XDG_CACHE_HOME/.bash_history")
-                ("EDITOR" . "emacs")))))
-   
-   (service home-shepherd-service-type
-            (home-shepherd-configuration
-             (shepherd shepherd)
-             (services
-              (list
-               (shepherd-service
-                (provision '(syncthing))
-                (documentation "Run 'syncthing' without calling the browser")
-                (start #~(make-forkexec-constructor
-                          (list #$(file-append syncthing "/bin/syncthing")
-                                "-no-browser"
-                                "-logflags=3" ; prefix with date and time
-                                "-logfile=/home/paul/log/syncthing.log")))
-                (stop #~(make-kill-destructor)))
-               (shepherd-service
-                (provision '(gpg-agent))
-                (documentation "Run 'gpg-agent'")
-                (start #~(make-system-constructor
-                          #$(file-append gnupg "/bin/gpg-connect-agent /bye")))
-                (stop #~(make-system-destructor
-                         #$(file-append gnupg "/bin/gpgconf --kill gpg-agent"))))
-               (shepherd-service
-                (provision '(pulseaudio))
-                (documentation "Run pulseaudio")
-                (start #~(make-forkexec-constructor
-                          (list #$(file-append pulseaudio "/bin/pulseaudio"))))
-                (stop #~(make-kill-destructor)))
-               (shepherd-service
-                (provision '(mpd))
-                (documentation "Run 'mpd' server")
-                (start #~(make-forkexec-constructor
-                          (list #$(file-append mpd "/bin/mpd"))))
-                (stop #~(make-kill-destructor)))))))
-                           
-             
-   (simple-service 'inputrc-config
-                   home-files-service-type
-                   (list `("inputrc"
-                           ,%inputrc)))
+  ;; Home-apps
+  ;; - The applications I want to have installed even for the base case
 
-   (simple-service 'mpd-config
-                   home-files-service-type
-                   (list `(".config/mpd/mpd.conf"
-                           ,(local-file "/home/paul/dotfiles/home/files/mpd/mpd.conf"))))
-   
-   (simple-service 'emacs-config
-                   home-files-service-type
-                   (list `("emacs.d/early-init.el"
-                           ,(local-file "/home/paul/dotfiles/home/files/emacs/early-init.el"))
-                         `("emacs.d/init.el"
-                           ,(local-file "/home/paul/dotfiles/home/files/emacs/init.el"))
-                         `("emacs.d/lisp/my-org-mode.el"
-                           ,(local-file "/home/paul/dotfiles/home/files/emacs/lisp/my-org-mode.el")))))))
+  (define %home-apps
+    (append
+     (list
+      "git"
+      "ntfs-3g"
+      "exfat-utils"
+      "fuse-exfat"
+      "bluez"
+      "bluez-alsa"
+      "pulseaudio"
+      "tlp"
+      "xf86-input-libinput"
+      "nss-certs"
+      "gvfs"
+      "htop"
+      "syncthing"
+      "nyxt"
+      "mpd")
+     %emacs-packages))
+
+  (home-environment
+   (packages (map specification->package+output
+                  %home-apps))
+   (services
+    (list
+     (service home-bash-service-type
+              (home-bash-configuration
+               (guix-defaults? #t)
+               (environment-variables
+                '(("XDG_CACHE_HOME" . "~/.cache")
+                  ("INPUTRC" . "~/.inputrc")
+                  ("HISTFILE" . "$XDG_CACHE_HOME/.bash_history")
+                  ("EDITOR" . "emacs")
+                  ("PATH" . "~/.bin:~/.bin/statusbar:$PATH")
+                  ("BROWSER" . "nyxt")))))
+
+     (service home-shepherd-service-type
+              (home-shepherd-configuration
+               (shepherd shepherd)
+               (services
+                (list
+                 (shepherd-service
+                  (provision '(syncthing))
+                  (documentation "Run 'syncthing' without calling the browser")
+                  (start #~(make-forkexec-constructor
+                            (list #$(file-append syncthing "/bin/syncthing")
+                                  "-no-browser"
+                                  "-logflags=3" ; prefix with date and time
+                                  "-logfile=/home/paul/log/syncthing.log")))
+                  (stop #~(make-kill-destructor)))
+                 (shepherd-service
+                  (provision '(gpg-agent))
+                  (documentation "Run 'gpg-agent'")
+                  (start #~(make-system-constructor
+                            #$(file-append gnupg "/bin/gpg-connect-agent /bye")))
+                  (stop #~(make-system-destructor
+                           #$(file-append gnupg "/bin/gpgconf --kill gpg-agent"))))
+                 (shepherd-service
+                  (provision '(pulseaudio))
+                  (documentation "Run pulseaudio")
+                  (start #~(make-forkexec-constructor
+                            (list #$(file-append pulseaudio "/bin/pulseaudio"))))
+                  (stop #~(make-kill-destructor)))
+                 (shepherd-service
+                  (provision '(mpd))
+                  (documentation "Run 'mpd' server")
+                  (start #~(make-forkexec-constructor
+                            (list #$(file-append mpd "/bin/mpd ~/.config/mpd/mpd.conf"))))
+                  (stop #~(make-kill-destructor)))))))
+
+
+     (simple-service 'inputrc-config
+                     home-files-service-type
+                     (list `("inputrc"
+                             ,%inputrc)))
+
+     (simple-service 'mpd-config
+                     home-files-service-type
+                     (list `("config/mpd/mpd.conf"
+                             ,(local-file "/home/paul/dotfiles/home/files/mpd/mpd.conf"))))
+
+     (simple-service 'emacs-config
+                     home-files-service-type
+                     (list `("emacs.d/early-init.el"
+                             ,(local-file "/home/paul/dotfiles/home/files/emacs/early-init.el"))
+                           `("emacs.d/init.el"
+                             ,(local-file "/home/paul/dotfiles/home/files/emacs/init.el"))
+                           `("emacs.d/lisp/my-org-mode.el"
+                             ,(local-file "/home/paul/dotfiles/home/files/emacs/lisp/my-org-mode.el")))))))
 #+end_src
 *** Zeus
 
@@ -887,18 +905,18 @@ window manager and associated programs is done there.
 
 *.xsession*
 
-#+begin_src sh :mkdirp yes :tangle .xsession :shebang #!/bin/sh
-if [ -z "$(pgrep -u paul shepherd)" ]; then
-  shepherd &
-fi
+#+begin_src sh :mkdirp yes :notangle .xsession :shebang #!/bin/sh
+#if [ -z "$(pgrep -u paul shepherd)" ]; then
+#  shepherd &
+#fi
 
-xsettingsd &
+#xsettingsd &
 
-compton &
+#compton &
 # TODO: Make the background changeable, and saved between sessions
-feh --bg-fill ~/backgrounds/mountains-1412683.jpg &
-unclutter &
-exec dwm
+#feh --bg-fill ~/backgrounds/mountains-1412683.jpg &
+#unclutter &
+#exec dwm
 
 #+end_src
 
