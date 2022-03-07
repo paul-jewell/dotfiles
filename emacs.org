@@ -1288,10 +1288,8 @@ Git gutter:
 ;; Font size setting for Emacs 27:
 (set-face-attribute 'default nil :font my:font )
 (set-frame-font my:font nil t)
-;; Old font size setting:
-;;(set-default-font my:font)
-;;(set-frame-font my:font t)
-
+;; Set font for frames running under emacs daemon
+(add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
 #+end_src
 
 *Guix Packages*
