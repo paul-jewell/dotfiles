@@ -1,5 +1,5 @@
 #+TITLE: org-workflow.org - personalised gtd workflow for org-mode
-#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/lisp/my-org-mode.el :mkdirp t
+#+PROPERTY: header-args:emacs-lisp :tangle home/files/emacs/lisp/my-org-mode.el :mkdirp t
 
 Org-mode workflow developed over time from the excellent configuration
 shared by Bernt Hansen. Since then I have brought the code up to date
@@ -14,18 +14,19 @@ TODO: Complete the breakdown and documentation in this file.
 :END:
 
 - [[#preamble][Preamble]]
-- [[#key-bindings][Key bindings]]
-- [[#helper-functions][Helper functions]]
+- [[#load-org-modules][Load org modules]]
+- [[#keybindings][Keybindings]]
+- [[#functions][Functions]]
 - [[#capture-templates][Capture templates]]
-- [[#agenda-custom-commands][Agenda custom commands]]
-- [[#clocking-management][Clocking management]]
-- [[#agenda-clock-report-parameters][Agenda clock report parameters]]
+- [[#clocking-functions][Clocking functions]]
+- [[#helper-functions][Helper functions]]
+- [[#publishing][Publishing]]
 
 * Preamble
 
-#+begin_src emacs-lisp :mkdirp t :tangle home/files/emacs/lisp/my-org-mode.el
+#+begin_src emacs-lisp
 ;; -*- buffer-read-only: t; -*-
-;;; package --- Summary
+;;; my-org-mode --- Summary
 
 ;; Org-mode personal configuration
 
@@ -38,11 +39,31 @@ TODO: Complete the breakdown and documentation in this file.
 
 #+end_src
 
-* Key bindings
-
+* Load org modules
 #+begin_src emacs-lisp
+;; Enable habit tracking (and a bunch of other modules)
+(defvar my-org-modules '(org-crypt
+                          ol-gnus
+                          org-id
+                          ol-info
+                          ;; org-jsinfo
+                          org-habit
+                          org-inlinetask
+                          ol-irc
+                          ;; org-mew
+                          ol-mhe
+                          org-protocol
+                          ol-rmail
+                          ;; org-vm
+                          ;; org-wl
+                          ol-w3m))
 
+(mapcar (lambda (x) (add-to-list 'org-modules x)) my-org-modules)
 
+#+end_src
+
+* Keybindings
+#+begin_src emacs-lisp
 ;; Standard key bindings
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
@@ -87,12 +108,8 @@ TODO: Complete the breakdown and documentation in this file.
 
 #+end_src
 
-* Helper functions
-
-
-
+* Functions
 #+begin_src emacs-lisp
-
 (defun pj/set-truncate-lines ()
   "Toggle value of 'truncate-lines' and refresh window display."
   (interactive)
@@ -101,10 +118,6 @@ TODO: Complete the breakdown and documentation in this file.
   (save-excursion
     (set-window-start (selected-window)
                       (window-start (selected-window)))))
-
-#+end_src
-
-#+begin_src emacs-lisp
 
 (defun pj/switch-to-scratch ()
   "Switch to scratch buffer."
@@ -151,12 +164,9 @@ TODO: Complete the breakdown and documentation in this file.
   (if (string= "windows-nt" system-type)
       (shell-command-to-string "powershell -Command \"[guid]::NewGuid().ToString()\" ")
     (shell-command-to-string "uuidgen")))
-
-
 #+end_src
 
 * Capture templates
-
 #+begin_src emacs-lisp
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (defvar org-capture-templates
@@ -262,12 +272,6 @@ TODO: Complete the breakdown and documentation in this file.
 
 (setq org-agenda-compact-blocks t)
 
-
-#+end_src
-
-* Agenda custom commands
-
-#+begin_src emacs-lisp
 ;; Custom agenda command definitions
 
 (setq org-agenda-custom-commands
@@ -353,11 +357,8 @@ TODO: Complete the breakdown and documentation in this file.
 (setq org-agenda-auto-exclude-function 'pj/org-auto-exclude-function)
 
 #+end_src
-
-* Clocking management
-
+* Clocking functions
 #+begin_src emacs-lisp
-;;
 ;; Resume clocking task when emacs is restarted
 
 (org-clock-persistence-insinuate)
@@ -535,11 +536,6 @@ A prefix arg forces clock in of the default task."
 
 (setq org-clock-out-remove-zero-time-clocks t)
 
-#+end_src
-
-* Agenda clock report parameters
-
-#+begin_src emacs-lisp
 ;; Agenda clock report parameters
 
 (setq org-agenda-clockreport-parameter-plist
@@ -590,7 +586,6 @@ A prefix arg forces clock in of the default task."
   (bbdb-initialize))
 
 
-
 (global-set-key (kbd "<f9> p") 'pj/phone-call)
 
 ;; Phone capture template handling with BBDB lookup
@@ -632,6 +627,10 @@ A prefix arg forces clock in of the default task."
 
 (setq org-stuck-projects (quote ("" nil nil "")))
 
+#+end_src
+
+* Helper functions
+#+begin_src emacs-lisp
 ;; Helper predicates
 
 (defun pj/is-project-p ()
@@ -930,7 +929,6 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
          (gnuplot . t)
          (clojure . t)
          (shell . t)
-         (ledger . t)
          (org . t)
          (lisp . t)
          (scheme . t)
@@ -1128,6 +1126,10 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 ;;               ("tmp"
 ;;                :components ("tmp-org" "tmp-extra")))))
 
+#+end_src
+
+* Publishing
+#+begin_src emacs-lisp
 ; I'm lazy and don't want to remember the name of the project to publish when I modify
 ; a file that is part of a project.  So this function saves the file, and publishes
 ; the project that includes this file
@@ -1196,7 +1198,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
     (widen)))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "W"
+          (lambda () (org-defkey org-agenda-mode-map "W"
                                   (lambda () (interactive)
                                     (setq pj/hide-scheduled-and-waiting-next-tasks t)
                                     (pj/widen))))
@@ -1215,7 +1217,7 @@ so change the default 'F' binding in the agenda to allow both"
     (goto-char (point-min))))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "F" 'pj/restrict-to-file-or-follow))
+          (lambda () (org-defkey org-agenda-mode-map "F" 'pj/restrict-to-file-or-follow))
           'append)
 
 (defun pj/narrow-to-org-subtree ()
@@ -1235,7 +1237,7 @@ so change the default 'F' binding in the agenda to allow both"
     (pj/narrow-to-org-subtree)))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "N" 'pj/narrow-to-subtree))
+          (lambda () (org-defkey org-agenda-mode-map "N" 'pj/narrow-to-subtree))
           'append)
 
 (defun pj/narrow-up-one-org-level ()
@@ -1260,7 +1262,7 @@ so change the default 'F' binding in the agenda to allow both"
     (pj/narrow-up-one-org-level)))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "U" 'pj/narrow-up-one-level))
+          (lambda () (org-defkey org-agenda-mode-map "U" 'pj/narrow-up-one-level))
           'append)
 
 (defun pj/narrow-to-org-project ()
@@ -1285,7 +1287,7 @@ so change the default 'F' binding in the agenda to allow both"
       (org-agenda-set-restriction-lock))))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "P" 'pj/narrow-to-project))
+          (lambda () (org-defkey org-agenda-mode-map "P" 'pj/narrow-to-project))
           'append)
 
 (defvar pj/project-list nil)
@@ -1334,14 +1336,14 @@ so change the default 'F' binding in the agenda to allow both"
         (error "All projects viewed")))))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "V" 'pj/view-next-project))
+          (lambda () (org-defkey org-agenda-mode-map "V" 'pj/view-next-project))
           'append)
 
 ;; Seemingly not needed...:
 ;; (setq org-show-entry-below (quote ((default))))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "\C-c\C-x<" 'pj/set-agenda-restriction-lock))
+          (lambda () (org-defkey org-agenda-mode-map "\C-c\C-x<" 'pj/set-agenda-restriction-lock))
           'append)
 
 (defun pj/set-agenda-restriction-lock (arg)
@@ -1369,7 +1371,7 @@ so change the default 'F' binding in the agenda to allow both"
 
 ;; Always hilight the current agenda line
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (hl-line-mode 1))
+          (lambda () (hl-line-mode 1))
           'append)
 
 ;; Keep tasks with dates on the global todo lists
@@ -1585,29 +1587,11 @@ Late deadlines first, then scheduled, then non-late deadlines"
 
 (setq org-clock-sound "/usr/local/lib/tngchime.wav")
 
-; Enable habit tracking (and a bunch of other modules)
-(setq org-modules (quote (org-bbdb
-                          org-bibtex
-                          org-crypt
-                          org-gnus
-                          org-id
-                          org-info
-                          org-jsinfo
-                          org-habit
-                          org-inlinetask
-                          org-irc
-                          org-mew
-                          org-mhe
-                          org-protocol
-                          org-rmail
-                          org-vm
-                          org-wl
-                          org-w3m)))
 
 ; position the habit graph on the agenda to the right of the default
 (setq org-habit-graph-column 50)
 
-(run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
+(run-at-time "06:00" 86400 (lambda () (setq org-habit-show-habits t)))
 
 (global-auto-revert-mode t)
 
@@ -1751,8 +1735,8 @@ Late deadlines first, then scheduled, then non-late deadlines"
 (setq org-link-mailto-program (quote (compose-mail "%a" "%s")))
 
 ;; Bookmark handling
-(global-set-key (kbd "<C-f6>") '(lambda () (interactive) (bookmark-set "SAVED")))
-(global-set-key (kbd "<f6>") '(lambda () (interactive) (bookmark-jump "SAVED")))
+(global-set-key (kbd "<C-f6>") (lambda () (interactive) (bookmark-set "SAVED")))
+(global-set-key (kbd "<f6>") (lambda () (interactive) (bookmark-jump "SAVED")))
 
 (use-package org-mime
   :ensure t)
@@ -1811,7 +1795,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 (add-hook 'message-mode-hook 'orgtbl-mode 'append)
 (add-hook 'message-mode-hook 'turn-on-flyspell 'append)
 (add-hook 'message-mode-hook
-          '(lambda () (setq fill-column 72))
+          (lambda () (setq fill-column 72))
           'append)
 
 ;; flyspell mode for spell checking everywhere
@@ -1823,7 +1807,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 ;;    C-c ;
 ;;    C-c C-x C-q  cancelling the clock (we never want this)
 (add-hook 'org-mode-hook
-          '(lambda ()
+          (lambda ()
              ;; Undefine C-c [ and C-c ] since this breaks my
              ;; org-agenda files when directories are include It
              ;; expands the files in the directories individually
@@ -1900,5 +1884,4 @@ Late deadlines first, then scheduled, then non-late deadlines"
 
 (provide 'my-org-mode)
 ;;; my-org-mode.el ends here
-
 #+end_src
