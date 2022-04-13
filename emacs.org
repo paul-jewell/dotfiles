@@ -115,106 +115,116 @@ Emacs configuration.
 * Machine specific code, and package initialisation
 
 #+begin_src emacs-lisp
-;; Load machine local definitions
+    ;; Load machine local definitions
 
-(defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
-(defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
-(defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
-(defvar *pj/font-size*        "14"  "Fontsize for this system.")
+    (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
+    (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
+    (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
+    (defvar *pj/font-size*        "14"  "Fontsize for this system.")
 
-(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+    (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
-(defun pj/is-windows-p ()
-  "True if run in windows environment."
-  (string= "windows-nt" system-type))
+    (defun pj/is-windows-p ()
+      "True if run in windows environment."
+      (string= "windows-nt" system-type))
 
-(defun pj/is-linux-p ()
-  "True if run in linux environment."
-  (string= "gnu/linux" system-type))
+    (defun pj/is-linux-p ()
+      "True if run in linux environment."
+      (string= "gnu/linux" system-type))
 
-(defun pj/is-host-p (name)
-  "True if running on system NAME."
-  (string= (system-name) name))
+    (defun pj/is-host-p (name)
+      "True if running on system NAME."
+      (string= (system-name) name))
 
-;; Currently only zeus is a guix system. This may need changing in the future.
-(defun pj/is-guix-p ()
-  "True if system is running guix."
-  (pj/is-host-p "zeus"))
+    ;; Currently only zeus is a guix system. This may need changing in the future.
+    (defun pj/is-guix-p ()
+      "True if system is running guix."
+      (pj/is-host-p "zeus"))
 
-;; Three possibilities for specifying values:
+    ;; Three possibilities for specifying values:
 
-;; - Globally, for all systems
-;; - By operating system
-;; - By system name
+    ;; - Globally, for all systems
+    ;; - By operating system
+    ;; - By system name
 
-(cond
- ((pj/is-linux-p)
-  (cond
-   ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-    (progn
-      (require 'gnutls)
-      (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-	   (setq *pj/enable-mu4e-mode* t)
-	   (setq *pj/load-site-gentoo* nil)
-	   (setq *pj/enable-auctex* t)
-	   
-	   ;; define the location of the orgmode code - currently using the built in version.
-	   ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-	   ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
-      (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-      (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-      (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-	   (setq *pj/font-size* "14")))
-   ((pj/is-guix-p)
-    (progn
-      (setq *pj/enable-mu4e-mode* t)
-      (setq *pj/load-site-gentoo* nil)
-      (setq *pj/enable-auctex* t)
-	   ;; define the location of the orgmode code
-	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
-	   ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
-      (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-      (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-      (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))
-   (t (progn
-        (setq *pj/enable-mu4e-mode* t)
-        (setq *pj/load-site-gentoo* t)
-        (setq *pj/enable-auctex* t)
-	     ;; define the location of the orgmode code
-	     ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
-	     ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+    (cond
+     ((pj/is-linux-p)
+      (cond
+       ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+        (progn
+          (require 'gnutls)
+          (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+          (setq *pj/enable-mu4e-mode* t)
+          (setq *pj/load-site-gentoo* nil)
+          (setq *pj/enable-auctex* t)
+
+          ;; define the location of the orgmode code - currently using the built in version.
+          ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+          ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+          (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+          (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+          (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+          (setq *pj/font-size* "12")))
+       ((pj/is-guix-p)
+        (progn
+          (setq *pj/enable-mu4e-mode* t)
+          (setq *pj/load-site-gentoo* nil)
+          (setq *pj/enable-auctex* t)
+          ;; define the location of the orgmode code
+          ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+          ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+          (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+          (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+          (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))
+       ;; tristan now has a 4K screen, so need to pull out the settings
+       ((string-prefix-p "tristan" (system-name))
+        (progn
+          (setq *pj/enable-mu4e-mode* t)
+          (setq *pj/load-site-gentoo* t)
+          (setq *pj/enable-auctex* t)
+          (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+          (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+          (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+          (setq *pj/font-size* "14")))
+       (t (progn
+            (setq *pj/enable-mu4e-mode* t)
+            (setq *pj/load-site-gentoo* t)
+            (setq *pj/enable-auctex* t)
+            ;; define the location of the orgmode code
+            ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+            ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+            (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+            (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+            (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
+     ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+      (progn
+        (setq *pj/enable-mu4e-mode* nil)
+        (setq *pj/load-site-gentoo* nil)
+        (setq *pj/enable-auctex* nil)
+
+        ;; define the location of the orgmode code
+        ;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
+        ;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
+        (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
         (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
         (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-        (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
- ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
-  (progn
-    (setq *pj/enable-mu4e-mode* nil)
-    (setq *pj/load-site-gentoo* nil)
-    (setq *pj/enable-auctex* nil)
-    
-    ;; define the location of the orgmode code
-    ;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
-    ;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
-    (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
-    (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-    (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-    (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-    (setq *pj/font-size* "10")))
- (t
-  (error "Undefined system-type %s" system-type)))
+        (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+        (setq *pj/font-size* "10")))
+     (t
+      (error "Undefined system-type %s" system-type)))
 
 
-;;(require 'site-specific "~/.emacs.d/site-specific.el")
+    ;;(require 'site-specific "~/.emacs.d/site-specific.el")
 
-(defvar *packages-initialised* nil)
+    (defvar *packages-initialised* nil)
 
-(defun initialise-packages ()
-  "Ensure `package-initialize' is called only once."
-  (unless *packages-initialised*
-    (package-initialize)
-    (setq *packages-initialised* t)))
+    (defun initialise-packages ()
+      "Ensure `package-initialize' is called only once."
+      (unless *packages-initialised*
+        (package-initialize)
+        (setq *packages-initialised* t)))
 
-(initialise-packages)
+    (initialise-packages)
 
 #+end_src
 
@@ -724,16 +734,16 @@ Not working, and not used currently...
 
 
   (require 'org)
-;;  (require 'org-contribdir)
+  ;;  (require 'org-contribdir)
   (require 'org-agenda)
   (require 'org-clock)
   (require 'org-archive)
-;;  (require 'org-checklist)
+  ;;  (require 'org-checklist)
   (require 'org-crypt)
   (require 'org-protocol)
   (require 'ido)
   (require 'org-id)
-;;  (require 'bbdb-com)
+  ;;  (require 'bbdb-com)
   (require 'ox-html)
   (require 'ox-latex)
   (require 'ox-ascii)
@@ -741,7 +751,9 @@ Not working, and not used currently...
 
   (setq org-agenda-files *pj/org-agenda-files*)
   (load "~/.emacs.d/lisp/my-org-mode.el")
-  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
+
+;;  (eval-after-load "org" (add-to-list 'org-modules 'org-habit))
+;;  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
   (global-set-key (kbd "C-c w") 'org-refile)
 
 #+end_src
@@ -1276,20 +1288,22 @@ Git gutter:
 * Themes
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....themes
-;;     ------
+  ;;==============================================================================
+  ;;.....themes
+  ;;     ------
 
-(use-package gruvbox-theme
-  :config
-  (load-theme 'gruvbox t))
-;; Font size is localised in site-local.el
-(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
-;; Font size setting for Emacs 27:
-(set-face-attribute 'default nil :font my:font )
-(set-frame-font my:font nil t)
-;; Set font for frames running under emacs daemon
-(add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
+  (use-package gruvbox-theme
+    :config
+    (load-theme 'gruvbox t))
+  ;; Font size is localised in site-local.el
+  (defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
+
+  ;; Font size setting for Emacs 27:
+  (set-face-attribute 'default nil :font my:font )
+  ;; (set-frame-font my:font nil t)
+
+  ;; Set font for frames running under emacs daemon
+  (add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
 #+end_src
 
 *Guix Packages*
