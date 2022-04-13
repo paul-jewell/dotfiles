@@ -62,7 +62,7 @@ else
         GPG_AGENT_INFO=$(cut -c 16- < "$HOME"/.gpg-agent-info)
     else
         # No, gpg-agent not available; start gpg-agent
-        eval "$(gpg-agent --daemon --no-grab --write-env-file $HOME/.gpg-agent-info)"
+        eval "$(gpg-agent --daemon --no-grab $HOME/.gpg-agent-info)"
     fi
     export GPG_TTY=$(tty)
     export GPG_AGENT_INFO
