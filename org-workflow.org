@@ -203,11 +203,13 @@ TODO: Complete the breakdown and documentation in this file.
 :END:" :clock-in t :clock-resume t)
 
           ("h" "Habit" entry (file *pj/org-default-refile-file*)
-           "* NEXT %?\n\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")
+           "* NEXT %?\n%aSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")
 :PROPERTIES:
 :ID: %(pj/uuidgen):CREATED: %U
 :STYLE: habit
 :REPEAT_TO_STATE: NEXT
+:END:
+:LOGBOOK:
 :END:\n"))))
 
 ;; Remove empty LOGBOOK drawers on clock out
@@ -357,6 +359,10 @@ TODO: Complete the breakdown and documentation in this file.
 (setq org-agenda-auto-exclude-function 'pj/org-auto-exclude-function)
 
 #+end_src
+
+#+results:
+: pj/org-auto-exclude-function
+
 * Clocking functions
 #+begin_src emacs-lisp
 ;; Resume clocking task when emacs is restarted
