@@ -1,0 +1,8 @@
+/bin/env sh
+
+# Use this command to make the other yubikey active
+
+# Put the key in, and run this script
+
+gpg-connect-agent "scd serialno" "learn --force" /bye
+
