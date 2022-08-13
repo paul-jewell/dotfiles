@@ -1918,6 +1918,7 @@ Developed from bbatsov's code on his github.
                                      "#nonguix"
                                      "#emacs"
                                      "#gentoo"
+                                     "#gentoo-haskell"
                                      "#guile"
                                      "#lisp"
                                      "#clojure"
