@@ -1,0 +1,7 @@
+default partial alphanumeric_keys modifier_keys keypad_keys
+xkb_symbols "basic" {
+	include "gb"
+
+	replace key <LWIN> { [ F20 ] };
+};
+

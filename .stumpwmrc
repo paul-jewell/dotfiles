@@ -1,0 +1,193 @@
+;; -*- Mode: lisp; Mode: StumpWM -*-
+(in-package :stumpwm)
+
+;; load Stump contrib modules
+(mapc #'load-module
+      '("ttf-fonts"
+	     "swm-gaps"))
+
+;; font settings
+(xft:cache-fonts)
+(set-font (list
+	        (make-instance 'xft:font
+			                 :family "DejaVu Sans Mono"
+			                 :subfamily "Bold"
+			                 :size 12)
+	        (make-instance 'xft:font
+			                 :family "FontAwesome"
+			                 :subfamily "Regular"
+			                 :size 12)))
+
+(setf *colors*
+      '("#ffffff"        ; ^0 ; White
+	     "#131220"        ; ^1 ; Dark Blue
+	     "#f72f33"        ; ^2 ; Red
+	     "#689d6a"        ; ^3 ; Light Green
+	     "#62bfef"        ; ^4 ; Light Blue
+        "#fabd2f"        ; ^5 ; Yellow / Help map keys
+	     "#a644bf"        ; ^6 ; Magenta
+	     "#cc4a0e"        ; ^7 ; Brown
+	     "#56b6c2"))      ; ^8 ; Cyan  
+	
+(defparameter *mode-line-bg-color* (nth 1 *colors*))
+(defparameter *mode-line-fg-color* (nth 0 *colors*))
+(defparameter *msg-bg-color* (nth 1 *colors*))
+(defparameter *msg-fg-color* (nth 0 *colors*))
+(defparameter *msg-border-color* (nth 2 *colors*))
+
+;;; Changing the prefix key
+(set-prefix-key (kbd "s-z"))
+
+(defcommand launcher () ()
+  (run-shell-command
+   "rofi -show drun"))
+
+;;; Load swank on demand
+;; Note: This path will unfortunately change when slime is updated
+(load "~/.emacs.d/elpa/slime-20221003.936/swank-loader.lisp")
+(swank-loader:init)
+
+(defparameter *port-number* 4005
+  "My default port number for Swank")
+
+(defvar *swank-server-p* nil
+  "Keep track of Swank server, only started on request")
+
+(defcommand start-swank () ()
+  "Start Swank if not already running"
+  (if *swank-server-p*
+      (message "Swank server is already active on Port^5 ~a^n" *port-number*)
+      (progn
+        (swank:create-server :port *port-number*
+                             :style swank:*communication-style*
+                             :dont-close t)
+        (setf *swank-server-p* t)
+        (echo-string (current-screen)
+                     "Starting swank. M-x slime-connect RET RET, then (in-package stumpwm)."))))
+
+(defcommand stop-swank () ()
+  "Stop Swank"
+  (swank:stop-server *port-number*)
+  (setf *swank-server-p* nil)
+  (message "Stopping Swank Server! Closing Port^5 ~a^n." *port-number*))
+
+(define-key *root-map* (kbd "C-s") "start-swank")
+
+;;; Process management
+;; Thanks to tomoyuki28jp:
+;; https://github.com/tomoyuki28jp/stumpwm/blob/master/.stumpwmrc
+(defun ps-exists (ps)
+  (let ((f "ps -ef | grep ~S | grep -v -e grep -e stumpish | wc -l"))
+    (< 0 (parse-integer (run-shell-command (format nil f ps) t)))))
+
+(defun start-uniq-command-ps (command &key options (background t))
+  (unless (ps-exists command)
+         (run-shell-command
+          (concat command " " options " " (when background "&")))))
+
+;; ---------------------------------------------------------------------
+
+(defcommand nm-applet () ()
+  (start-uniq-command-ps "nm-applet" :options "--sm-disable"))
+
+
+;; TODO: Clarify whether emacs daemon is worth using, since
+;; calling the emacs window to the front is so easy.
+;; (defcommand start-emacs-daemon () ()
+;;   (run-command "emacs" :options "--daemon"))
+
+;; emacsclient is run with these parameters:
+;; emacsclient -c -a 'emacs'
+
+;;; Run commands
+(when *initializing* 
+  (nm-applet)
+  (run-shell-command "emacs --daemon")
+  (start-uniq-command-ps "redshift" :options "-l 53:0")
+  (start-uniq-command-ps "picom" :options "--experimental-backends")
+  (start-uniq-command-ps "dunst"))
+;;(start-emacs)
+
+(defcommand emacsclient () ()
+  "Open / raise client window"
+  (run-or-raise "emacsclient -n -c -e '(switch-to-buffer nil)'" '(:class "Emacs") nil T)
+  (message "GNU-Emacs"))
+
+(defcommand new-emacsclient () ()
+  "Open new client window"
+  (run-shell-command "emacsclient -n -c -e '(switch-to-buffer nil)'"))
+
+(defcommand browser () ()
+  (run-or-raise "firefox" '(:class "Firefox"))) 
+(define-key *root-map* (kbd "b") "browser")
+
+;;; Modeline
+
+(defvar *swank-ml-status* ""
+  "Modeline status for Swank server")
+
+(defun get-swank-status ()
+  (if *swank-server-p*
+      (setf *swank-ml-status* (format nil "Swank ^3^f1^f0^n Port:^5 ~a^n " *port-number*))
+      (setf *swank-ml-status* "")))
+
+(defun ml-fmt-swank-status (ml)
+  (declare (ignore ml))
+  (get-swank-status))
+
+(add-screen-mode-line-formatter #\S #'ml-fmt-swank-status)
+
+;;; Modeline settings
+
+(setf *mode-line-timeout* 1)
+(setf *mode-line-border-width* 0)
+
+(setf *mode-line-background-color* *mode-line-bg-color*)
+(setf *mode-line-border-color* *mode-line-bg-color*)
+(setf *mode-line-foreground-color* *mode-line-fg-color*)
+
+(setf *time-modeline-string* "^2^f1^f0^n %H:%M")
+
+(defparameter *battery-percent* "")
+
+(defun get-battery-status ()
+  (let* ((batgetcap (run-shell-command "cat /sys/class/power_supply/BAT0/capacity | tr -d '\\r\\n'" t)))
+    (setf *battery-percent* (format nil "^4^f1^f0^n ~a% " batgetcap))))
+
+(defun battery-percentage (ml)
+  (declare (ignore ml))
+  *battery-percent*)
+  
+(run-with-timer 0 10 #'get-battery-status)
+
+(add-screen-mode-line-formatter #\B #'battery-percentage)
+
+(setf *screen-mode-line-format*
+      (list "^5[%g]^n "   ; groups
+            "%W"          ; windows
+            "^>"          ; right align
+            "%S"          ; Swank status
+            "%B"          ; Battery status
+            "%d"))        ; time/date
+
+(if (not (head-mode-line (current-head)))
+    (toggle-mode-line (current-screen) (current-head)))
+
+
+;;; Multimedia keys
+;; Volume control
+(define-key *top-map* (kbd "XF86AudioLowerVolume") "exec amixer set Master 5%-")
+(define-key *top-map* (kbd "XF86AudioRaiseVolume") "exec amixer set Master 5%+")
+
+;; Mute
+(define-key *top-map* (kbd "XF86AudioMute") "exec amixer set Master toggle")
+(define-key *top-map* (kbd "XF86AudioMicMute") "exec amixer set Capture toggle")
+
+;;; Screen brightness
+(define-key *top-map* (kbd "XF86MonBrightnessDown") "exec light -U 10")
+(define-key *top-map* (kbd "XF86MonBrightnessUp") "exec light -A 10")
+
+;;; Favorite applications
+(define-key *top-map* (kbd "s-e") "emacsclient")
+(define-key *top-map* (kbd "s-E") "new-emacsclient")
+(define-key *top-map* (kbd "s-w") "browser")
