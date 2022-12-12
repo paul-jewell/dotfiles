@@ -47,6 +47,7 @@ Emacs configuration.
 - [[#clojure][Clojure]]
 - [[#lisp][Lisp]]
 - [[#emacs-lisp][emacs-lisp]]
+- [[#haskell][Haskell]]
 - [[#mu4e---email][mu4e - Email]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
@@ -59,7 +60,7 @@ Emacs configuration.
 - [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
 * Early init file
-#+begin_src emacs-lisp :tangle ./home/files/emacs/early-init.el
+#+begin_src emacs-lisp :mkdirp t :tangle ./home/files/emacs/early-init.el
 ;;; -*-buffer-read-only: t;-*- 
 ;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
 ;;; Commentary:
@@ -151,65 +152,74 @@ Emacs configuration.
      ((pj/is-linux-p)
       (cond
        ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-        (progn
-          (require 'gnutls)
-          (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-          (setq *pj/enable-mu4e-mode* t)
-          (setq *pj/load-site-gentoo* nil)
-          (setq *pj/enable-auctex* t)
+	(progn
+	  (require 'gnutls)
+	  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+	  (setq *pj/enable-mu4e-mode* t)
+	  (setq *pj/load-site-gentoo* nil)
+	  (setq *pj/enable-auctex* t)
 
-          ;; define the location of the orgmode code - currently using the built in version.
-          ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-          ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
-          (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-          (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-          (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-          (setq *pj/font-size* "12")))
+	  ;; define the location of the orgmode code - currently using the built in version.
+	  ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+	  ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+	  (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+	  (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+	  (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+	  (setq *pj/font-size* "12")))
        ((pj/is-guix-p)
-        (progn
-          (setq *pj/enable-mu4e-mode* t)
-          (setq *pj/load-site-gentoo* nil)
-          (setq *pj/enable-auctex* t)
-          ;; define the location of the orgmode code
-          ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
-          ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
-          (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-          (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-          (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))
+	(progn
+	  (setq *pj/enable-mu4e-mode* t)
+	  (setq *pj/load-site-gentoo* nil)
+	  (setq *pj/enable-auctex* t)
+	  ;; define the location of the orgmode code
+	  ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+	  ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+	  (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+	  (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+	  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))
        ;; tristan now has a 4K screen, so need to pull out the settings
        ((string-prefix-p "tristan" (system-name))
-        (progn
-          (setq *pj/enable-mu4e-mode* t)
-          (setq *pj/load-site-gentoo* t)
-          (setq *pj/enable-auctex* t)
-          (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-          (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-          (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-          (setq *pj/font-size* "14")))
+	(progn
+	  (setq *pj/enable-mu4e-mode* t)
+	  (setq *pj/load-site-gentoo* t)
+	  (setq *pj/enable-auctex* t)
+	  (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+	  (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+	  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+	  (setq *pj/font-size* "14")))
+       ((string-prefix-p "gandalf" (system-name))
+	(progn
+	  (setq *pj/enable-mu4e-mode* nil)
+	  (setq *pj/load-site-gentoo* nil)
+	  (setq *pj/enable-auctex* t)
+	  (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+	  (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+	  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+	  (setq *pj/font-size* "14")))
        (t (progn
-            (setq *pj/enable-mu4e-mode* t)
-            (setq *pj/load-site-gentoo* t)
-            (setq *pj/enable-auctex* t)
-            ;; define the location of the orgmode code
-            ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
-            ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
-            (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-            (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-            (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
+	    (setq *pj/enable-mu4e-mode* t)
+	    (setq *pj/load-site-gentoo* t)
+	    (setq *pj/enable-auctex* t)
+	    ;; define the location of the orgmode code
+	    ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+	    ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+	    (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+	    (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+	    (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
      ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
       (progn
-        (setq *pj/enable-mu4e-mode* nil)
-        (setq *pj/load-site-gentoo* nil)
-        (setq *pj/enable-auctex* nil)
+	(setq *pj/enable-mu4e-mode* nil)
+	(setq *pj/load-site-gentoo* nil)
+	(setq *pj/enable-auctex* nil)
 
-        ;; define the location of the orgmode code
-        ;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
-        ;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
-        (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
-        (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-        (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-        (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-        (setq *pj/font-size* "10")))
+	;; define the location of the orgmode code
+	;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
+	;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
+	(defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
+	(defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+	(defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+	(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+	(setq *pj/font-size* "10")))
      (t
       (error "Undefined system-type %s" system-type)))
 
@@ -221,8 +231,8 @@ Emacs configuration.
     (defun initialise-packages ()
       "Ensure `package-initialize' is called only once."
       (unless *packages-initialised*
-        (package-initialize)
-        (setq *packages-initialised* t)))
+	(package-initialize)
+	(setq *packages-initialised* t)))
 
     (initialise-packages)
 
@@ -1681,6 +1691,19 @@ quicklisp leads to the following:
 "emacs-elisp-slime-nav"
 #+end_src
 
+* Haskell
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....haskell
+;;     -------
+
+(require 'haskell-mode)
+
+(use-package haskell-mode
+  :ensure nil
+  :config
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
+#+end_src
 * mu4e - Email
 
 #+begin_src emacs-lisp
@@ -2164,7 +2187,7 @@ Guix packages
 * Emacs Manifest for guix
 *./home/zeus/emacs.scm:*
 
-#+begin_src scheme mkdirp t :tangle ./home/zeus/emacs.scm :noweb yes
+#+begin_src scheme :mkdirp t :tangle ./home/zeus/emacs.scm :noweb yes
 (define-module (home zeus emacs)
   #:use-module (guix gexp)
   #:use-module (guix transformations)
