@@ -52,20 +52,20 @@ then
     export EDITOR="$VISUAL"
     export BROWSER="nyxt"
     export TERMINAL="st"
-else 
+#else 
     # .profile setup for gentoo systems
 
     # Invoke GnuPG-Agent the first time we login.
     # Does `~/.gpg-agent-info' exist and points to gpg-agent process accepting signals?
-    if test -f "$HOME"/.gpg-agent-info && \
-        kill -0 "$(cut -d: -f 2 "$HOME"/.gpg-agent-info)" 2>/dev/null; then
-        GPG_AGENT_INFO=$(cut -c 16- < "$HOME"/.gpg-agent-info)
-    else
-        # No, gpg-agent not available; start gpg-agent
-        eval "$(gpg-agent --daemon --no-grab $HOME/.gpg-agent-info)"
-    fi
-    export GPG_TTY=$(tty)
-    export GPG_AGENT_INFO
+#    if test -f "$HOME"/.gpg-agent-info && \
+#        kill -0 "$(cut -d: -f 2 "$HOME"/.gpg-agent-info)" 2>/dev/null; then
+#        GPG_AGENT_INFO=$(cut -c 16- < "$HOME"/.gpg-agent-info)
+#    else
+#        # No, gpg-agent not available; start gpg-agent
+#        eval "$(gpg-agent --daemon --no-grab $HOME/.gpg-agent-info)"
+#    fi
+#    export GPG_TTY=$(tty)
+#    export GPG_AGENT_INFO
 fi
 
 # Load .bashrc to get login environment

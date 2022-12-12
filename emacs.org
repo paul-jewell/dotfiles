@@ -33,6 +33,7 @@ Emacs configuration.
 - [[#reftex][Reftex]]
 - [[#hydra][Hydra]]
 - [[#javascript-and-html][Javascript and HTML]]
+- [[#elm-mode][Elm mode]]
 - [[#company-mode][Company mode]]
 - [[#magit][Magit]]
 - [[#flycheck][Flycheck]]
@@ -1129,6 +1130,18 @@ want to get other stuff working first.
 ;;"emacs-js2-mode"
 ;;"emacs-js2-reflector-el"
 #+end_src
+
+* Elm mode
+#+begin_src emacs-lisp
+(use-package elm-mode
+  :config
+  (add-hook 'elm-mode-hook 'elm-format-on-save-mode))
+#+end_src
+
+#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
+emacs-elm-mode
+#+end_src
+
 * Company mode
 
 #+begin_src emacs-lisp
@@ -1653,6 +1666,7 @@ quicklisp leads to the following:
             (eval-after-load "auto-complete"
               '(add-to-list 'ac-modes 'slime-repl-mode)))))))
 
+(use-package stumpwm-mode)
 #+end_src
 
 *Guix Packages*
@@ -1922,7 +1936,8 @@ Developed from bbatsov's code on his github.
                                      "#guile"
                                      "#lisp"
                                      "#clojure"
-                                     "#scheme")))
+                                     "#scheme"
+                                     "#tropin")))
 
 ;; Interpret mIRC-style colour commands in IRC chats
 (setq erc-interpret-mirc-color t)
