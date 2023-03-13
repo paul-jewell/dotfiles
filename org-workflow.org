@@ -182,7 +182,7 @@ TODO: Complete the breakdown and documentation in this file.
 :ID: %(shell-command-to-string \"uuidgen\"):CREATED: %U\n%
 :END:" :clock-in t :clock-resume t)
 
-          ("j" "Journal" entry (file+datetree "~Nextcloud/git/org/diary.org.gpg")
+          ("j" "Journal" entry (file+olp+datetree "~Nextcloud/git/org/diary.org.gpg")
            "* %?" :clock-in t :clock-resume t)
           
           ("w" "org-protocol" entry (file *pj/org-default-refile-file*)
