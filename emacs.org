@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./home/files/emacs/init.el 
+#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.emacs.d/init.el 
 
 Emacs configuration.
 
@@ -54,11 +54,10 @@ Emacs configuration.
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
-- [[#guile--guix][Guile & guix]]
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 
 * Early init file
-#+begin_src emacs-lisp :mkdirp t :tangle ./home/files/emacs/early-init.el
+#+begin_src emacs-lisp :mkdirp t :tangle ./.emacs.d/early-init.el
 ;;; -*-buffer-read-only: t;-*- 
 ;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
 ;;; Commentary:
@@ -1326,16 +1325,15 @@ quicklisp leads to the following:
     (setq inferior-lisp-program "sbcl")
     (setq slime-lisp-implementations '((sbcl ("sbcl"))))
     
-    (if (not (pj/is-guix-p)) ;; ac-slime is currently not working in guix
-        (use-package ac-slime
-          :init
-          (progn
-            (add-hook 'slime-mode-hook 'set-up-slime-ac)
-            (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))
-          :config
-          (progn
-            (eval-after-load "auto-complete"
-              '(add-to-list 'ac-modes 'slime-repl-mode)))))))
+    (use-package ac-slime
+      :init
+      (progn
+        (add-hook 'slime-mode-hook 'set-up-slime-ac)
+        (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))
+      :config
+      (progn
+        (eval-after-load "auto-complete"
+          '(add-to-list 'ac-modes 'slime-repl-mode))))))
 
 #+end_src
 
@@ -1623,19 +1621,6 @@ Not yet set up. Website development with org and hugo.
 (provide 'init)
 ;;; init.el ends here
 
-#+end_src
-
-* Guile & guix
-#+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....Guix and Guile
-  ;;     --------------
-  (use-package flycheck-guile)
-  (use-package guix)
-  (use-package geiser
-    :custom
-    (geiser-active-implementations '(guile)))
-  (add-hook 'scheme-mode-hook 'guix-devel-mode)
 #+end_src
 
 * Auto-tangle Configuration files
