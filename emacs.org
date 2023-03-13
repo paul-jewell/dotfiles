@@ -40,7 +40,6 @@ Emacs configuration.
 - [[#themes][Themes]]
 - [[#eyebrowse][eyebrowse]]
 - [[#projectile][Projectile]]
-- [[#powerline][Powerline]]
 - [[#diminish][Diminish]]
 - [[#paredit][Paredit]]
 - [[#rainbow-delimiters][Rainbow Delimiters]]
@@ -57,7 +56,6 @@ Emacs configuration.
 - [[#ox-hugo][ox-hugo]]
 - [[#guile--guix][Guile & guix]]
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
-- [[#emacs-manifest-for-guix][Emacs Manifest for guix]]
 
 * Early init file
 #+begin_src emacs-lisp :mkdirp t :tangle ./home/files/emacs/early-init.el
@@ -116,130 +114,114 @@ Emacs configuration.
 * Machine specific code, and package initialisation
 
 #+begin_src emacs-lisp
-    ;; Load machine local definitions
+ ;; Load machine local definitions
 
-    (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
-    (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
-    (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
-    (defvar *pj/font-size*        "14"  "Fontsize for this system.")
+ (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
+ (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
+ (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
+ (defvar *pj/font-size*        "14"  "Fontsize for this system.")
 
-    (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+ (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
-    (defun pj/is-windows-p ()
-      "True if run in windows environment."
-      (string= "windows-nt" system-type))
+ (defun pj/is-windows-p ()
+   "True if run in windows environment."
+   (string= "windows-nt" system-type))
 
-    (defun pj/is-linux-p ()
-      "True if run in linux environment."
-      (string= "gnu/linux" system-type))
+ (defun pj/is-linux-p ()
+   "True if run in linux environment."
+   (string= "gnu/linux" system-type))
 
-    (defun pj/is-host-p (name)
-      "True if running on system NAME."
-      (string= (system-name) name))
+ (defun pj/is-host-p (name)
+   "True if running on system NAME."
+   (string= (system-name) name))
 
-    ;; Currently only zeus is a guix system. This may need changing in the future.
-    (defun pj/is-guix-p ()
-      "True if system is running guix."
-      (pj/is-host-p "zeus"))
+ ;; Three possibilities for specifying values:
 
-    ;; Three possibilities for specifying values:
+ ;; - Globally, for all systems
+ ;; - By operating system
+ ;; - By system name
 
-    ;; - Globally, for all systems
-    ;; - By operating system
-    ;; - By system name
+ (cond
+  ((pj/is-linux-p)
+   (cond
+    ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+     (progn
+       (require 'gnutls)
+       (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+       (setq *pj/enable-mu4e-mode* t)
+       (setq *pj/load-site-gentoo* nil)
+       (setq *pj/enable-auctex* t)
+       
+       ;; define the location of the orgmode code - currently using the built in version.
+       ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+       ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+       (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+       (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+       (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+       (setq *pj/font-size* "12")))
+     ;; tristan now has a 4K screen, so need to pull out the settings
+    ((string-prefix-p "tristan" (system-name))
+     (progn
+       (setq *pj/enable-mu4e-mode* t)
+       (setq *pj/load-site-gentoo* t)
+       (setq *pj/enable-auctex* t)
+       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+       (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+       (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+       (setq *pj/font-size* "14")))
+    ((string-prefix-p "gandalf" (system-name))
+     (progn
+       (setq *pj/enable-mu4e-mode* nil)
+       (setq *pj/load-site-gentoo* nil)
+       (setq *pj/enable-auctex* t)
+       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+       (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+       (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+       (setq *pj/font-size* "14")))
+    (t (progn
+	      (setq *pj/enable-mu4e-mode* t)
+	      (setq *pj/load-site-gentoo* t)
+	      (setq *pj/enable-auctex* t)
+	      ;; define the location of the orgmode code
+	      ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
+	      ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
+	      (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+	      (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+	      (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
+  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+   (progn
+     (setq *pj/enable-mu4e-mode* nil)
+     (setq *pj/load-site-gentoo* nil)
+     (setq *pj/enable-auctex* nil)
 
-    (cond
-     ((pj/is-linux-p)
-      (cond
-       ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-	(progn
-	  (require 'gnutls)
-	  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-	  (setq *pj/enable-mu4e-mode* t)
-	  (setq *pj/load-site-gentoo* nil)
-	  (setq *pj/enable-auctex* t)
-
-	  ;; define the location of the orgmode code - currently using the built in version.
-	  ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-	  ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
-	  (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-	  (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-	  (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-	  (setq *pj/font-size* "12")))
-       ((pj/is-guix-p)
-	(progn
-	  (setq *pj/enable-mu4e-mode* t)
-	  (setq *pj/load-site-gentoo* nil)
-	  (setq *pj/enable-auctex* t)
-	  ;; define the location of the orgmode code
-	  ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
-	  ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
-	  (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-	  (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-	  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))
-       ;; tristan now has a 4K screen, so need to pull out the settings
-       ((string-prefix-p "tristan" (system-name))
-	(progn
-	  (setq *pj/enable-mu4e-mode* t)
-	  (setq *pj/load-site-gentoo* t)
-	  (setq *pj/enable-auctex* t)
-	  (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-	  (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-	  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-	  (setq *pj/font-size* "14")))
-       ((string-prefix-p "gandalf" (system-name))
-	(progn
-	  (setq *pj/enable-mu4e-mode* nil)
-	  (setq *pj/load-site-gentoo* nil)
-	  (setq *pj/enable-auctex* t)
-	  (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-	  (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-	  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-	  (setq *pj/font-size* "14")))
-       (t (progn
-	    (setq *pj/enable-mu4e-mode* t)
-	    (setq *pj/load-site-gentoo* t)
-	    (setq *pj/enable-auctex* t)
-	    ;; define the location of the orgmode code
-	    ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/lisp")
-	    ;;(add-to-list 'load-path "~/Nextcloud/git/org-mode/contrib/lisp")
-	    (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-	    (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-	    (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
-     ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
-      (progn
-	(setq *pj/enable-mu4e-mode* nil)
-	(setq *pj/load-site-gentoo* nil)
-	(setq *pj/enable-auctex* nil)
-
-	;; define the location of the orgmode code
-	;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
-	;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
-	(defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
-	(defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-	(defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-	(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-	(setq *pj/font-size* "10")))
-     (t
-      (error "Undefined system-type %s" system-type)))
+     ;; define the location of the orgmode code
+     ;;(add-to-list 'load-path  "c:/users/paul/Nextcloud/git/org-mode/lisp")
+     ;;(add-to-list 'load-path "c:/users/Paul/Nextcloud/git/org-mode/contrib/lisp")
+     (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
+     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+     (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+     (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+     (setq *pj/font-size* "10")))
+  (t
+   (error "Undefined system-type %s" system-type)))
 
 
-    ;;(require 'site-specific "~/.emacs.d/site-specific.el")
+ ;;(require 'site-specific "~/.emacs.d/site-specific.el")
 
-    (defvar *packages-initialised* nil)
+ (defvar *packages-initialised* nil)
 
-    (defun initialise-packages ()
-      "Ensure `package-initialize' is called only once."
-      (unless *packages-initialised*
-	(package-initialize)
-	(setq *packages-initialised* t)))
+ (defun initialise-packages ()
+   "Ensure `package-initialize' is called only once."
+   (unless *packages-initialised*
 
-    (initialise-packages)
+     (package-initialize)
+     (setq *packages-initialised* t)))
+
+(initialise-packages)
 
 #+end_src
 
 #+begin_src emacs-lisp
-
 ;; To load external version of org-mode, clone the code from git:
 ;; - cd <directory below which you want the org code>
 ;; - git clone https://code.orgmode.org/bzg/org-mode.git
@@ -252,12 +234,12 @@ Emacs configuration.
 
 (defvar init-dir) ;; Initial directory for emacs configuration
 (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
+
 #+end_src
 
 * General configuration
 
 #+begin_src emacs-lisp
-
 ;;==============================================================================
 ;;.....General configuration
 ;;     ---------------------
@@ -302,16 +284,13 @@ Emacs configuration.
 (defalias 'list-buffers 'ibuffer)
 
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups"))))
+
 #+end_src
 
 * Package Management
-
-Packages are currently installed using use-package. Configuration for
-guix system to use inbuilt manifest for packages. Use of guix on top
-of gentoo is still to be explored...
+Packages are currently installed using use-package.
 
 #+begin_src emacs-lisp
-
 ;;==============================================================================
 ;;.....Package management
 ;;     ------------------
@@ -328,32 +307,22 @@ of gentoo is still to be explored...
       
 (initialise-packages)
 
-;; Not sure if this is necessary for guix system.
-;; Maybe OK, as it only updates the package list, not the installed code.
 (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
              (file-exists-p (concat init-dir "elpa/archives/melpa"))
              (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
   (package-refresh-contents))
 
 ;; Initialise use-package on non-guix systems.
-(unless (or (package-installed-p 'use-package)
-            (pj/is-guix-p))
+(unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (require 'use-package)
 
-;; In guix system - load packages through the guix package manager.
-(setq use-package-always-ensure (not (pj/is-guix-p)))
+;; TODO:: May need to set this to true. Otherwise can remove.
+;; (setq use-package-always-ensure )
 
-#+end_src
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-use-package"
 #+end_src
 
 * Keep .emacs.d Clean
-
 #+begin_src emacs-lisp
 ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
 (setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
@@ -368,12 +337,7 @@ of gentoo is still to be explored...
           (expand-file-name "custom.el" server-socket-dir)
         (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
 (load custom-file t)
-#+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-no-littering"
 #+end_src
 
 * Tramp
@@ -382,8 +346,8 @@ of gentoo is still to be explored...
 ;; Ensure paths are correct for editing files on guix systems (thanks @janneke)
 (with-eval-after-load 'tramp-sh (push 'tramp-own-remote-path tramp-remote-path))
 #+end_src
-* Ivy
 
+* Ivy
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Ivy
@@ -442,17 +406,10 @@ of gentoo is still to be explored...
                            ;; Don't mess with EXWM buffers
                            (with-current-buffer buffer
                              (not (derived-mode-p 'exwm-mode)))))))))
+
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-ivy"
-"ivy-hydra"
-"emacs-ivy-rich"
-#+end_src
 * Swiper
-
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....Swiper
@@ -489,16 +446,7 @@ of gentoo is still to be explored...
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-swiper"
-"emacs-counsel-bbdb"
-"emacs-counsel"
-#+end_src
-
 * Which-key
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....which-key
@@ -510,14 +458,7 @@ of gentoo is still to be explored...
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-which-key"
-#+end_src
-
 * ispell
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ispell
@@ -538,15 +479,7 @@ of gentoo is still to be explored...
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"ispell"
-"hunspell"
-"hunspell-dict-en-gb"
-#+end_src
 * Ledger
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ledger
@@ -562,14 +495,8 @@ of gentoo is still to be explored...
   (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
 
 #+end_src
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-ledger-mode"
-#+end_src
 
 * Go
-
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....go
@@ -580,12 +507,6 @@ of gentoo is still to be explored...
      :config
      (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1))))
 
-#+end_src
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-go-mode"
 #+end_src
 
 * Python
@@ -614,7 +535,6 @@ Not working, and not used currently...
 #+end_src
 
 * SQL
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....SQL
@@ -630,7 +550,6 @@ Not working, and not used currently...
 #+end_src
 
 * C++
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....c++
@@ -718,7 +637,6 @@ Not working, and not used currently...
 #+end_src
 
 * Multiple Cursors
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....multiple cursors
@@ -729,14 +647,7 @@ Not working, and not used currently...
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-multiple-cursors"
-#+end_src
-
 * Org-mode
-
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....org mode
@@ -769,7 +680,6 @@ Not working, and not used currently...
 #+end_src
 
 * Org Bullet mode
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org bullet mode
@@ -780,14 +690,7 @@ Not working, and not used currently...
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-org-bullets"
-#+end_src
-
 * Org-roam
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org roam mode
@@ -834,12 +737,6 @@ Not working, and not used currently...
   (org-roam-db-autosync-mode))
 
 
-#+end_src
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-org-roam"
 #+end_src
 
 * Licence Boilerplate
@@ -919,7 +816,6 @@ I set this up a long time ago, before I knew emacs-lisp.
 #+end_src
 
 * Auctex
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....auctex
@@ -953,14 +849,7 @@ I set this up a long time ago, before I knew emacs-lisp.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-auctex"
-#+end_src
-
 * Reftex
-
 I haven't used this yet, so there may be some issues.
 
 #+begin_src emacs-lisp
@@ -1003,14 +892,7 @@ I haven't used this yet, so there may be some issues.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-;"reftex"
-#+end_src
-
 * Hydra
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....hydra
@@ -1096,14 +978,7 @@ I haven't used this yet, so there may be some issues.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-hydra"
-#+end_src
-
 * Javascript and HTML
-
 Disabling js2 mode. I don't program in javascript at the moment, and I
 want to get other stuff working first.
 #+begin_src emacs-lisp :tangle no
@@ -1133,14 +1008,7 @@ want to get other stuff working first.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-;;"emacs-js2-mode"
-;;"emacs-js2-reflector-el"
-#+end_src
 * Company mode
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....company mode
@@ -1178,18 +1046,7 @@ want to get other stuff working first.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-company"
-"emacs-company-irony"
-"emacs-irony-mode"
-"emacs-irony-eldoc"
-"emacs-company-jedi"
-#+end_src
-
 * Magit
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....magit
@@ -1241,16 +1098,7 @@ Git gutter:
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-magit"
-"emacs-git-gutter"
-"emacs-git-timemachine"
-#+end_src
-
 * Flycheck
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....flycheck
@@ -1262,14 +1110,7 @@ Git gutter:
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-flycheck"
-#+end_src
-
 * All the icons
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....all the icons
@@ -1288,15 +1129,7 @@ Git gutter:
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-all-the-icons"
-"emacs-all-the-icons-dired"
-#+end_src
-
 * Themes
-
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....themes
@@ -1316,12 +1149,6 @@ Git gutter:
   (add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-gruvbox-theme"
-#+end_src
-
 * eyebrowse
 
 #+begin_src emacs-lisp :tangle no
@@ -1339,7 +1166,6 @@ Git gutter:
 #+end_src
 
 * Projectile
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Projectile
@@ -1361,128 +1187,7 @@ Git gutter:
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-projectile"
-"emacs-counsel-projectile"
-#+end_src
-
-* Powerline
-Currently not being used, as it is no longer actively maintained, and
-there were some issues with errors being generated. Now using the bog
-standard modeline.
-
-#+begin_src emacs-lisp :tangle no
-;;==============================================================================
-;;.....powerline
-;;     ---------
-
-(use-package powerline
-  :config
-  (add-hook 'desktop-after-read-hook 'powerline-reset)
-  (defun make-rect (color height width)
-    "Create an XPM bitmap."
-    (when window-system
-      (propertize
-       " " 'display
-       (let ((data nil)
-             (i 0))
-         (setq data (make-list height (make-list width 1)))
-         (pl/make-xpm "percent" color color (reverse data))))))
-  (defun powerline-mode-icon ()
-    (let ((icon (all-the-icons-icon-for-buffer)))
-      (unless (symbolp icon) ;; This implies it's the major mode
-        (format " %s"
-                (propertize icon
-                            'help-echo (format "Major-mode: `%s`" major-mode)
-                            'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
-  (defun powerline-modeline-vc ()
-    (when vc-mode
-      (let* ((text-props (text-properties-at 1 vc-mode))
-             (vc-without-props (substring-no-properties vc-mode))
-             (new-text (concat
-                        " "
-                        (all-the-icons-faicon "code-fork"
-                                              :v-adjust -0.1)
-                        vc-without-props
-                        " "))
-             )
-        (apply 'propertize
-               new-text
-               'face (when (powerline-selected-window-active) 'success)
-               text-props
-               ))))
-  (defun powerline-buffer-info ()
-    (let ((proj (projectile-project-name)))
-      (if (string= proj "-")
-          (buffer-name)
-        (concat
-         (propertize (concat
-                      proj)
-                     'face 'warning)
-         " "
-         (buffer-name)))))
-  (defun powerline-ace-window () (propertize (or (window-parameter (selected-window) 'my-ace-window-path) "") 'face 'error))
-  (setq-default mode-line-format
-                '("%e"
-                  (:eval
-                   (let* ((active (powerline-selected-window-active))
-                          (modified (buffer-modified-p))
-                          (face1 (if active 'powerline-active1 'powerline-inactive1))
-                          (face2 (if active 'powerline-active2 'powerline-inactive2))
-                          (bar-color (cond ((and active modified) (face-foreground 'error))
-                                           (active (face-background 'cursor))
-                                           (t (face-background 'tooltip))))
-                          (lhs (list
-                                (make-rect bar-color 30 3)
-                                (when modified
-                                  (concat
-                                   " "
-                                   (all-the-icons-faicon "floppy-o"
-                                                         :face (when active 'error)
-                                                         :v-adjust -0.01)))
-                                " "
-                                (powerline-buffer-info)
-                                " "
-                                (powerline-modeline-vc)
-                                ))
-                          (center (list
-                                   " "
-                                   (powerline-mode-icon)
-                                   " "
-                                   ;;major-mode
-                                   (powerline-major-mode)
-                                   " "))
-                          (rhs (list
-                                (powerline-ace-window)
-                                " | "
-                                ;;   (format "%s" (eyebrowse--get 'current-slot))
-                                ;;   " | "
-                                (powerline-raw "%l:%c" face1 'r)
-                                " | "
-                                (powerline-raw "%6p" face1 'r)
-                                (powerline-hud 'highlight 'region 1)
-                                " "
-                                ))
-                          )
-                     (concat
-                      (powerline-render lhs)
-                      (powerline-fill-center face1 (/ (powerline-width center) 2.0))
-                      (powerline-render center)
-                      (powerline-fill face2 (powerline-width rhs))
-                      (powerline-render rhs)))))))
-
-#+end_src
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-powerline"
-#+end_src
-
 * Diminish
-
 #+begin_src emacs-lisp
 
 (use-package diminish
@@ -1490,14 +1195,7 @@ standard modeline.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-diminish"
-#+end_src
-
 * Paredit
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Paredit
@@ -1532,15 +1230,7 @@ standard modeline.
 ;;               (highlight-parentheses-mode))))
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-paredit"
-;;"emacs-paredit-everywhere"
-#+end_src
-
 * Rainbow Delimiters
-
 #+begin_src emacs-lisp
 
 (use-package rainbow-delimiters
@@ -1554,14 +1244,7 @@ standard modeline.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-rainbow-delimiters"
-#+end_src
-
 * Clojure
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Clojure
@@ -1603,13 +1286,6 @@ standard modeline.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-cider"
-;;"emacs-cider-hydra"
-#+end_src
-
 * Lisp
 
 Investigating the correct way to setup slime, swank, lisp and
@@ -1622,9 +1298,7 @@ quicklisp leads to the following:
     (:tree "//home/paul//.emacs.d/elpa/")
     This will make quicklisp search for swank in the installed
     directory in the emacs.d tree.
-  - 
     
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....lisp - slime
@@ -1665,14 +1339,7 @@ quicklisp leads to the following:
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-slime"
-#+end_src
-
 * emacs-lisp
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....elisp - slime
@@ -1683,12 +1350,6 @@ quicklisp leads to the following:
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook #'elisp-slime-nav-mode)))
 
-#+end_src
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-elisp-slime-nav"
 #+end_src
 
 * Haskell
@@ -1705,7 +1366,6 @@ quicklisp leads to the following:
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
 #+end_src
 * mu4e - Email
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....mu4e
@@ -1845,13 +1505,6 @@ quicklisp leads to the following:
 
 #+end_src
 
-*Guix packages*
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"mu"
-"emacs-mu4e-alert"
-"isync"
-#+end_src
-
 * org-caldav
 Still under development
 
@@ -1875,14 +1528,7 @@ Still under development
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-org-caldav"
-#+end_src
-
 * Helpful
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....helpful
@@ -1901,28 +1547,15 @@ Still under development
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-helpful"
-#+end_src
-
 * gnupg - Key management
-
 #+begin_src emacs-lisp
 ;; Following the ELPA instructions didn't work as expected - came across
 ;; this approach, which does work. See also changes in gpg-agent.conf
 (setq epa-pinentry-mode 'loopback)
 #+end_src
-
-Guix Packages
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"pinentry"
-"emacs-pinentry"
-#+end_src
+ 
 * ERC
 Developed from bbatsov's code on his github.
-
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ERC
@@ -1942,14 +1575,14 @@ Developed from bbatsov's code on his github.
 ;;                                     "#lisp" "#clojure" "#scheme"))
 
 (setq erc-autojoin-channels-alist '(("libera.chat"
-                                     "#guix"
-                                     "#nonguix"
                                      "#emacs"
                                      "#gentoo"
                                      "#gentoo-haskell"
                                      "#guile"
                                      "#lisp"
                                      "#clojure"
+                                     "#haskell"
+                                     "#debian"
                                      "#scheme")))
 
 ;; Interpret mIRC-style colour commands in IRC chats
@@ -2090,16 +1723,6 @@ that can occur between two notifications.  The default is
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-;;"emacs-erc"
-;;"emacs-erc-log"
-;;"emacs-erc-notify"
-;;"emacs-erc-spelling"
-;;"emacs-erc-autoaway"
-#+end_src
-
 * toc-org
 Make table of contents when saving org-files.
 
@@ -2116,12 +1739,6 @@ Make table of contents when saving org-files.
   (add-hook 'markdown-mode-hook 'toc-org-mode))
 
 
-#+end_src
-
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-toc-org"
 #+end_src
 
 * ox-hugo
@@ -2142,12 +1759,6 @@ Not yet set up. Website development with org and hugo.
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-ox-hugo"
-#+end_src
-
 * Guile & guix
 #+begin_src emacs-lisp
   ;;==============================================================================
@@ -2161,16 +1772,7 @@ Not yet set up. Website development with org and hugo.
   (add-hook 'scheme-mode-hook 'guix-devel-mode)
 #+end_src
 
-Guix packages
-
-#+begin_src scheme :noweb-ref packages :noweb-sep "\n"
-"emacs-flycheck-guile"
-"emacs-guix"
-"emacs-geiser"
-#+end_src
-
 * Auto-tangle Configuration files
-
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....Auto tangle configuration files
@@ -2187,44 +1789,4 @@ Guix packages
             (lambda () 
               (add-hook 'after-save-hook
                         #'pj/org-babel-tangle-config)))
-#+end_src
-
-* Emacs Manifest for guix
-*./home/zeus/emacs.scm:*
-
-#+begin_src scheme :mkdirp t :tangle ./home/zeus/emacs.scm :noweb yes
-(define-module (home zeus emacs)
-  #:use-module (guix gexp)
-  #:use-module (guix transformations)
-
-  #:use-module (gnu packages)
-
-  #:use-module (gnu home-services)
-  #:use-module (gnu home-services emacs)
-  #:use-module (gnu home-services-utils)
-
-  (define packages
-    (map specification->package
-          '(
-            <<packages>>
-            )))
-
-  (define-public services
-    (list
-     (service home-emacs-service-type
-              (home-emacs-configuration
-               (package emacs)
-               ;;Useful for native-comp - not for emacs27
-               ;;(rebuild-elisp-packages? #t)
-
-               ;; Because the init.el and early-init.el are used in my gentoo
-               ;; systems, I load them up directly. They are generated when
-               ;; the emacs.org file is tangled.
-               (init-el
-                `(,(slurp-file-gexp (local-file "../files/emacs/init.el"))))
-               (early-init-el
-                `(,(slurp-file-gexp (local-file "../files/emacs/early-init.el"))))
-               (elisp-packages packages))))))
-
-           
 #+end_src
