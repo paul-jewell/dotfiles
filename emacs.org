@@ -326,7 +326,7 @@ Packages are currently installed using use-package.
 (require 'use-package)
 
 ;; TODO:: May need to set this to true. Otherwise can remove.
-;; (setq use-package-always-ensure )
+(setq use-package-always-ensure t)
 
 #+end_src
 
