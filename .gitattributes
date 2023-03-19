@@ -1,3 +1,8 @@
 # Declare files to have lf at end of lines
 * text eol=lf
 
+# Binary files - should not be changed
+*.png binary
+*.jpg binary
+*.j*g binary
+
