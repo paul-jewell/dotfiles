@@ -20,6 +20,7 @@ with pkgs; [
   firefox
 
   fd
+  feh
   fzf
 
   gcc
@@ -47,7 +48,6 @@ with pkgs; [
   #  nodePackages.npm
   #  nodejs
   ngrok
-  nitrogen
   openssh
   pandoc
   pcmanfm

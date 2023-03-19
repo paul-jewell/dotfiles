@@ -198,6 +198,8 @@
     # Applications
     gimp
     frescobaldi
+
+    procps
   ];
 
   

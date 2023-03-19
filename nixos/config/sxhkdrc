@@ -93,7 +93,7 @@ super + y
 
 # Program launcher
 super + @space
-	rofi -config -no-lazy-grab -show drun -modi drun -theme ~/dotfiles/flake/config/rofi/launcher.rasi
+	rofi -config -no-lazy-grab -show drun -modi drun -theme ~/dotfiles/nixos/config/rofi/launcher.rasi
 
 # Terminal emulator
 super + ctrl + Return
