@@ -35,7 +35,7 @@ bspc rule -a KeePassXC state=floating center=true rectangle=909x625+0+0
 ## Set desktops
 #killall -qw chrome
 #killall -qw tmux
-#killall -qw emacsclient
+killall -qw emacsclient
 ## killall -qw slack
 #killall -qw telegram-desktop
 #killall -qw cider
