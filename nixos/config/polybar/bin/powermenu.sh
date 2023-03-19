@@ -6,7 +6,7 @@
 ## Twitter : @adi1090x
 
 dir="~/dotfiles/nixos/config/rofi"
-uptime=$(uptime -p | sed -e 's/up //g')
+# uptime=$(uptime -p | sed -e 's/up //g')
 
 rofi_command="rofi -no-config -theme $dir/powermenu.rasi"
 
@@ -35,7 +35,7 @@ msg() {
 # Variable passed to rofi
 options="$lock\n$suspend\n$logout\n$reboot\n$shutdown"
 
-chosen="$(echo -e "$options" | $rofi_command -p "Uptime: $uptime" -dmenu -selected-row 0)"
+chosen="$(echo -e "$options" | $rofi_command -p "Power options" -dmenu -selected-row 0)"
 case $chosen in
     $shutdown)
 		ans=$(confirm_exit &)
@@ -81,7 +81,7 @@ case $chosen in
 		if [[ $ans == "yes" || $ans == "YES" || $ans == "y" || $ans == "Y" ]]; then
 			if [[ "$DESKTOP_SESSION" == "Openbox" ]]; then
 				openbox --exit
-			elif [[ "$DESKTOP_SESSION" == "bspwm" ]]; then
+			elif [[ "$DESKTOP_SESSION" == "none+bspwm" ]]; then
 				bspc quit
 			elif [[ "$DESKTOP_SESSION" == "i3" ]]; then
 				i3-msg exit
