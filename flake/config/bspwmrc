@@ -44,7 +44,7 @@ killall -qw pcmanfm
 
 # Set background and top bar
 # feh --bg-scale $HOME/.local/state/feh/active
-nitrogen --restore
+nitrogen --restore &!
 systemctl --user start polybar
 
 sleep .25
