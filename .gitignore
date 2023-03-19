@@ -31,6 +31,11 @@
 .config/vimb/*
 .config/zathura/*
 .config/shepherd/*
+.config/bspwm/*
+.config/*
+
+
+
 .xsession
 
 # Mail
