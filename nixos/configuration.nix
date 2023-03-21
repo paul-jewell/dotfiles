@@ -87,6 +87,9 @@
       configFile = ./config/bspwmrc;
       sxhkd.configFile = ./config/sxhkdrc;
     };
+    windowmanager.i3 = {
+      enable = true;
+    };
     xautolock.enable = true;
   };
 
@@ -203,6 +206,8 @@
     frescobaldi
 
     procps
+
+    i3bar
   ];
 
   
