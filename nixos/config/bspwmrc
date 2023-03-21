@@ -44,7 +44,11 @@ killall -qw emacsclient
 
 # Set background and top bar
 feh --bg-scale $HOME/.local/state/feh/active
-systemctl --user start polybar
+# This currently has an issue on my system - none of the clickable links work
+# when starting polybar with systemctl.
+#systemctl --user start polybar
+
+polybar &
 
 sleep .25
 

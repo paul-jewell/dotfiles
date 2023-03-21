@@ -68,6 +68,7 @@
 
     # Configure keymap in X11
     layout = "gb";
+    xkbModel = "pc105";
     xkbOptions = "ctrl:nocaps";
     xkbVariant = "extd";
 
