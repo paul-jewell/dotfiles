@@ -87,7 +87,7 @@
       configFile = ./config/bspwmrc;
       sxhkd.configFile = ./config/sxhkdrc;
     };
-    windowmanager.i3 = {
+    windowManager.i3 = {
       enable = true;
     };
     xautolock.enable = true;
