@@ -144,13 +144,13 @@ ctrl + alt + BackSpace
   	betterlockscreen -l blur
 
 # Audio controls for + volume
-XF86AudioRaiseVolume
-	pactl set-sink-volume @DEFAULT_SINK@ +5%
+#XF86AudioRaiseVolume
+#	pactl set-sink-volume @DEFAULT_SINK@ +5%
 
 # Audio controls for - volume
-XF86AudioLowerVolume
-	pactl set-sink-volume @DEFAULT_SINK@ -5%
+#XF86AudioLowerVolume
+#	pactl set-sink-volume @DEFAULT_SINK@ -5%
 
 # Audio controls for mute
-XF86AudioMute
-	pactl set-sink-mute @DEFAULT_SINK@ toggle
+#XF86AudioMute
+#	pactl set-sink-mute @DEFAULT_SINK@ toggle
