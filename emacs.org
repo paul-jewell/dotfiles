@@ -325,7 +325,8 @@ Packages are currently installed using use-package.
   (package-install 'use-package))
 (require 'use-package)
 
-;; TODO:: May need to set this to true. Otherwise can remove.
+;; This ensures packages are available - if using nix/guix declarative package
+;; installation, this needs to be removed
 (setq use-package-always-ensure t)
 
 #+end_src
