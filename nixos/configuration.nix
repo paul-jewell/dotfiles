@@ -20,11 +20,16 @@
     ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.configurationLimit = 10;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      systemd-boot.configurationLimit = 10;
+      efi.canTouchEfiVariables = true;
+      efi.efiSysMountPoint = "/boot/efi";
+    };
+    initrd.kernelModules = [ "amdgpu"];
+    kernelPackages = pkgs.linuxPackages_latest;
+  };
 
   networking.hostName = "isolde"; # Define your hostname.
 
@@ -72,6 +77,8 @@
   # xserver setup
   services.xserver = {
     enable = true;
+    
+    videoDrivers = ["amdgpu" ];
 
     # Enable touchpad support (enabled default in most desktopManager).
     libinput.enable = true;
@@ -228,7 +235,7 @@
     gimp
     frescobaldi
     ncmpcpp
-    
+    nextcloud-client    
     procps
 
   ];

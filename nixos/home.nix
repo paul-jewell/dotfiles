@@ -60,6 +60,11 @@ in
     script = "polybar main &";
   };
 
+  services.nextcloud-client = {
+    enable = true;
+    startInBackground = true;
+  };
+
   services.dunst = {
     enable = true;
     package = pkgs.dunst;
@@ -104,5 +109,60 @@ in
       };
     };
   };
+
+  zsh = {
+    enable = true;
+    autocd = false;
+    cdpath = [ "~/.local/share/src" ];
+    dirHashes = {
+      code = "$HOME/.local/share/src";
+      nixos-config = "$HOME/dotfiles/nixos";
+    };
+    plugins = [
+      {
+        name = "powerlevel10k";
+        src = pkgs.zsh-powerlevel10k;
+        file = "share/szh-powerlevel10k/powerlevel10k.zsh-theme";
+      }
+      {
+        name = "powerlevel10k-config";
+        src = lib.cleanSource ./config;
+        file = "p10k.zsh";
+      }
+    ];
+    initExtraFirst = ''
+      if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+        . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+        . /nix/var/nix/profiles/default/etc/profile.d/nix.sh
+      fi
+
+      # set editor
+      export ALTERNATE_EDITOR=""
+      export EDITOR="emacsclient -t"
+      export VISUAL="emacsclient -c -a emacs"
+      e() {
+          emacsclient -t "$@"
+      }
+    '';
+  };
+
+  git = {
+    enable = true;
+    userName = name;
+    userEmail = email;
+    lfs.enable = true;
+    extraConfig = {
+      init.defaultBranch = "main";
+      core = {
+        editor = "nvim";
+        autocrlf = "input";
+      };
+      commit.gpgsign = true;
+      pull.rebase = true;
+      rebase.autostash = true;
+    };
+  };
+
+
   programs = common-programs // {};
 }
