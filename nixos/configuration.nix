@@ -133,6 +133,7 @@
     isNormalUser = true;
     description = "Paul Jewell";
     extraGroups = [ "networkmanager" "wheel" ];
+    shell = pkgs.zsh;
   };
 
   # Allow unfree packages
@@ -150,7 +151,8 @@
       envypn-font
       font-awesome
       hack-font
-      feather-font
+# Feather font - awaiting clarification as to location
+#      feather-font
       fira-code
       fira-code-symbols
       iosevka
@@ -162,6 +164,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    sof-firmware
     neovim-unwrapped # Do not forget to add an editor.
     wget
     gcc
@@ -192,7 +195,7 @@
 
     # Wallpapers TODO: Nitrogen better?
     feh
-
+    # feather-font
     fontconfig
     font-manager
 
