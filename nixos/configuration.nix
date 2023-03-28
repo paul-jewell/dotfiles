@@ -130,7 +130,15 @@
 
   services.mpd = {
       enable = true;
-      musicDirectory = 
+      musicDirectory = "/var/lib/music/";
+      extraConfig = ''
+        audio_output {
+            type "pipewire"
+            name "isolde pipewire output"
+        }
+      '';
+      network.listenAddress = "any";
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${user} = {
@@ -218,7 +226,8 @@
     # Applications
     gimp
     frescobaldi
-
+    ncmpcpp
+    
     procps
 
   ];
