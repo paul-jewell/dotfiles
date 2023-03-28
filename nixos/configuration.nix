@@ -112,7 +112,7 @@
   services.tlp.enable = true;
   
   # Enable sound with pipewire.
-  sound.enable = true;
+  # sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -128,11 +128,15 @@
     #media-session.enable = true;
   };
 
+  services.mpd = {
+      enable = true;
+      musicDirectory = 
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${user} = {
     isNormalUser = true;
     description = "Paul Jewell";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" "cdrom" ];
     shell = pkgs.zsh;
   };
 
