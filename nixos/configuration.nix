@@ -24,6 +24,7 @@
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  boot.kernelPackages = pkgs.limuxPackages_latest;
 
   networking.hostName = "isolde"; # Define your hostname.
 
