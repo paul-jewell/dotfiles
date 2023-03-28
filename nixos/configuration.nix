@@ -233,7 +233,9 @@
 
   ];
 
-  
+  programs.neovim.vimAlias = true;
+  programs.neovim.viAlias = true;
+
   services.picom = {
     enable = true;
     settings = {
