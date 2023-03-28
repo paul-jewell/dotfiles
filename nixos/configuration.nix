@@ -3,9 +3,10 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, 
+  inputs,
   pkgs,
-  lib,
-  settings,
+#  lib,
+#  settings,
   ... 
 }:
  let
@@ -31,6 +32,14 @@
 
   # Set your time zone.
   time.timeZone = "Europe/London";
+
+  nix = {
+    settings.allowed-users = [ "${user}" ];
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
 
 # Manages keys and such
   programs.gnupg.agent = {
@@ -339,8 +348,4 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.11"; # Did you read the comment?
 
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = "experimental-features = nix-command flakes";
-  };
 }
