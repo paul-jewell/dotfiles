@@ -141,6 +141,7 @@
       envypn-font
       font-awesome
       hack-font
+      feather-font
       fira-code
       fira-code-symbols
       iosevka
