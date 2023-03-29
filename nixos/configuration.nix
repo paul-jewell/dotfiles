@@ -121,13 +121,14 @@
   
   # Enable sound with pipewire.
   sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
+  hardware.pulseaudio.enable = true;
+
+#  security.rtkit.enable = true;
+#  services.pipewire = {
+#    enable = true;
+#    alsa.enable = true;
+#    alsa.support32Bit = true;
+#    pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
 
@@ -142,11 +143,10 @@
       extraConfig = ''
         audio_output {
             type "pulse"
-            server "127.0.0.1"
-            name "isolde pulse output"
+            name "isolde pipewire output"
         }
       '';
-      network.listenAddress = "any";
+#      network.listenAddress = "any";
   };
 
   services.gnome.gnome-keyring.enable = true;
@@ -156,7 +156,7 @@
     isNormalUser = true;
     description = "Paul Jewell";
     extraGroups = [ "networkmanager" "wheel" "audio" "cdrom" ];
-    shell = pkgs.zsh;
+    # shell = pkgs.zsh;
   };
 
   # Allow unfree packages
@@ -245,6 +245,7 @@
 
   programs.neovim.vimAlias = true;
   programs.neovim.viAlias = true;
+#  programs.zsh.enable = true;
 
   services.picom = {
     enable = true;
