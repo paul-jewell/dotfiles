@@ -120,7 +120,7 @@
   services.tlp.enable = true;
   
   # Enable sound with pipewire.
-  # sound.enable = true;
+  sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -141,8 +141,9 @@
       musicDirectory = "/var/lib/music/";
       extraConfig = ''
         audio_output {
-            type "pipewire"
-            name "isolde pipewire output"
+            type "pulse"
+            server "127.0.0.1"
+            name "isolde pulse output"
         }
       '';
       network.listenAddress = "any";
