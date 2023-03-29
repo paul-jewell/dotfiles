@@ -126,3 +126,5 @@ sleep .25
 #/etc/profiles/per-user/paul/bin/cider &!
 
 # sleep .5
+
+nm-applet&
