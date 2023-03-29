@@ -47,6 +47,7 @@ Emacs configuration.
 - [[#lisp][Lisp]]
 - [[#emacs-lisp][emacs-lisp]]
 - [[#haskell][Haskell]]
+- [[#nix][nix]]
 - [[#email---notmuch][email - notmuch]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
@@ -1366,7 +1367,7 @@ quicklisp leads to the following:
 ;;.....nix
 ;;     ===
 
-(use-package 'nix-mode)
+(use-package nix-mode)
 
 
 
