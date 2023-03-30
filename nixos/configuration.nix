@@ -121,7 +121,10 @@
   
   # Enable sound with pipewire.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio = {
+    enable = true;
+    extraConfig = "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1";
+  };
 
 #  security.rtkit.enable = true;
 #  services.pipewire = {
@@ -143,10 +146,11 @@
       extraConfig = ''
         audio_output {
             type "pulse"
-            name "isolde pipewire output"
+            server "127.0.0.1"
+            name "isolde pulse output"
         }
       '';
-#      network.listenAddress = "any";
+      network.listenAddress = "any";
   };
 
   services.gnome.gnome-keyring.enable = true;
