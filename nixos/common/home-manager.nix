@@ -95,7 +95,7 @@ in
     extraConfig = {
       init.defaultBranch = "main";
       core = { 
-	    editor = "vim";
+	    editor = "nvim";
         autocrlf = "input";
       };
       commit.gpgsign = true;
