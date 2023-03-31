@@ -5,7 +5,7 @@
 { config, 
   inputs,
   pkgs,
-#  lib,
+  lib,
 #  settings,
   ... 
 }:
@@ -115,7 +115,16 @@
   
   # Enable CUPS to print documents.
   services.printing.enable = true;
-  services.printing.drivers = [ pkgs.brlaser ];
+#  services.printing.drivers = [ 
+#    (writeTextDir "share/cups/model/Brother_HL-8260CDW_series.ppd"
+#        (builtins.readFile ./config/Brother_HL-8260CDW_series.ppd))
+#    (writeTextDir "share/cups/model/Brother_HL-8260CDW_series.ppd.0"
+#        (builtins.readFile ./config/Brother_HL-8260CDW_series.ppd.0))
+#  ];
+  services.avahi = {
+      enable = true;
+      nssmdns = true;
+  };
 
   services.tlp = {
     enable = true;
