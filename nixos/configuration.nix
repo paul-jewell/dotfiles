@@ -117,7 +117,26 @@
   services.printing.enable = true;
   services.printing.drivers = [ pkgs.brlaser ];
 
-  services.tlp.enable = true;
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_BAT="powersave";
+      CPU_SCALING_GOVERNOR_ON_AC="powersave";
+
+      # The following prevents the battery from charging fully to preserve
+      # lifetime. Run `tlp fullcharge` to temporarily force full charge.
+      # https://linrunner.de/tlp/faq/battery.html#how-to-choose-good-battery-charge-thresholds
+      # Based on the information regarding Lenovo laptops at this link,
+      # I have chosen not to implement these limits.
+      #START_CHARGE_THRESH_BAT0=40;
+      #STOP_CHARGE_THRESH_BAT0=50;
+
+      # 100 being the maximum - limit the speed of the CPU to reduce
+      # heat and increase battery usage:
+      CPU_MAX_PERF_ON_AC=100;
+      CPU_MAX_PERF_ON_BAT=75;
+    };
+  };
   
   # Enable sound with pipewire.
   sound.enable = true;
