@@ -135,6 +135,7 @@
       # heat and increase battery usage:
       CPU_MAX_PERF_ON_AC=100;
       CPU_MAX_PERF_ON_BAT=75;
+    };
   };
   
   # Enable sound with pipewire.
