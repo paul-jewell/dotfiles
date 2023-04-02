@@ -62,7 +62,7 @@
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
 
-                home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
+                home-manager.sharedModules = pkgs.lib.attrValues self.homeModules;
               }
 
              ./host/common
@@ -85,15 +85,15 @@
           modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
         })
         // {
-         hmModules = {
+         homeModules = {
             beets = import ./modules/hm/beets.nix;
             catppuccin = import ./modules/hm/catppuccin.nix;
             fish-theme = import ./modules/hm/fish-theme.nix;
             fuzzel = import ./modules/hm/fuzzel.nix;
             jellyfin-mpv-shim = import ./modules/hm/jellyfin-mpv-shim.nix;
             pipewire = import ./modules/hm/pipewire.nix;
-          };
-          overlays.default = import ./pkgs;
+         };
+         overlays.default = import ./pkgs;
         };
     };
 }
