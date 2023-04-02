@@ -1,6 +1,6 @@
 {
   lib,
-  common,
+  config,
   nixosConfig,
   pkgs,
   ...
@@ -16,7 +16,6 @@
     ./neovim.nix
     ./pipewire
     ./ranger.nix
-    ./screenshot-bash.nix
     ./sway
   ];
 

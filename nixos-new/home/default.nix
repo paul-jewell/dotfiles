@@ -14,7 +14,7 @@ in {
       ++ optional config.security.rtkit.enable "rtkit"
       ++ optional config.networking.networkmanager.enable "networkmanager"
       ++ optional config.programs.adb.enable "adbusers"
-      ++ optional config.virtualisation.libvirtd.enable "libvirtd"
+      ++ optional config.virtualisation.libvirtd.enable "libvirtd";
   };
 
   # age.secrets."beets-secrets.yaml" = {

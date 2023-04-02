@@ -12,8 +12,8 @@
     # Quieter boot
     initrd.verbose = false;
     initrd.systemd.enable = true;
-    cnsoleLogLevel = 0;
-    kernelParams = ["quiet" "udev.log_level=3"];
+    consoleLogLevel = 0;
+    kernelParams = ["quiet" "udev.log_level=2"];
 
     tmpOnTmpfs = true;
     tmpOnTmpfsSize = "75%";

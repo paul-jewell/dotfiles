@@ -2,7 +2,7 @@
   services.openssh.enable = true;
 
   networking.firewall = {
-    allowedTCCPPorts = [
+    allowedTCPPorts = [
       22000 # syncthing
     ];
     allowedUDPPorts = [

@@ -3,5 +3,5 @@
   lib,
   ...
 }: {
-  services.blueman.enable = lib.MkDefault config.hardware.bluetooth.enable;
+  services.blueman.enable = lib.mkDefault config.hardware.bluetooth.enable;
 }

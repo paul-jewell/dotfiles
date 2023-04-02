@@ -15,7 +15,7 @@
     # signing = {
     #   signByDefault = true;
     #   key = "E13DFD4B47127951";
-    };
+    #};
 
     delta = {
       enable = true;
