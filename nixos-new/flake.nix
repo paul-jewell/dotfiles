@@ -41,7 +41,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config = {allowUnfree = true;};
-        overlays = [nix-serve-ng.overlays.default]; #  self.overlays.default];
+        overlays = [nix-serve-ng.overlays.default self.overlays.default];
       };
       username = "paul";
 
