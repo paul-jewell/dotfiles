@@ -29,14 +29,14 @@
 
   outputs = {
     self,
-      nixpkgs,
-      flake-utils,
-      nixos-hardware,
-      home-manager,
-      nix-serve-ng,
-      ...
+    nixpkgs,
+    flake-utils,
+    nixos-hardware,
+    home-manager,
+    nix-serve-ng,
+    ...
   }: 
-    let     
+    (let     
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
@@ -83,17 +83,17 @@
           hostName = "isolde";
 
           modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
-        })
-        // {
-         hmModules = {
-            beets = import ./modules/hm/beets.nix;
-            catppuccin = import ./modules/hm/catppuccin.nix;
-            fish-theme = import ./modules/hm/fish-theme.nix;
-            fuzzel = import ./modules/hm/fuzzel.nix;
-            jellyfin-mpv-shim = import ./modules/hm/jellyfin-mpv-shim.nix;
-            pipewire = import ./modules/hm/pipewire.nix;
-         };
-         overlays.default = import ./pkgs;
-        };
+        });
+    })
+    // {
+      hmModules = {
+        beets = import ./modules/hm/beets.nix;
+        catppuccin = import ./modules/hm/catppuccin.nix;
+        fish-theme = import ./modules/hm/fish-theme.nix;
+        fuzzel = import ./modules/hm/fuzzel.nix;
+        jellyfin-mpv-shim = import ./modules/hm/jellyfin-mpv-shim.nix;
+        pipewire = import ./modules/hm/pipewire.nix;
+      };
+      overlays.default = import ./pkgs;
     };
 }
