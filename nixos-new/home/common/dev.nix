@@ -9,7 +9,7 @@
     enable = true;
     package = pkgs.gitAndTools.gitFull;
 
-    userName = "paul";
+    userName = "Paul Jewell";
     userEmail = "paul@teulu.org";
     # Set up with my key
     # signing = {
@@ -53,25 +53,25 @@
     controlPersist = "10m";
     
 # TODO: Change to my individual ssh id files
-    matchBlocks = let
-      idFile = "~/.ssh/id_ed25519";
-    in {
-      "gitlab.com" = {
-        user = "git";
-        identityFile = idFile;
-      };
-      "git.sr.ht" = {
-        user = "git";
-        identityFile = idFile;
-      };
-      "github.com" = {
-        user = "git";
-        identityFile = idFile;
-      };
-      "codeberg.org" = {
-        user = "git";
-        identityFile = idFile;
-      };
+    # matchBlocks = let
+    #   idFile = "~/.ssh/id_ed25519";
+    # in {
+    #   "gitlab.com" = {
+    #     user = "git";
+    #     identityFile = idFile;
+    #   };
+    #   "git.sr.ht" = {
+    #     user = "git";
+    #     identityFile = idFile;
+    #   };
+    #   "github.com" = {
+    #     user = "git";
+    #     identityFile = idFile;
+    #   };
+    #   "codeberg.org" = {
+    #     user = "git";
+    #     identityFile = idFile;
+    #   };
       # "gitlab.freedesktop.org" = {
       #   user = "git";
       #   identityFile = idFile;
@@ -113,7 +113,7 @@
       #   port = 22701;
       #   identityFile = idFile;
       # };
-    };
+    #};
   };
 
   programs.gpg = {

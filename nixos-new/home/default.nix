@@ -16,7 +16,7 @@ in {
       ++ optional config.programs.adb.enable "adbusers"
       ++ optional config.virtualisation.libvirtd.enable "libvirtd";
   };
-
+  
   # age.secrets."beets-secrets.yaml" = {
   #   file = ../secrets/common/beets-secrets.yaml;
   #   owner = username;
