@@ -62,7 +62,7 @@
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
 
-                home-manager.sharedModules = pkgs.lib.attrValues self.homeModules;
+                home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
               }
 
              ./host/common
@@ -85,7 +85,7 @@
           modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
         })
         // {
-         homeModules = {
+         hmModules = {
             beets = import ./modules/hm/beets.nix;
             catppuccin = import ./modules/hm/catppuccin.nix;
             fish-theme = import ./modules/hm/fish-theme.nix;
