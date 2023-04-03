@@ -69,9 +69,11 @@
   };
   services.jellyfin-mpv-shim.enable = true;
 
-  programs.firefox.enable = true;
-  programs.chromium.enable = true;
-  programs.browserpass.enable = true;
+  programs= {
+    firefox.enable = true;
+    chromium.enable = true;
+    browserpass.enable = true;
+  };
 
   services.syncthing.enable = true;
   programs.mangohud = {
@@ -126,7 +128,7 @@
       sha256 = "GrRCOwCgM8BFhY8TzO3/WDTUnGtqkhvlDWE//ox2GxI=";
     };
   in "${theme}/dist/mocha.yml";
-
+  
   programs.htop = {
     enable = true;
     settings =
