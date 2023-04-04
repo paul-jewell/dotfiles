@@ -27,7 +27,7 @@
       efi.canTouchEfiVariables = true;
       efi.efiSysMountPoint = "/boot/efi";
     };
-    initrd.kernelModules = [ "amdgpu"];
+   # initrd.kernelModules = [ "amdgpu"];
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
@@ -78,7 +78,7 @@
   services.xserver = {
     enable = true;
     
-    videoDrivers = ["amdgpu" ];
+    # videoDrivers = ["amdgpu" ];
 
     # Enable touchpad support (enabled default in most desktopManager).
     libinput.enable = true;
