@@ -13,9 +13,10 @@ in {
       ["wheel" "input" "audio" "video"]
       ++ optional config.security.rtkit.enable "rtkit"
       ++ optional config.networking.networkmanager.enable "networkmanager"
-      ++ optional config.programs.adb.enable "adbusers"
-      ++ optional config.virtualisation.libvirtd.enable "libvirtd";
+      ++ optional config.programs.adb.enable "adbusers";
+#      ++ optional config.virtualisation.libvirtd.enable "libvirtd";
   };
+
   
   # age.secrets."beets-secrets.yaml" = {
   #   file = ../secrets/common/beets-secrets.yaml;
@@ -29,7 +30,10 @@ in {
   nix.settings.trusted-users = [username];
 
   home-manager.users."${username}" = {
-    imports = [./common ./${config.networking.hostName}];
+    imports = [
+      ./common
+      ./${config.networking.hostName}
+    ];
 
     home.username = username;
     home.homeDirectory = "/home/${username}";
