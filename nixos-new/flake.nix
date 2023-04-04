@@ -7,8 +7,6 @@
     nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
     flake-utils.url = github:numtide/flake-utils;
     nixos-hardware.url = github:NixOS/nixos-hardware;
-#    nixpkgs.follows = "nixpkgs";
-#    flake-utils.follows = "flake-utils";
 
     home-manager = {
       url = github:nix-community/home-manager;
@@ -55,23 +53,22 @@
           inherit system;
           inherit pkgs;
 
-          modules =
-            [
-              home-manager.nixosModules.home-manager
-              {
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-
-                home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
-              }
-
-             ./host/common
-             ./host/${hostName}
-              ({lib, ...}: {networking.hostName = lib.mkDefault hostName;})
-
-              (import ./home username)
-            ]
-            ++ modules;
+          modules = [
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              
+              home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
+            }
+            
+            ./host/common
+            ./host/${hostName}
+            ({lib, ...}: {networking.hostName = lib.mkDefault hostName;})
+            
+            (import ./home username)
+          ]
+          ++ modules;
         };
       };
     in {
@@ -79,9 +76,9 @@
         (mkHost {
           inherit system;
           inherit pkgs;
-
+          
           hostName = "isolde";
-
+          
           modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
         });
     })
