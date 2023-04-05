@@ -5,7 +5,7 @@
 
   inputs = {
     nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
-    flake-utils.url = github:numtide/flake-utils;
+#    flake-utils.url = github:numtide/flake-utils;
     nixos-hardware.url = github:NixOS/nixos-hardware;
 
     home-manager = {
@@ -13,11 +13,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-serve-ng = {
-      url = github:aristanetworks/nix-serve-ng;
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.utils.follows = "flake-utils";
-    };
+    # nix-serve-ng = {
+    #   url = github:aristanetworks/nix-serve-ng;
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    #   inputs.utils.follows = "flake-utils";
+    # };
         
     # TODO: Look into:
     # - github:ryantm:agenix - managing secrets with deployment
@@ -28,10 +28,10 @@
   outputs = {
     self,
     nixpkgs,
-    flake-utils,
+#    flake-utils,
     nixos-hardware,
     home-manager,
-    nix-serve-ng,
+#    nix-serve-ng,
     ...
   }: 
     (let     
@@ -39,7 +39,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config = {allowUnfree = true;};
-        overlays = [nix-serve-ng.overlays.default self.overlays.default];
+#        overlays = [nix-serve-ng.overlays.default self.overlays.default];
       };
       username = "paul";
 
