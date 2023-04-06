@@ -47,9 +47,9 @@
   programs.ssh = {
     enable = true;
 
-    controlMaster = "auto";
-    controlPath = "~/.ssh/sockets/master-%r@%n:%p";
-    controlPersist = "10m";
+    # controlMaster = "auto";
+    # controlPath = "~/.ssh/sockets/master-%r@%n:%p";
+    # controlPersist = "10m";
 
     matchBlocks = let
       idFile = "~/.ssh/id_ed25519";
