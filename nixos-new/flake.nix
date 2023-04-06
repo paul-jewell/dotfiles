@@ -76,7 +76,7 @@
         overlays = [nix-serve-ng.overlays.default prismlauncher.overlays.default screenshot-bash.overlays.default self.overlays.default];
       };
 
-      username = "scrumplex";
+      username = "paul";
 
       mkHost = {
         hostName,
