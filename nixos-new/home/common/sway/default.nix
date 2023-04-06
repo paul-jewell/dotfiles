@@ -19,18 +19,14 @@
       ];
       input = {
         "type:keyboard" = {
-          xkb_layout = "us";
-          xkb_variant = "altgr-intl";
-          xkb_numlock = "enabled";
+          xkb_layout = "gb";
+          xkb_variant = "extd";
+          xkb_options = "ctrl:nocaps";
         };
-        "1133:49277:Logitech_Gaming_Mouse_G502" = {
-          accel_profile = "adaptive";
-          pointer_accel = "-1.0";
-        };
-        "6127:24717:PixArt_Lenovo_USB_Optical_Mouse" = {
-          accel_profile = "adaptive";
-          pointer_accel = "-1.0";
-        };
+        # "6127:24717:PixArt_Lenovo_USB_Optical_Mouse" = {
+        #   accel_profile = "adaptive";
+        #   pointer_accel = "-1.0";
+        # };
         "2362:628:PIXA3854:00_093A:0274_Touchpad" = {
           natural_scroll = "enabled";
           tap = "enabled";
