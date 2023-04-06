@@ -1,5 +1,4 @@
 {config, ...}: {
-# TODO: Understand this, and add my gpg keys?
   xdg.configFile."pam-gnupg".text = ''
     ${config.programs.gpg.homedir}
     2622167BDE636A248CE883080EE77D752284FDF4

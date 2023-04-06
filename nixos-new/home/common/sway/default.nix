@@ -19,11 +19,18 @@
       ];
       input = {
         "type:keyboard" = {
-          xkb_layout = "gb";
+          xkb_layout = "us";
           xkb_variant = "altgr-intl";
-          xkb_model = "pc105";
+          xkb_numlock = "enabled";
         };
-        # TODO: Inputs for normal touchpad on lenovo and mouse?
+        "1133:49277:Logitech_Gaming_Mouse_G502" = {
+          accel_profile = "adaptive";
+          pointer_accel = "-1.0";
+        };
+        "6127:24717:PixArt_Lenovo_USB_Optical_Mouse" = {
+          accel_profile = "adaptive";
+          pointer_accel = "-1.0";
+        };
         "2362:628:PIXA3854:00_093A:0274_Touchpad" = {
           natural_scroll = "enabled";
           tap = "enabled";
@@ -31,22 +38,20 @@
         };
       };
       output = {
-        # TODO: Outputs for laptop screen? Docking station?
-        
-        # "LG Electronics LG ULTRAGEAR 104MANJ7FL47" = {
-        #   mode = "2560x1440@144Hz";
-        #   position = "0,0";
-        #   adaptive_sync = "on";
-        # };
-        # "Samsung Electric Company S24E650 H4ZJ803253" = {
-        #   mode = "1920x1080@60Hz";
-        #   position = "2560,0";
-        # };
-        # "BOE 0x095F Unknown" = {
-        #   mode = "2256x1504@59.999Hz";
-        #   position = "0,0";
-        #   scale = "1.25";
-        # };
+        "LG Electronics LG ULTRAGEAR 104MANJ7FL47" = {
+          mode = "2560x1440@144Hz";
+          position = "0,0";
+          adaptive_sync = "on";
+        };
+        "Samsung Electric Company S24E650 H4ZJ803253" = {
+          mode = "1920x1080@60Hz";
+          position = "2560,0";
+        };
+        "BOE 0x095F Unknown" = {
+          mode = "2256x1504@59.999Hz";
+          position = "0,0";
+          scale = "1.25";
+        };
         "*" = {bg = "${./current-wallpaper.jpg} fill";};
       };
       assigns = {

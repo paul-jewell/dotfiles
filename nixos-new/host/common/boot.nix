@@ -1,5 +1,6 @@
 {lib, ...}: {
   boot = {
+    # Needs unstable nixpkgs!
     bootspec.enable = lib.mkDefault true;
 
     loader = {
@@ -9,14 +10,13 @@
       timeout = 0;
     };
 
-    # Quieter boot
+    # quieter boot
     initrd.verbose = false;
     initrd.systemd.enable = true;
     consoleLogLevel = 0;
-    kernelParams = ["quiet" "udev.log_level=2"];
+    kernelParams = ["quiet" "udev.log_level=3"];
 
     tmpOnTmpfs = true;
     tmpOnTmpfsSize = "75%";
   };
 }
-

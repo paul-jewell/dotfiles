@@ -29,6 +29,10 @@
       pkg = pkgs.element-desktop;
       desktopFile = "element-desktop.desktop";
     }
+    {
+      pkg = pkgs.evolution;
+      desktopFile = "org.gnome.Evolution.desktop";
+    }
   ];
 in
   mkMerge (map mapAutostart autostarts)

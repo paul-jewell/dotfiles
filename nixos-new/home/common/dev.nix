@@ -9,13 +9,12 @@
     enable = true;
     package = pkgs.gitAndTools.gitFull;
 
-    userName = "Paul Jewell";
-    userEmail = "paul@teulu.org";
-    # Set up with my key
-    # signing = {
-    #   signByDefault = true;
-    #   key = "E13DFD4B47127951";
-    #};
+    userName = "Sefa Eyeoglu";
+    userEmail = "contact@scrumplex.net";
+    signing = {
+      signByDefault = true;
+      key = "E13DFD4B47127951";
+    };
 
     delta = {
       enable = true;
@@ -34,6 +33,8 @@
         "ssh://git@github.com/".pushInsteadOf = "github:";
         "https://gitlab.com/".insteadOf = "gitlab:";
         "ssh://git@gitlab.com/".pushInsteadOf = "gitlab:";
+        "https://aur.archlinux.org/".insteadOf = "aur:";
+        "ssh://aur@aur.archlinux.org/".pushInsteadOf = "aur:";
         "https://git.sr.ht/".insteadOf = "srht:";
         "ssh://git@git.sr.ht/".pushInsteadOf = "srht:";
         "https://codeberg.org/".insteadOf = "codeberg:";
@@ -51,69 +52,72 @@
     controlMaster = "auto";
     controlPath = "~/.ssh/sockets/master-%r@%n:%p";
     controlPersist = "10m";
-    
-# TODO: Change to my individual ssh id files
-    # matchBlocks = let
-    #   idFile = "~/.ssh/id_ed25519";
-    # in {
-    #   "gitlab.com" = {
-    #     user = "git";
-    #     identityFile = idFile;
-    #   };
-    #   "git.sr.ht" = {
-    #     user = "git";
-    #     identityFile = idFile;
-    #   };
-    #   "github.com" = {
-    #     user = "git";
-    #     identityFile = idFile;
-    #   };
-    #   "codeberg.org" = {
-    #     user = "git";
-    #     identityFile = idFile;
-    #   };
-      # "gitlab.freedesktop.org" = {
-      #   user = "git";
-      #   identityFile = idFile;
-      # };
 
-      # "iss.lan" = {
-      #   user = "root";
-      #   hostname = "10.10.10.1";
-      #   identityFile = idFile;
-      # };
+    matchBlocks = let
+      idFile = "~/.ssh/id_ed25519";
+    in {
+      "aur.archlinux.org" = {
+        user = "aur";
+        identityFile = idFile;
+      };
+      "gitlab.com" = {
+        user = "git";
+        identityFile = idFile;
+      };
+      "git.sr.ht" = {
+        user = "git";
+        identityFile = idFile;
+      };
+      "github.com" = {
+        user = "git";
+        identityFile = idFile;
+      };
+      "codeberg.org" = {
+        user = "git";
+        identityFile = idFile;
+      };
+      "gitlab.freedesktop.org" = {
+        user = "git";
+        identityFile = idFile;
+      };
 
-      # "voyager.lan" = {
-      #   user = "root";
-      #   hostname = "10.10.10.8";
-      #   identityFile = idFile;
-      # };
+      "iss.lan" = {
+        user = "root";
+        hostname = "10.10.10.1";
+        identityFile = idFile;
+      };
 
-      # "cosmos.lan" = {
-      #   user = "root";
-      #   hostname = "10.10.10.11";
-      #   identityFile = idFile;
-      # };
+      "voyager.lan" = {
+        user = "root";
+        hostname = "10.10.10.8";
+        identityFile = idFile;
+      };
 
-      # "eclipse.lan" = {
-      #   user = "root";
-      #   hostname = "10.10.10.12";
-      #   port = 22701;
-      #   identityFile = idFile;
-      # };
+      "cosmos.lan" = {
+        user = "root";
+        hostname = "10.10.10.11";
+        identityFile = idFile;
+      };
 
-      # "scrumplex.net" = {
-      #   user = "root";
-      #   port = 22701;
-      #   identityFile = idFile;
-      # };
+      "eclipse.lan" = {
+        user = "root";
+        hostname = "10.10.10.12";
+        port = 22701;
+        identityFile = idFile;
+      };
 
-      # "duckhub.io" = {
-      #   user = "root";
-      #   port = 22701;
-      #   identityFile = idFile;
-      # };
-    #};
+      "scrumplex.net" = {
+        user = "root";
+        port = 22701;
+        identityFile = idFile;
+      };
+
+      "duckhub.io" = {
+        user = "root";
+        port = 22701;
+        identityFile = idFile;
+      };
+    };
   };
 
   programs.gpg = {

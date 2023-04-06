@@ -1,74 +1,111 @@
-# Modular Configuration for all my systems
-
 {
-  description = "Home manager configuration for my systems";
+  description = "Home Manager configuration of Jane Doe";
 
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
-#    flake-utils.url = github:numtide/flake-utils;
-    nixos-hardware.url = github:NixOS/nixos-hardware;
-
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
     home-manager = {
-      url = github:nix-community/home-manager;
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # nix-serve-ng = {
-    #   url = github:aristanetworks/nix-serve-ng;
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    #   inputs.utils.follows = "flake-utils";
-    # };
-        
-    # TODO: Look into:
-    # - github:ryantm:agenix - managing secrets with deployment
-    # - github:nix-community/lanzaboote - Secure boot implementation
-
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+    nix-serve-ng = {
+      url = "github:aristanetworks/nix-serve-ng";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.utils.follows = "flake-utils";
+    };
+    prismlauncher = {
+      url = "github:PrismLauncher/PrismLauncher";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.pre-commit-hooks.follows = "pre-commit-hooks";
+    };
+    screenshot-bash = {
+      url = "git+https://codeberg.org/Scrumplex/screenshot-bash";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
-#    flake-utils,
+    flake-utils,
     nixos-hardware,
+    pre-commit-hooks,
     home-manager,
-#    nix-serve-ng,
+    agenix,
+    lanzaboote,
+    nix-serve-ng,
+    prismlauncher,
+    screenshot-bash,
     ...
-  }: 
-    (let     
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      checks = {
+        pre-commit-check = pre-commit-hooks.lib.${system}.run {
+          src = ./.;
+          hooks = {alejandra.enable = true;};
+        };
+      };
+      devShells.default = pkgs.mkShell {
+        inherit (self.checks.${system}.pre-commit-check) shellHook;
+        packages = with pkgs; [alejandra agenix.packages.${system}.agenix];
+      };
+    })
+    // (let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config = {allowUnfree = true;};
-#        overlays = [nix-serve-ng.overlays.default self.overlays.default];
+        overlays = [nix-serve-ng.overlays.default prismlauncher.overlays.default screenshot-bash.overlays.default self.overlays.default];
       };
-      username = "paul";
+
+      username = "scrumplex";
 
       mkHost = {
         hostName,
-          system,
-          pkgs,
-          modules,
+        system,
+        pkgs,
+        modules,
       }: {
         ${hostName} = nixpkgs.lib.nixosSystem {
           inherit system;
           inherit pkgs;
 
-          modules = [
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              
-              home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
-            }
-            
-            ./host/common
-            ./host/${hostName}
-            ({lib, ...}: {networking.hostName = lib.mkDefault hostName;})
-            
-            (import ./home username)
-          ]
-          ++ modules;
+          modules =
+            [
+              home-manager.nixosModules.home-manager
+              {
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+
+                home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
+              }
+              agenix.nixosModules.age
+              lanzaboote.nixosModules.lanzaboote
+              ./host/common
+              ./host/${hostName}
+              ({lib, ...}: {networking.hostName = lib.mkDefault hostName;})
+
+              (import ./home username)
+            ]
+            ++ modules;
         };
       };
     in {
@@ -76,10 +113,22 @@
         (mkHost {
           inherit system;
           inherit pkgs;
-          
-          hostName = "isolde";
-          
-          modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
+
+          hostName = "andromeda";
+
+          modules = [
+            nixos-hardware.nixosModules.common-cpu-amd-pstate
+            nixos-hardware.nixosModules.common-gpu-amd
+            nixos-hardware.nixosModules.common-pc-ssd
+          ];
+        })
+        // (mkHost {
+          inherit system;
+          inherit pkgs;
+
+          hostName = "dyson";
+
+          modules = [nixos-hardware.nixosModules.framework-12th-gen-intel];
         });
     })
     // {

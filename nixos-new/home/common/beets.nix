@@ -38,8 +38,8 @@
         "scrub"
       ];
       replaygain.backend = "gstreamer";
-# TODO: Understand secrets
-##      include = [nixosConfig.age.secrets."beets-secrets.yaml".path];
+
+      include = [nixosConfig.age.secrets."beets-secrets.yaml".path];
     };
   };
 }

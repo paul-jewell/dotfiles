@@ -21,4 +21,3 @@ in {
     "L+ ${channelPath}     - - - - ${pkgs.path}"
   ];
 }
-   

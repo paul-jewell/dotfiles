@@ -16,13 +16,17 @@
     ./neovim.nix
     ./pipewire
     ./ranger.nix
+    ./screenshot-bash.nix
     ./sway
   ];
 
   home.packages = with pkgs; [
     dig
+    distrobox
     ffmpeg
     file
+    flatpak-builder
+    fluxcd
     libqalculate
     psmisc
     ripgrep
@@ -49,7 +53,13 @@
     tenacity
     libreoffice
 
-    thunderbird
+    evolution
+    portfolio
+    AusweisApp2
+
+    prismlauncher
+    steam
+    steam-run
   ];
 
   theme = {
@@ -69,11 +79,9 @@
   };
   services.jellyfin-mpv-shim.enable = true;
 
-  programs= {
-    firefox.enable = true;
-    chromium.enable = true;
-    browserpass.enable = true;
-  };
+  programs.firefox.enable = true;
+  programs.chromium.enable = true;
+  programs.browserpass.enable = true;
 
   services.syncthing.enable = true;
   programs.mangohud = {
@@ -100,7 +108,7 @@
       toggle_fps_limit = "Shift_R+F1";
     };
   };
-  
+
   programs.obs-studio = {
     enable = true;
     plugins = with pkgs.obs-studio-plugins; [
@@ -128,7 +136,7 @@
       sha256 = "GrRCOwCgM8BFhY8TzO3/WDTUnGtqkhvlDWE//ox2GxI=";
     };
   in "${theme}/dist/mocha.yml";
-  
+
   programs.htop = {
     enable = true;
     settings =
