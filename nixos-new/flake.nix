@@ -129,6 +129,14 @@
           hostName = "dyson";
 
           modules = [nixos-hardware.nixosModules.framework-12th-gen-intel];
+        })
+        // (mkHost {
+          inherit system;
+          inherit pkgs;
+
+          hostName = "isolde";
+
+          modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
         });
     })
     // {
