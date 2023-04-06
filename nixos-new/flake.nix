@@ -28,12 +28,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.utils.follows = "flake-utils";
     };
-    prismlauncher = {
-      url = "github:PrismLauncher/PrismLauncher";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.pre-commit-hooks.follows = "pre-commit-hooks";
-    };
+    # prismlauncher = {
+    #   url = "github:PrismLauncher/PrismLauncher";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    #   inputs.flake-utils.follows = "flake-utils";
+    #   inputs.pre-commit-hooks.follows = "pre-commit-hooks";
+    # };
     screenshot-bash = {
       url = "git+https://codeberg.org/Scrumplex/screenshot-bash";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,7 +50,7 @@
     agenix,
     lanzaboote,
     nix-serve-ng,
-    prismlauncher,
+#    prismlauncher,
     screenshot-bash,
     ...
   }:
@@ -73,7 +73,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config = {allowUnfree = true;};
-        overlays = [nix-serve-ng.overlays.default prismlauncher.overlays.default screenshot-bash.overlays.default self.overlays.default];
+        overlays = [nix-serve-ng.overlays.default screenshot-bash.overlays.default self.overlays.default];
       };
 
       username = "paul";

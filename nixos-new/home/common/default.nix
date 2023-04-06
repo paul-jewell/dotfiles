@@ -57,9 +57,6 @@
     portfolio
     AusweisApp2
 
-    prismlauncher
-    steam
-    steam-run
   ];
 
   theme = {
