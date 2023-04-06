@@ -3,31 +3,31 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+#    flake-utils.url = "github:numtide/flake-utils";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
+#      inputs.flake-utils.follows = "flake-utils";
     };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
-    nix-serve-ng = {
-      url = "github:aristanetworks/nix-serve-ng";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.utils.follows = "flake-utils";
-    };
+    # agenix = {
+    #   url = "github:ryantm/agenix";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+    # lanzaboote = {
+    #   url = "github:nix-community/lanzaboote";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    #   inputs.flake-utils.follows = "flake-utils";
+    # };
+#    nix-serve-ng = {
+#      url = "github:aristanetworks/nix-serve-ng";
+#      inputs.nixpkgs.follows = "nixpkgs";
+#      inputs.utils.follows = "flake-utils";
+#    };
 
     screenshot-bash = {
       url = "git+https://codeberg.org/Scrumplex/screenshot-bash";
@@ -38,13 +38,13 @@
   outputs = {
     self,
     nixpkgs,
-    flake-utils,
+#    flake-utils,
     nixos-hardware,
     pre-commit-hooks,
     home-manager,
-    agenix,
-    lanzaboote,
-    nix-serve-ng,
+ #   agenix,
+ #   lanzaboote,
+ #   nix-serve-ng,
     screenshot-bash,
     ...
   }:
@@ -53,7 +53,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config = {allowUnfree = true;};
-        overlays = [nix-serve-ng.overlays.default screenshot-bash.overlays.default self.overlays.default];
+        overlays = [screenshot-bash.overlays.default self.overlays.default];
       };
       
       username = "paul";
@@ -77,8 +77,8 @@
 
                 home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
               }
-              agenix.nixosModules.age
-              lanzaboote.nixosModules.lanzaboote
+#              agenix.nixosModules.age
+#              lanzaboote.nixosModules.lanzaboote
               ./host/common
               ./host/${hostName}
               ({lib, ...}: {networking.hostName = lib.mkDefault hostName;})
