@@ -1,21 +1,18 @@
 let
-  scrumplex = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJV9lYhi0kcwAAjPTMl6sycwCGkjrI0bvTIwpPuXkW2W scrumplex@andromeda"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsd6Edr19iTS5QFnCEvMQh0rUZM1mjksaZHlihweLdU scrumplex@dyson"
+  paul = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1Ia1H2cMVFPkJYl7EedhCQen2u8CdbUJYHh39STkRR paul@isolde"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH4HJWyXzUw6EW66y81iRjwXFAqR9wwxRvuZw/W7NBy2 paul@isolde"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINX9KVaqmzbp8eb6WgIy5gXlNCK3XKQtDmBHEghZgEDD paul@isolde"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOau2hlmZjd2UtWd1Yxz6a/S7iyidcmWq8q1QH4TNhD5 paul@isolde"
   ];
 
-  andromeda = [
+  isolde = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKYlGOi/nu3U4pORGwJuVjanMZMPX3qHcPYH4LIvj0UP root@nixos"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEwSXiI0/VUx0B9auVaCB6tDU8AP7QLbgOFQaH8khRnA"
   ];
-  dyson = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOLPh2twOIyrawZAQC76U9gUVETyPWBOSWJ4k9hdA8mP"
-  ];
 in {
-  "andromeda/cache-key.age".publicKeys = andromeda ++ scrumplex;
-  "andromeda/wg.age".publicKeys = andromeda ++ scrumplex;
+  "isolde/wg.age".publicKeys = isolde ++ paul;
 
-  "dyson/wg.age".publicKeys = dyson ++ scrumplex;
-
-  "common/beets-secrets.yaml".publicKeys = andromeda ++ dyson ++ scrumplex;
-  "common/listenbrainz-token".publicKeys = andromeda ++ dyson ++ scrumplex;
+  "common/beets-secrets.yaml".publicKeys = isolde ++ paul;
+  "common/listenbrainz-token".publicKeys = isolde ++ paul;
 }

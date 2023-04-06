@@ -18,14 +18,14 @@ in {
       ++ optional config.virtualisation.podman.enable "podman";
   };
 
-  age.secrets."beets-secrets.yaml" = {
-    file = ../secrets/common/beets-secrets.yaml;
-    owner = username;
-  };
-  age.secrets."listenbrainz-token" = {
-    file = ../secrets/common/listenbrainz-token;
-    owner = username;
-  };
+  # age.secrets."beets-secrets.yaml" = {
+  #   file = ../secrets/common/beets-secrets.yaml;
+  #   owner = username;
+  # };
+  # age.secrets."listenbrainz-token" = {
+  #   file = ../secrets/common/listenbrainz-token;
+  #   owner = username;
+  # };
 
   nix.settings.trusted-users = [username];
 
