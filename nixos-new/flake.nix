@@ -48,30 +48,16 @@
     screenshot-bash,
     ...
   }:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-    in {
-      checks = {
-        pre-commit-check = pre-commit-hooks.lib.${system}.run {
-          src = ./.;
-          hooks = {alejandra.enable = true;};
-        };
-      };
-      devShells.default = pkgs.mkShell {
-        inherit (self.checks.${system}.pre-commit-check) shellHook;
-        packages = with pkgs; [alejandra agenix.packages.${system}.agenix];
-      };
-    })
-    // (let
+    (let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config = {allowUnfree = true;};
         overlays = [nix-serve-ng.overlays.default screenshot-bash.overlays.default self.overlays.default];
       };
-
+      
       username = "paul";
-
+      
       mkHost = {
         hostName,
         system,
