@@ -9,11 +9,11 @@
     enable = true;
     package = pkgs.gitAndTools.gitFull;
 
-    userName = "Sefa Eyeoglu";
-    userEmail = "contact@scrumplex.net";
+    userName = "Paul Jewell";
+    userEmail = "paul@teulu.org";
     signing = {
       signByDefault = true;
-      key = "E13DFD4B47127951";
+      key = "61BFB242EBCAEB67";
     };
 
     delta = {
@@ -33,8 +33,6 @@
         "ssh://git@github.com/".pushInsteadOf = "github:";
         "https://gitlab.com/".insteadOf = "gitlab:";
         "ssh://git@gitlab.com/".pushInsteadOf = "gitlab:";
-        "https://aur.archlinux.org/".insteadOf = "aur:";
-        "ssh://aur@aur.archlinux.org/".pushInsteadOf = "aur:";
         "https://git.sr.ht/".insteadOf = "srht:";
         "ssh://git@git.sr.ht/".pushInsteadOf = "srht:";
         "https://codeberg.org/".insteadOf = "codeberg:";
@@ -56,66 +54,40 @@
     matchBlocks = let
       idFile = "~/.ssh/id_ed25519";
     in {
-      "aur.archlinux.org" = {
-        user = "aur";
-        identityFile = idFile;
-      };
-      "gitlab.com" = {
-        user = "git";
-        identityFile = idFile;
-      };
-      "git.sr.ht" = {
-        user = "git";
-        identityFile = idFile;
-      };
+#      "git.sr.ht" = {
+#        user = "git";
+#        identityFile = idFile;
+#      };
       "github.com" = {
-        user = "git";
-        identityFile = idFile;
+#        user = "git";
+        identityFile = "~/.ssh/isolde-github";
       };
-      "codeberg.org" = {
-        user = "git";
-        identityFile = idFile;
-      };
-      "gitlab.freedesktop.org" = {
-        user = "git";
-        identityFile = idFile;
-      };
-
-      "iss.lan" = {
-        user = "root";
-        hostname = "10.10.10.1";
-        identityFile = idFile;
+#      "codeberg.org" = {
+#        user = "git";
+#        identityFile = idFile;
+#      };
+      "orac" = {
+        user = "paul";
+        hostname = "orac";
+        identityFile = "~/.ssh/orac_25519";
       };
 
-      "voyager.lan" = {
-        user = "root";
-        hostname = "10.10.10.8";
-        identityFile = idFile;
+      "orac-ip" = {
+        user = "paul";
+        hostname = "192.168.1.2";
+        identityFile = "~/.ssh/orac_25519";
       };
 
-      "cosmos.lan" = {
-        user = "root";
-        hostname = "10.10.10.11";
-        identityFile = idFile;
+      "tristan" = {
+        user = "paul";
+        hostname = "tristan";
+        identityFile = "~/.ssh/tristan_ed25519";
       };
 
-      "eclipse.lan" = {
-        user = "root";
-        hostname = "10.10.10.12";
-        port = 22701;
-        identityFile = idFile;
-      };
-
-      "scrumplex.net" = {
-        user = "root";
-        port = 22701;
-        identityFile = idFile;
-      };
-
-      "duckhub.io" = {
-        user = "root";
-        port = 22701;
-        identityFile = idFile;
+      "shingo" = {
+        user = "paul";
+        hostname = "shingo";
+        identityFile = "~/.ssh/shingo_ed25519";
       };
     };
   };
