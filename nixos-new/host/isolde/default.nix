@@ -28,6 +28,8 @@
 
   services.logind = {
     lidSwitch = "suspend-then-hibernate";
+    lidSwitchDocked = "ignore";
+    lidSwitchExternalPower = "ignore";
     extraConfig = ''
       HandlePowerKey=suspend-then-hibernate
       PowerKeyIgnoreInhibited=yes
