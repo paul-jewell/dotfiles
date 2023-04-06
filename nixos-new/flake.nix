@@ -94,26 +94,6 @@
           inherit system;
           inherit pkgs;
 
-          hostName = "andromeda";
-
-          modules = [
-            nixos-hardware.nixosModules.common-cpu-amd-pstate
-            nixos-hardware.nixosModules.common-gpu-amd
-            nixos-hardware.nixosModules.common-pc-ssd
-          ];
-        })
-        // (mkHost {
-          inherit system;
-          inherit pkgs;
-
-          hostName = "dyson";
-
-          modules = [nixos-hardware.nixosModules.framework-12th-gen-intel];
-        })
-        // (mkHost {
-          inherit system;
-          inherit pkgs;
-
           hostName = "isolde";
 
           modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
