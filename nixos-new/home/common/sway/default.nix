@@ -84,7 +84,7 @@
       };
       bars = [];
       fonts = {
-        names = ["Monocraft"];
+        names = ["Iosevka"];
         size = 10.0;
       };
       colors = with config.theme.colors; {

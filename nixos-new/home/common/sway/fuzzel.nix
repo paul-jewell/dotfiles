@@ -8,7 +8,7 @@
 
     settings = {
       main = {
-        font = "Monocraft:size=13";
+        font = "Iosevka:size=13";
         terminal = "${pkgs.kitty}/bin/kitty";
       };
       colors = with config.theme.colors; {
