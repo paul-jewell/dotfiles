@@ -137,6 +137,14 @@
           hostName = "isolde";
 
           modules = [nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen3];
+        })
+        // (mkHost {
+          inherit system;
+          inherit pkgs;
+
+          hostName = "gandalf";
+
+          modules = [nixos-hardware.nixosModules.lenovo-thinkpad-x390];
         });
     })
     // {

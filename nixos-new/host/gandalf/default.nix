@@ -39,10 +39,7 @@
     HibernateDelaySec=10m
   '';
 
-  environment.systemPackages = with pkgs; [
-    neovim-unwrapped
-    emacs
-  ];
+  environment.systemPackages = with pkgs; [neovim-unwrapped];
 
   system.stateVersion = "22.11";
 }
