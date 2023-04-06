@@ -11,10 +11,10 @@
 
     userName = "Paul Jewell";
     userEmail = "paul@teulu.org";
-    signing = {
-      signByDefault = true;
-      key = "61BFB242EBCAEB67";
-    };
+#     signing = {
+#       signByDefault = true;
+# #      key = "61BFB242EBCAEB67";
+#     };
 
     delta = {
       enable = true;
@@ -47,9 +47,9 @@
   programs.ssh = {
     enable = true;
 
-    # controlMaster = "auto";
-    # controlPath = "~/.ssh/sockets/master-%r@%n:%p";
-    # controlPersist = "10m";
+    controlMaster = "auto";
+    controlPath = "~/.ssh/sockets/master-%r@%n:%p";
+    controlPersist = "10m";
 
     matchBlocks = let
       idFile = "~/.ssh/id_ed25519";
