@@ -51,7 +51,7 @@
     gimp
     krita
     tenacity
-    libreoffice
+#    libreoffice
 
     evolution
     portfolio
