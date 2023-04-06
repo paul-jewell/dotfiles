@@ -7,6 +7,8 @@
       noto-fonts-cjk-sans
       fira
       monocraft
+      iosevka
+      corefonts
       fira-code
       (nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];})
     ];
