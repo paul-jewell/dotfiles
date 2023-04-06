@@ -172,7 +172,7 @@
     systemd.enable = true;
     style = with config.theme.colors; ''
       window#waybar {
-        font-family: "Monocraft";
+        font-family: "Iosevka";
         font-size: 10pt;
         background-color: #${crust};
         color: #${text};
