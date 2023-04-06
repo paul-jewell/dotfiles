@@ -77,7 +77,6 @@
       volume = 50;
     };
   };
-  services.jellyfin-mpv-shim.enable = true;
 
   programs.firefox.enable = true;
   programs.chromium.enable = true;
