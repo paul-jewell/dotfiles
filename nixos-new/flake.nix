@@ -28,12 +28,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.utils.follows = "flake-utils";
     };
-    # prismlauncher = {
-    #   url = "github:PrismLauncher/PrismLauncher";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    #   inputs.flake-utils.follows = "flake-utils";
-    #   inputs.pre-commit-hooks.follows = "pre-commit-hooks";
-    # };
+
     screenshot-bash = {
       url = "git+https://codeberg.org/Scrumplex/screenshot-bash";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,7 +45,6 @@
     agenix,
     lanzaboote,
     nix-serve-ng,
-#    prismlauncher,
     screenshot-bash,
     ...
   }:
