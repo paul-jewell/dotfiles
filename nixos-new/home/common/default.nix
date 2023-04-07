@@ -55,8 +55,6 @@
 
     evolution
     portfolio
-    AusweisApp2
-
   ];
 
   theme = {
