@@ -32,6 +32,7 @@
     qt5ct
     qt6ct
 
+    pulsemixer
     xdg-user-dirs
     xdg-utils
   ];
