@@ -92,10 +92,9 @@
   };
 
   programs.firefox.enable = true;
-#  programs.chromium.enable = true;
   programs.browserpass.enable = true;
 
-  services.syncthing.enable = true;
+#  services.syncthing.enable = true;
   programs.mangohud = {
     enable = true;
     settings = {

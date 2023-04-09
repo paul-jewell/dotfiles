@@ -86,11 +86,11 @@
     })
     // {
       hmModules = {
-        beets = import ./modules/hm/beets.nix;
+        beets      = import ./modules/hm/beets.nix;
         catppuccin = import ./modules/hm/catppuccin.nix;
         fish-theme = import ./modules/hm/fish-theme.nix;
-        fuzzel = import ./modules/hm/fuzzel.nix;
-        pipewire = import ./modules/hm/pipewire.nix;
+        fuzzel     = import ./modules/hm/fuzzel.nix;
+        pipewire   = import ./modules/hm/pipewire.nix;
       };
       overlays.default = import ./pkgs;
     };
