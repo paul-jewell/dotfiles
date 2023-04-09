@@ -16,11 +16,32 @@
     ./neovim.nix
     ./pipewire
     ./ranger.nix
-    ./screenshot-bash.nix
-    ./sway
+    ./polybar.nix
+    ./dunst.nix
+#    ./screenshot-bash.nix
+#    ./sway
   ];
 
   home.packages = with pkgs; [
+    aspell
+    aspellDicts.en
+    bash-completion
+    bat
+    ledger
+
+    feh
+
+    gcc
+    gh 
+
+    keepassxc
+    neofetch
+    pinentry
+    pandoc
+
+    xdg-desktop-portal
+    xdg-utils
+
     dig
     distrobox
     ffmpeg
@@ -54,7 +75,6 @@
 #    libreoffice
 
     evolution
-    portfolio
   ];
 
   theme = {
@@ -74,7 +94,7 @@
   };
 
   programs.firefox.enable = true;
-  programs.chromium.enable = true;
+#  programs.chromium.enable = true;
   programs.browserpass.enable = true;
 
   services.syncthing.enable = true;

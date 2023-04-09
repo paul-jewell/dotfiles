@@ -97,11 +97,11 @@ super + @space
 
 # Terminal emulator
 super + ctrl + Return
-	bspc rule -a Alacritty -o state=floating rectangle=1024x768x0x0 center=true && /etc/profiles/per-user/paul/bin/alacritty
+	bspc rule -a kitty -o state=floating rectangle=1024x768x0x0 center=true && /etc/profiles/per-user/paul/bin/kitty
 
 # Terminal emulator
 super + Return
-	/etc/profiles/per-user/paul/bin/alacritty
+	/etc/profiles/per-user/paul/bin/kitty
 
 # Jump to workspaces
 super + t
