@@ -31,6 +31,12 @@
     };
     xautolock.enable = true;
   };
+
+  environment.systemPackages = with pkgs; [
+    rofi
+    rofi-calc
+    feh
+  ];
   
   services.tlp = {
     enable = true;

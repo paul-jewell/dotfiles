@@ -29,7 +29,7 @@
     bat
     ledger
 
-    feh
+#    feh
 
     gcc
     gh 
