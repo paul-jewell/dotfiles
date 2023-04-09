@@ -1,3 +1,3 @@
 {...}: {
-  imports = [./sway];
+  imports = [ ]; # was ./sway
 }

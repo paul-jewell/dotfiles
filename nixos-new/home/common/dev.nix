@@ -9,6 +9,7 @@
     enable = true;
     package = pkgs.gitAndTools.gitFull;
 
+ #   ignore = [ "*.swp" ];
     userName = "Paul Jewell";
     userEmail = "paul@teulu.org";
 #     signing = {
@@ -22,7 +23,10 @@
     };
 
     extraConfig = {
-      core.autocrlf = "input";
+      core = {
+        autocrlf = "input";
+        editor = "nvim";
+      };
       color.ui = "auto";
       diff.colorMoved = "default";
       push.followTags = true;
