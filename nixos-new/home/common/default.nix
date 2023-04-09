@@ -43,10 +43,8 @@
     xdg-utils
 
     dig
-    distrobox
     ffmpeg
     file
-    flatpak-builder
     fluxcd
     libqalculate
     psmisc
@@ -72,7 +70,7 @@
     gimp
     krita
     tenacity
-#    libreoffice
+    libreoffice
 
     evolution
   ];
