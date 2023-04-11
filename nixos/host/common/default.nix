@@ -11,5 +11,6 @@
     ./pipewire.nix
     ./regional.nix
     ./utils.nix
+    ./journald.nix
   ];
 }
