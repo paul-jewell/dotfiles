@@ -80,9 +80,10 @@
       fira-code
       fira-code-symbols
       meslo-lgs-nf
-      roboto
-      roboto-mono
-      (nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];})
+      #roboto
+      #roboto-mono
+      nerdfonts
+      #(nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];})
     ];
 
     enableDefaultFonts = true;
