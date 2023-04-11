@@ -39,7 +39,7 @@
       ];
       replaygain.backend = "gstreamer";
 
-#      include = [nixosConfig.age.secrets."beets-secrets.yaml".path];
+      include = [nixosConfig.age.secrets."beets-secrets.yaml".path];
     };
   };
 }
