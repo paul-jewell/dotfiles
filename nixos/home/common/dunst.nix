@@ -1,5 +1,8 @@
-{ config, pkgs, ... }:
 {
+  config,
+  pkgs,
+  ...
+}: {
   services.dunst = {
     enable = true;
     package = pkgs.dunst;
@@ -18,7 +21,7 @@
         horizontal_padding = 32;
         frame_width = 0;
         sort = "no";
-        idle_threshold = 120;
+        idle_threshold = 0;
         font = "Noto Sans";
         line_height = 4;
         markup = "full";
@@ -36,15 +39,24 @@
         sticky_history = "yes";
         history_length = 20;
         history = "ctrl+grave";
-        browser = "google-chrome-stable";
+        browser = "firefox";
         always_run_script = true;
         title = "Dunst";
         class = "Dunst";
         max_icon_size = 64;
       };
+      urgency_normal = {
+        timeout = 10;
+      };
+      urgency_low = {
+        timeout = 10;
+      };
+      urgency_critical = {
+        frame_color = "#B7472A";
+        foreground = "#B7472A";
+        background = "#191311";
+        timeout = 10;
+      };
     };
   };
 }
-
-    
-    
