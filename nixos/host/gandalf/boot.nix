@@ -11,11 +11,11 @@
       efi.efiSysMountPoint = "/boot/efi";
     };
 
-    plymouth = {
-      enable = true;
-      theme = "bgrt";
-      font = "${pkgs.fira}/share/fonts/opentype/FiraSans-Regular.otf";
-    };
+#    plymouth = {
+#      enable = true;
+#      theme = "bgrt";
+#      font = "${pkgs.fira}/share/fonts/opentype/FiraSans-Regular.otf";
+#    };
   };
 }
 

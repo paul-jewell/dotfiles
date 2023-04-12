@@ -100,7 +100,8 @@
         inherit system;
         inherit pkgs;
         hostName = "gandalf";
-        modules = [nixos-hardware.nixosModules.lenovo-thinkpad-x390];
+	modules = [];
+        # modules = [nixos-hardware.nixosModules.lenovo-thinkpad-x390];
       });
   })
   // {
