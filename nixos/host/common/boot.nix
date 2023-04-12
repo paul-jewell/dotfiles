@@ -7,7 +7,7 @@
       systemd-boot.enable = true;
       systemd-boot.consoleMode = "max";
       efi.canTouchEfiVariables = true;
-      timeout = 0;
+      timeout = 5;
     };
 
     # quieter boot
