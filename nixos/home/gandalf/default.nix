@@ -1,5 +1,5 @@
 {...}: {
   # imports = [./dev.nix ./sway];
-  imports = [ ];
+  imports = [ ./dev.nix ];
 }
 
