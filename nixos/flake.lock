@@ -136,11 +136,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1681366722,
-        "narHash": "sha256-s3pefLGZGRFB+XAHyPinIh6nWccTuLzcQ3c+HI9dDOg=",
+        "lastModified": 1681375273,
+        "narHash": "sha256-KdLAB0TZbzuCbr4vjetQRhXjIRiwAr5DI0EpYEHRldc=",
         "owner": "paul-jewell",
         "repo": "nixos-hardware",
-        "rev": "4c722c9638c185e1e1a8aaace9a5bd0d14d857f3",
+        "rev": "ff89b6da4d67744281d7110b73f8137e4b3b2261",
         "type": "github"
       },
       "original": {
