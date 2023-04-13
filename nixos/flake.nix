@@ -6,7 +6,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     #    nixos-hardware.url = "github:NixOS/nixos-hardware";
     # My fork - for development of x390 hardware files
-    nixos-hardware.url = "github:pauljewell/nixos-hardware";
+    nixos-hardware.url = "github:paul-jewell/nixos-hardware/lenovo-x390";
     pre-commit-hooks = {
        url = "github:cachix/pre-commit-hooks.nix";
        inputs.nixpkgs.follows = "nixpkgs";
