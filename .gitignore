@@ -41,6 +41,8 @@
 # Mail
 .mbsyncrc
 
+.pre-commit-config.yaml
+
 # Guix Configuration
 .config/guix/systems/*
 .config/guix/manifests/*
