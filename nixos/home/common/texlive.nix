@@ -1,7 +1,5 @@
-{ config,
-  pkgs,
-  ... }: {
-  services.texlive = {
+{ ... }: {
+  programs.texlive = {
     enable = true;
   };
 }
