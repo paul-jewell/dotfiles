@@ -18,6 +18,7 @@
     ./ranger.nix
     ./polybar.nix
     ./dunst.nix
+    ./texlive.nix
 #    ./screenshot-bash.nix
 #    ./sway
   ];

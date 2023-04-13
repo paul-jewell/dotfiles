@@ -1,0 +1,6 @@
+{ ... }: {
+  services.texlive = {
+    enable = true;
+  };
+}
+
