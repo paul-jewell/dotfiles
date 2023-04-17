@@ -1,5 +1,4 @@
 {pkgs, ...}: {
-
   #programs.sway.enable = true;
   #security.pam.services.gtklock = {};
 
@@ -23,7 +22,18 @@
       background = ./config/login-wallpaper.png;
     };
     desktopManager.xfce.enable = true;
-    
+
+    displayManager.session = [
+      {
+        manage = "window";
+        name = "stumpwm";
+        start = ''
+          export SBCL_HOME=${pkgs.sbcl}/lib/sbcl
+          $HOME/projects/stumpwm/stumpwm
+        '';
+      }
+    ];
+
     windowManager.bspwm = {
       enable = true;
       configFile = ./config/bspwmrc;
@@ -37,13 +47,13 @@
     rofi-calc
     feh
   ];
-  
+
   services.tlp = {
     enable = true;
     settings = {
-      CPU_SCALING_GOVERNOR_ON_BAT="powersave";
-      CPU_SCALING_GOVERNOR_ON_AC="powersave";
-      
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+
       # The following prevents the battery from charging fully to preserve
       # lifetime. Run `tlp fullcharge` to temporarily force full charge.
       # https://linrunner.de/tlp/faq/battery.html#how-to-choose-good-battery-charge-thresholds
@@ -51,21 +61,21 @@
       # I have chosen not to implement these limits.
       #START_CHARGE_THRESH_BAT0=40;
       #STOP_CHARGE_THRESH_BAT0=50;
-      
+
       # 100 being the maximum - limit the speed of the CPU to reduce
       # heat and increase battery usage:
-      CPU_MAX_PERF_ON_AC=100;
-      CPU_MAX_PERF_ON_BAT=75;
+      CPU_MAX_PERF_ON_AC = 100;
+      CPU_MAX_PERF_ON_BAT = 75;
     };
   };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
   services.avahi = {
-      enable = true;
-      nssmdns = true;
+    enable = true;
+    nssmdns = true;
   };
-  
+
   fonts = {
     fonts = with pkgs; [
       fira
@@ -92,14 +102,14 @@
       enable = true;
       decompressFonts = true;
     };
-    
+
     fontconfig = {
       enable = true;
       hinting.autohint = true;
       antialias = true;
     };
     enableGhostscriptFonts = true;
-    
+
     # fontconfig = {
     #   cache32Bit = true;
     #   defaultFonts = {
