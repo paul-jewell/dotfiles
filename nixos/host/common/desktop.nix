@@ -23,16 +23,21 @@
     };
     desktopManager.xfce.enable = true;
 
-    displayManager.session = [
-      {
-        manage = "window";
-        name = "stumpwm";
-        start = ''
-          export SBCL_HOME=${pkgs.sbcl}/lib/sbcl
-          $HOME/projects/stumpwm/stumpwm
-        '';
-      }
-    ];
+    windowManager.stumpwm = {
+      enable = true;
+    };
+    # If I am reading this correctly, stumpwm is being run from
+    # a local clone of the stumpwm repository...
+    #displayManager.session = [
+    #  {
+    #    manage = "window";
+    #    name = "stumpwm";
+    #    start = ''
+    #      export SBCL_HOME=${pkgs.sbcl}/lib/sbcl
+    #      $HOME/projects/stumpwm/stumpwm
+    #    '';
+    #  }
+    #];
 
     windowManager.bspwm = {
       enable = true;
