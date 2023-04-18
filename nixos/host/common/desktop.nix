@@ -23,6 +23,8 @@
     };
     desktopManager.xfce.enable = true;
 
+    # TODO: This doesn't work - not sure whether it is a configuration issue
+    # with stumpwm-contrib modules, or missing lisp packages from quicklisp.
     windowManager.stumpwm = {
       enable = true;
     };
