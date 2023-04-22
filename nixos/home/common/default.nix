@@ -125,6 +125,8 @@
     };
   in "${theme}/dist/mocha.yml";
 
+  programs.btop.enable = true;
+
   programs.htop = {
     enable = true;
     settings =
