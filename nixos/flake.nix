@@ -41,6 +41,11 @@
         };
       };
 
+      packages.x86_64-linux = import ./pkgs {
+        inherit self;
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      };
+
       apps.x86_64-linux.commit-nvfetcher = {
         type = "app";
         program = toString (nixpkgs.legacyPackages.x86_64-linux.writeShellScript "commit-nvfetcher" ''
@@ -49,7 +54,7 @@
       };
 
       devShells.default = let
-        commit-nvfetcher = self.packages.x86_64-linux-commit-nvfetcher;
+        commit-nvfetcher = self.packages.x86_64-linux.commit-nvfetcher;
       in
         pkgs.mkShell {
           inherit (self.checks.${system}.pre-commit-check) shellHook;
