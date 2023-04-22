@@ -19,11 +19,6 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    screenshot-bash = {
-      url = "git+https://codeberg.org/Scrumplex/screenshot-bash";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
@@ -33,7 +28,6 @@
     nixos-hardware,
     pre-commit-hooks,
     home-manager,
-    screenshot-bash,
     agenix,
     ...
   }:
@@ -59,7 +53,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config = {allowUnfree = true;};
-        overlays = [screenshot-bash.overlays.default self.overlays.default];
+        overlays = [self.overlays.default];
       };
 
       username = "paul";

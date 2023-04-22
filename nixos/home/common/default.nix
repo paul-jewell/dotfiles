@@ -19,8 +19,6 @@
     ./polybar.nix
     ./dunst.nix
     ./texlive.nix
-    #    ./screenshot-bash.nix
-    #    ./sway
   ];
 
   home.packages = with pkgs; [
