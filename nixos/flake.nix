@@ -60,6 +60,7 @@
         pkgs.mkShell {
           inherit (self.checks.${system}.pre-commit-check) shellHook;
           packages = with pkgs; [
+            commit-nvfetcher
             alejandra
             agenix.packages.${system}.agenix
           ];
