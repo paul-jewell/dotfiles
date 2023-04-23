@@ -3,7 +3,6 @@
   pkgs,
   ...
 }: {
-
   programs.ssh = {
     enable = true;
 
@@ -11,21 +10,18 @@
     controlPath = "~/.ssh/sockets/master-%r@%n:%p";
     controlPersist = "10m";
 
-    matchBlocks = let
-      idFile = "~/.ssh/id_ed25519";
-    in {
-#      "git.sr.ht" = {
-#        user = "git";
-#        identityFile = idFile;
-#      };
+    matchBlocks = {
+      "git.sr.ht" = {
+        identityFile = "~/.ssh/isolde-sourcehut";
+      };
       "github.com" = {
-#        user = "git";
+        #        user = "git";
         identityFile = "~/.ssh/isolde-github";
       };
-#      "codeberg.org" = {
-#        user = "git";
-#        identityFile = idFile;
-#      };
+      #      "codeberg.org" = {
+      #        user = "git";
+      #        identityFile = idFile;
+      #      };
       "orac" = {
         user = "paul";
         hostname = "orac";
