@@ -13,41 +13,40 @@
     matchBlocks = let
       idFile = "~/.ssh/id_ed25519";
     in {
-#      "git.sr.ht" = {
-#        user = "git";
-#        identityFile = idFile;
-#      };
+      "git.sr.ht" = {
+        identityFile = "~/.ssh/gandalf-sourcehut";
+      };
       "github.com" = {
-#        user = "git";
+        #        user = "git";
         identityFile = "~/.ssh/gandalf-github";
       };
-#      "codeberg.org" = {
-#        user = "git";
-#        identityFile = idFile;
-#      };
-#      "orac" = {
-#        user = "paul";
-#        hostname = "orac";
-#        identityFile = "~/.ssh/orac_25519";
-#      };
-#
-#      "orac-ip" = {
-#        user = "paul";
-#        hostname = "192.168.1.2";
-#        identityFile = "~/.ssh/orac_25519";
-#      };
-#
-#      "tristan" = {
-#        user = "paul";
-#        hostname = "tristan";
-#        identityFile = "~/.ssh/tristan_ed25519";
-#      };
-#
-#      "shingo" = {
-#        user = "paul";
-#        hostname = "shingo";
-#        identityFile = "~/.ssh/shingo_ed25519";
-#      };
+      #      "codeberg.org" = {
+      #        user = "git";
+      #        identityFile = idFile;
+      #      };
+      #      "orac" = {
+      #        user = "paul";
+      #        hostname = "orac";
+      #        identityFile = "~/.ssh/orac_25519";
+      #      };
+      #
+      #      "orac-ip" = {
+      #        user = "paul";
+      #        hostname = "192.168.1.2";
+      #        identityFile = "~/.ssh/orac_25519";
+      #      };
+      #
+      #      "tristan" = {
+      #        user = "paul";
+      #        hostname = "tristan";
+      #        identityFile = "~/.ssh/tristan_ed25519";
+      #      };
+      #
+      #      "shingo" = {
+      #        user = "paul";
+      #        hostname = "shingo";
+      #        identityFile = "~/.ssh/shingo_ed25519";
+      #      };
     };
   };
 }
