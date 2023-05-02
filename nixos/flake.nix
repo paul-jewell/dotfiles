@@ -76,8 +76,8 @@
                 home-manager.sharedModules = pkgs.lib.attrValues self.hmModules;
               }
               agenix.nixosModules.age
-              ./host/common
-              ./host/${hostName}
+              ./hosts/common
+              ./hosts/${hostName}
               ({lib, ...}: {networking.hostName = lib.mkDefault hostName;})
 
               (import ./home username)
