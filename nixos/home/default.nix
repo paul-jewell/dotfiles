@@ -6,6 +6,7 @@ username: {
 }: let
   inherit (lib) optional;
 in {
+  users.mutableUsers = false;
   users.users."${username}" = {
     isNormalUser = true;
     shell = pkgs.fish;
@@ -16,6 +17,7 @@ in {
       ++ optional config.programs.adb.enable "adbusers"
       ++ optional config.virtualisation.libvirtd.enable "libvirtd"
       ++ optional config.virtualisation.podman.enable "podman";
+    hashedPassword = "$y$j9T$ZCuWqmlsKtA9OK3e4kg5H.$u6sqp.4En.XHL7H20MVVYPm2FIhAuP7/w4OtFEsfKq5";
   };
 
   age.secrets."beets-secrets.yaml" = {
