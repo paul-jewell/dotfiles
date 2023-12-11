@@ -64,7 +64,7 @@
 
 ;;; Load swank on demand
 ;; Note: This path will unfortunately change when slime is updated
-(load "~/.emacs.d/elpa/slime-20230109.1535/swank-loader.lisp")
+(load "~/.emacs.d/elpa/slime-20230730.1734/swank-loader.lisp")
 (swank-loader:init)
 
 (defparameter *port-number* 4005
