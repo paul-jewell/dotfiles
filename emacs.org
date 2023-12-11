@@ -28,6 +28,7 @@ Emacs configuration.
 - [[#sql][SQL]]
 - [[#c][C++]]
 - [[#rust][Rust]]
+- [[#yasnippet][yasnippet]]
 - [[#multiple-cursors][Multiple Cursors]]
 - [[#org-mode][Org-mode]]
 - [[#org-bullet-mode][Org Bullet mode]]
@@ -118,108 +119,112 @@ Emacs configuration.
 * Machine specific code, and package initialisation
 
 #+begin_src emacs-lisp
- ;; Load machine local definitions
+       ;; Load machine local definitions
 
- (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
- (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
- (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
- (defvar *pj/font-size*        "14"  "Fontsize for this system.")
+       (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
+       (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
+       (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
+       (defvar *pj/font-size*        "14"  "Fontsize for this system.")
 
- (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+       (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
- (defun pj/is-windows-p ()
-   "True if run in windows environment."
-   (string= "windows-nt" system-type))
+       (defun pj/is-windows-p ()
+         "True if run in windows environment."
+         (string= "windows-nt" system-type))
 
- (defun pj/is-linux-p ()
-   "True if run in linux environment."
-   (string= "gnu/linux" system-type))
+       (defun pj/is-linux-p ()
+         "True if run in linux environment."
+         (string= "gnu/linux" system-type))
 
- (defun pj/is-host-p (name)
-   "True if running on system NAME."
-   (string= (system-name) name))
+       (defun pj/is-host-p (name)
+         "True if running on system NAME."
+         (string= (system-name) name))
 
- ;; Three possibilities for specifying values:
+       ;; Three possibilities for specifying values:
 
- ;; - Globally, for all systems
- ;; - By operating system
- ;; - By system name
+       ;; - Globally, for all systems
+       ;; - By operating system
+       ;; - By system name
 
- (cond
-  ((pj/is-linux-p)
-   (cond
-    ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-     (progn
-       (require 'gnutls)
-       (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-       (setq *pj/enable-mu4e-mode* t)
-       (setq *pj/load-site-gentoo* nil)
-       (setq *pj/enable-auctex* t)
+       (cond
+        ((pj/is-linux-p)
+         (cond
+          ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+           (progn
+             (require 'gnutls)
+             (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+             (setq *pj/enable-mu4e-mode* t)
+             (setq *pj/load-site-gentoo* nil)
+             (setq *pj/enable-auctex* t)
 
-       ;; define the location of the orgmode code - currently using the built in version.
-       ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-       ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
-       (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-       (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-       (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-       (setq *pj/font-size* "12")))
-    ;; tristan now has a 4K screen, so need to pull out the settings
-    ((string-prefix-p "tristan" (system-name))
-     (progn
-       (setq *pj/enable-mu4e-mode* t)
-       (setq *pj/load-site-gentoo* t)
-       (setq *pj/enable-auctex* t)
-       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-       (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-       (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-       (setq *pj/font-size* "14")))
-    ((string-prefix-p "gandalf" (system-name))
-     (progn
-       (setq *pj/enable-mu4e-mode* nil)
-       (setq *pj/load-site-gentoo* nil)
-       (setq *pj/enable-auctex* t)
-       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-       (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-       (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-       (setq *pj/font-size* "14")))
-    ((string-prefix-p "isolde" (system-name))
-     (progn
-       (setq *pj/enable-mu4e-mode* nil)
-       (setq *pj/load-site-gentoo* nil)
-       (setq *pj/enable-auctex* t)
-       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-       (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-       (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-       (setq *pj/font-size* "14")))
-    (t (progn
-	      (setq *pj/enable-mu4e-mode* nil)
-	      (setq *pj/load-site-gentoo* t)
-	      (setq *pj/enable-auctex* t)
-	      (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-	      (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-	      (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
-  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
-   (progn
-     (setq *pj/enable-mu4e-mode* nil)
-     (setq *pj/load-site-gentoo* nil)
-     (setq *pj/enable-auctex* nil)
-     (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
-     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-     (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-     (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-     (setq *pj/font-size* "10")))
-  (t
-   (error "Undefined system-type %s" system-type)))
+             ;; define the location of the orgmode code - currently using the built in version.
+             ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
+             ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
+             (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+             (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+             (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+             (setq *pj/font-size* "12")))
+          ;; tristan now has a 4K screen, so need to pull out the settings
+          ((string-prefix-p "tristan" (system-name))
+           (progn
+             (setq *pj/enable-mu4e-mode* t)
+             (setq *pj/load-site-gentoo* t)
+             (setq *pj/enable-auctex* t)
+             (defvar *pj/org-agenda-file
 
- (defvar *packages-initialised* nil)
+               s* '("~/Nextcloud/org"))
+             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+             (setq *pj/font-size* "14")))
+          ((string-prefix-p "gandalf" (system-name))
+           (progn
+             (setq *pj/enable-mu4e-mode* nil)
+             (setq *pj/load-site-gentoo* nil)
+             (setq *pj/enable-auctex* t)
+             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+             (setq *pj/font-size* "14")))
+          ((string-prefix-p "isolde" (system-name))
+           (progn
+             (setq *pj/enable-mu4e-mode* nil)
+             (setq *pj/load-site-gentoo* nil)
+             (setq *pj/enable-auctex* t)
+             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+             (setq *pj/font-size* "14")))
+          (t (progn
+               (setq *pj/enable-mu4e-mode* nil)
+               (setq *pj/load-site-gentoo* t)
+               (setq *pj/enable-auctex* t)
+               (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+               (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+               (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
+        ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+         (progn
+           (setq *pj/enable-mu4e-mode* nil)
+           (setq *pj/load-site-gentoo* nil)
+           (setq *pj/enable-auctex* nil)
+           (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
+           (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+           (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
 
- (defun initialise-packages ()
-   "Ensure `package-initialize' is called only once."
-   (unless *packages-initialised*
-     (package-initialize)
-     (setq *packages-initialised* t)))
 
-(initialise-packages)
+           :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+           (setq *pj/font-size* "10")))
+        (t
+         (error "Undefined system-type %s" system-type)))
+
+       (defvar *packages-initialised* nil)
+
+       (defun initialise-packages ()
+         "Ensure `package-initialize' is called only once."
+         (unless *packages-initialised*
+           (package-initialize)
+           (setq *packages-initialised* t)))
+
+      (initialise-packages)
 
 #+end_src
 
@@ -267,7 +272,7 @@ Emacs configuration.
 (set-variable 'confirm-kill-emacs 'yes-or-no-p)
 
 ;; Eliminate C-z sleep in graphical mode
-(fset 'original-suspend-frame (symbol-definition 'suspend-frame))
+(fset 'original-suspend-frame (symbol-function 'suspend-frame))
 
 (defun my-suspend-frame ()
   "A custom version of suspend frame that does nothing in graphical mode."
@@ -275,7 +280,7 @@ Emacs configuration.
       (message "Frame suspension is disabled in graphical mode.")
     (original-frame-suspend)))
 
-(add-advice 'suspend-frame :override #'my-suspend-frame)
+(advice-add 'suspend-frame :override #'my-suspend-frame)
 
 ;; The following lines are always needed. Choose your own keys.
 (global-font-lock-mode t)
@@ -589,13 +594,13 @@ Packages are currently installed using use-package.
 #+end_src
 * LSP mode
 #+begin_src emacs-lisp
-(use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :hook (
-         (c++-mode . lsp)
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
+;; (use-package lsp-mode
+;;   :init
+;;   (setq lsp-keymap-prefix "C-c l")
+;;   :hook (
+;;          (c++-mode . lsp)
+;;          (lsp-mode . lsp-enable-which-key-integration))
+;;   :commands lsp)
 
 #+end_src
 * Go
@@ -746,15 +751,91 @@ Not working, and not used currently...
 ;;     ----
 ;; Package for rust programming.
 
-(use-package rustic)
+;; (use-package rustic)
 
-(defun rustic-mode-auto-save-hook ()
-  "Enable auto-saving in rustic-mode buffers."
+;; (defun rustic-mode-auto-save-hook ()
+;;   "Enable auto-saving in rustic-mode buffers."
+;;   (when buffer-file-name
+;;     (setq-local compilation-ask-about-save nil)))
+;; (add-hook 'rustic-mode-hook 'rustic-mode-auto-save-hook)
+
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status)
+              ("C-c C-c e" . lsp-rust-analyzer-expand-macro)
+              ("C-c C-c d" . dap-hydra)
+              ("C-c C-c h" . lsp-ui-doc-glance))
+  :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+
+  ;; comment to disable rustfmt on save
+  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
+
+(defun rk/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
+  ;; save rust buffers that are not file visiting. Once
+  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
+  ;; no longer be necessary.
   (when buffer-file-name
-    (setq-local compilation-ask-about-save nil)))
-(add-hook 'rustic-mode-hook 'rustic-mode-auto-save-hook)
+    (setq-local buffer-save-without-query t))
+  (add-hook 'before-save-hook 'lsp-format-buffer nil t))
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; for rust-analyzer integration
+
+(use-package lsp-mode
+  :ensure
+  :commands lsp
+  :custom
+  ;; what to use when checking on-save. "check" is default, I prefer clippy
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.6)
+  ;; This controls the overlays that display type and other hints inline. Enable
+  ;; / disable as you prefer. Well require a `lsp-workspace-restart' to have an
+  ;; effect on open projects.
+  (lsp-rust-analyzer-server-display-inlay-hints t)
+  (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (lsp-rust-analyzer-display-chaining-hints t)
+  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+  (lsp-rust-analyzer-display-closure-return-type-hints t)
+  (lsp-rust-analyzer-display-parameter-hints nil)
+  (lsp-rust-analyzer-display-reborrow-hints nil)
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+(use-package lsp-ui
+  :ensure
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable nil))
+
 
 #+end_src
+* yasnippet
+#+begin_src 
+(use-package yasnippet
+  :ensure
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
+#+end_src
+
+
 * Multiple Cursors
 #+begin_src emacs-lisp
 ;;==============================================================================
@@ -1098,6 +1179,7 @@ I haven't used this yet, so there may be some issues.
 #+end_src
 
 * Javascript and HTML
+
 Disabling js2 mode. I don't program in javascript at the moment, and I
 want to get other stuff working first.
 #+begin_src emacs-lisp :tangle no
@@ -1135,23 +1217,60 @@ want to get other stuff working first.
 
 (use-package company
   :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 3)
-  (global-company-mode 1))
+;;  (setq company-idle-delay 0)
+;;  (setq company-minimum-prefix-length 3)
+  (global-company-mode 1)
+  :bind
+  (:map company-active-map
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous)
+        ("C-<" . company-select-first)
+        ("C->" . company-select-last))
 
-(use-package company-irony
-  :config
-  (add-to-list 'company-backends 'company-irony))
+  (:map company-mode-map
+        ("<tab>" . tab-indent-or-complete)
+        ("TAB" . tab-indent-or-complete)))
 
-(use-package irony
-  :config
-  (add-hook 'c++-mode-hook 'irony-mode)
-  (add-hook 'c-mode-hook 'irony-mode)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+(defun company-yasnippet-or-completion ()
+  (interactive)
+  (or (do-yas-expand)
+      (company-complete-common)))
 
-(use-package irony-eldoc
-  :config
-  (add-hook 'irony-mode-hook #'irony-eldoc))
+(defun check-expansion ()
+  (save-excursion
+    (if (looking-at "\\_>") t
+      (backward-char 1)
+      (if (looking-at "\\.") t
+        (backward-char 1)
+        (if (looking-at "::") t nil)))))
+
+(defun do-yas-expand ()
+  (let ((yas/fallback-behavior 'return-nil))
+    (yas/expand)))
+
+(defun tab-indent-or-complete ()
+  (interactive)
+  (if (minibufferp)
+      (minibuffer-complete)
+    (if (or (not yas/minor-mode)
+            (null (do-yas-expand)))
+        (if (check-expansion)
+            (company-complete-common)
+          (indent-for-tab-command)))))
+
+;; (use-package company-irony
+;;   :config
+;;   (add-to-list 'company-backends 'company-irony))
+
+;; (use-package irony
+;;   :config
+;;   (add-hook 'c++-mode-hook 'irony-mode)
+;;   (add-hook 'c-mode-hook 'irony-mode)
+;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+;; (use-package irony-eldoc
+;;   :config
+;;   (add-hook 'irony-mode-hook #'irony-eldoc))
 
 (use-package company-jedi
   :config
