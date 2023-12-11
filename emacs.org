@@ -76,7 +76,7 @@ Emacs configuration.
 * Preamble
 
 #+begin_src emacs-lisp
-;;-*-buffer-read-only: t;-*-
+;;-*- buffer-read-only: t; lexical-binding: t; -*-
 
 ;;; init.el --- Startup file for emacs
 
