@@ -14,6 +14,7 @@ Emacs configuration.
 - [[#general-configuration][General configuration]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
+- [[#moody][Moody]]
 - [[#tramp][Tramp]]
 - [[#ivy][Ivy]]
 - [[#swiper][Swiper]]
@@ -265,9 +266,16 @@ Emacs configuration.
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-variable 'confirm-kill-emacs 'yes-or-no-p)
 
-;; Eliminate C-z sleep
-(global-unset-key [(control z)])
-(global-unset-key [(control x)(control z)])
+;; Eliminate C-z sleep in graphical mode
+(fset 'original-suspend-frame (symbol-definition 'suspend-frame))
+
+(defun my-suspend-frame ()
+  "A custom version of suspend frame that does nothing in graphical mode."
+  (if (displayt-graphic-p)
+      (message "Frame suspension is disabled in graphical mode.")
+    (original-frame-suspend)))
+
+(add-advice 'suspend-frame :override #'my-suspend-frame)
 
 ;; The following lines are always needed. Choose your own keys.
 (global-font-lock-mode t)
@@ -284,7 +292,14 @@ Emacs configuration.
 
 (defalias 'list-buffers 'ibuffer)
 
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups"))))
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups")))
+      ;; don't kill my hardlinks
+      backup-by-copying t
+      ;; Keep multiple versions for each file, but not too many
+      version-control t
+      delete-old-versions t
+      kept-new-versions 20
+      kept-old-versions 5)
 
 #+end_src
 
@@ -341,7 +356,16 @@ Packages are currently installed using use-package.
 (load custom-file t)
 
 #+end_src
+* Moody
+#+begin_src emacs-lisp
+(use-package moody
+  :config
+  (setq x-underline-at-descent-line t)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode)
+  (moody-replace-eldoc-minibuffer-message-function))
 
+#+end_src
 * Tramp
 #+begin_src emacs-lisp
 (setq tramp-default-method "ssh")
