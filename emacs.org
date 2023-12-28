@@ -54,6 +54,7 @@ Emacs configuration.
 - [[#haskell][Haskell]]
 - [[#nix][nix]]
 - [[#email---notmuch][email - notmuch]]
+- [[#gnus][GNUS]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
 - [[#gnupg---key-management][gnupg - Key management]]
@@ -170,9 +171,7 @@ Emacs configuration.
              (setq *pj/enable-mu4e-mode* t)
              (setq *pj/load-site-gentoo* t)
              (setq *pj/enable-auctex* t)
-             (defvar *pj/org-agenda-file
-
-               s* '("~/Nextcloud/org"))
+             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
              (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
              (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
              (setq *pj/font-size* "14")))
@@ -276,7 +275,7 @@ Emacs configuration.
 
 (defun my-suspend-frame ()
   "A custom version of suspend frame that does nothing in graphical mode."
-  (if (displayt-graphic-p)
+  (if (display-graphic-p)
       (message "Frame suspension is disabled in graphical mode.")
     (original-frame-suspend)))
 
@@ -362,6 +361,7 @@ Packages are currently installed using use-package.
 
 #+end_src
 * Moody
+Moody makes the mode line pretty:
 #+begin_src emacs-lisp
 (use-package moody
   :config
@@ -530,66 +530,75 @@ Packages are currently installed using use-package.
 #+end_src
 
 * Treesitter
+
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....treesitter
 ;;     ----------
-(setq treesit-language-source-alist
-      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-        (c "https://github.com/tree-sitter/tree-sitter-c")
-        (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-        (cmake "https://github.com/uyha/tree-sitter-cmake")
-        (css "https://github.com/tree-sitter/tree-sitter-css")
-        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-        (go "https://github.com/tree-sitter/tree-sitter-go")
-        (java "https://github.com/tree-sitter/tree-sitter-java")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-        (json "https://github.com/tree-sitter/tree-sitter-json")
-        (julia "https://github.com/tree-sitter/tree-sitter-julia")
-        (nix "https://github.com/nix-community/tree-sitter-nix")
-        (python "https://github.com/tree-sitter/tree-sitter-python")
-        (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        (rust "https://github.com/tree-sitter/tree-sitter-rust")
-        (toml "https://github.com/tree-sitter/tree-sitter-toml")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
-(setq treesit-load-name-override-list '((c++ "libtree-sitter-cpp")))
-
-;; Can install the above with:
-;; (dolist (lang treesit-language-source-alist)
-;;   (unless (treesit-language-available-p (car lang))
-;;     (treesit-install-language-grammar (car lang))))
-
-(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
-(add-to-list 'major-mode-remap-alist '(shell-script-mode . bash-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
-(add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
-(add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
-(add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
-(add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
-(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-(add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-
-(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-ts-mode))
-(add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.json\\'" . json-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-ts-mode))
-
+;;; Code:
 (use-package treesit-auto
+  :commands
+  (treesit-install-language-grammar pj/treesit-install-all-languages)
+  :init
+  (defvar treesit-language-source-alist
+      '((bash .("https://github.com/tree-sitter/tree-sitter-bash"))
+        (c . ("https://github.com/tree-sitter/tree-sitter-c"))
+        (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+        (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
+        (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+        (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
+        (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+        (java . ("https://github.com/tree-sitter/tree-sitter-java"))
+        (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
+        (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+        (julia .("https://github.com/tree-sitter/tree-sitter-julia"))
+        (nix . ("https://github.com/nix-community/tree-sitter-nix"))
+        (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+        (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
+        (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+        (toml . ("https://github.com/tree-sitter/tree-sitter-toml"))
+        (typescript .("https://github.com/tree-sitter/tree-sitter-typescript"
+                      "master"
+                      "typescript/src"))
+        (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+
+  (setq treesit-load-name-override-list '((c++ "libtree-sitter-cpp")))
+
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(shell-script-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+
+  (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-ts-mode))
+
   :custom
   (treesit-auto-install 'prompt)
   :config
-  (dolist (lang treesit-language-source-alist)
-    (unless (treesit-language-available-p (car lang))
-      (treesit-install-language-grammar (car lang)))))
+  (defun pj/treesit-install-all-languages ()
+    "Install all languages specified by `treeesit-language-source-alist'."
+    (interactive)
+    (let ((languages (mapcar 'car treesit-language-source-alist)))
+      (dolist (lang languages)
+        (unless (treesit-language-available-p lang)
+          (treesit-install-language-grammar lang)
+          (message "`%s' parser was installed." lang)
+          (sit-for 0.75))))))
+
 
 #+end_src
 * LSP mode
@@ -761,18 +770,19 @@ Not working, and not used currently...
 
 (use-package rustic
   :ensure
-  :bind (:map rustic-mode-map
-              ("M-j" . lsp-ui-imenu)
-              ("M-?" . lsp-find-references)
-              ("C-c C-c l" . flycheck-list-errors)
-              ("C-c C-c a" . lsp-execute-code-action)
-              ("C-c C-c r" . lsp-rename)
-              ("C-c C-c q" . lsp-workspace-restart)
-              ("C-c C-c Q" . lsp-workspace-shutdown)
-              ("C-c C-c s" . lsp-rust-analyzer-status)
-              ("C-c C-c e" . lsp-rust-analyzer-expand-macro)
-              ("C-c C-c d" . dap-hydra)
-              ("C-c C-c h" . lsp-ui-doc-glance))
+  :mode ("\\.rs\\'" . rustic-mode)
+  ;; :bind (:map rustic-mode-map
+  ;;             ("M-j" . lsp-ui-imenu)
+  ;;             ("M-?" . lsp-find-references)
+  ;;             ("C-c C-c l" . flycheck-list-errors)
+  ;;             ("C-c C-c a" . lsp-execute-code-action)
+  ;;             ("C-c C-c r" . lsp-rename)
+  ;;             ("C-c C-c q" . lsp-workspace-restart)
+  ;;             ("C-c C-c Q" . lsp-workspace-shutdown)
+  ;;             ("C-c C-c s" . lsp-rust-analyzer-status)
+  ;;             ("C-c C-c e" . lsp-rust-analyzer-expand-macro)
+  ;;             ("C-c C-c d" . dap-hydra)
+  ;;             ("C-c C-c h" . lsp-ui-doc-glance))
   :config
   ;; uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
@@ -825,14 +835,22 @@ Not working, and not used currently...
 
 
 #+end_src
+
+#+results:
+
 * yasnippet
-#+begin_src 
+#+begin_src emacs-lisp
 (use-package yasnippet
   :ensure
+  :bind
+  (:map yas-minor-mode-map
+        ("C-TAB" . yas-expand)
+        ([(tab)] . nil)
+        ("TAB" . nil))
   :config
   (yas-reload-all)
-  (add-hook 'prog-mode-hook 'yas-minor-mode)
-  (add-hook 'text-mode-hook 'yas-minor-mode))
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  (add-hook 'text-mode-hook #'yas-minor-mode))
 #+end_src
 
 
@@ -848,6 +866,7 @@ Not working, and not used currently...
 #+end_src
 
 * Org-mode
+
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....org mode
@@ -876,6 +895,18 @@ Not working, and not used currently...
 ;;  (eval-after-load "org" (add-to-list 'org-modules 'org-habit))
 ;;  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
   (global-set-key (kbd "C-c w") 'org-refile)
+
+
+;; Resolving conflict between org-mode and yasnippet
+;; (defun yas/org-very-safe-expand ()
+;;   (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
+
+;; (add-hook 'org-mode-hook
+;;           (lambda ()
+;;             (make-variable-buffer-local 'yas/trigger-key)
+;;             (setq yas/trigger-key [tab])
+;;             (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+;;             (define-key yas/keymap [tab] 'yas/next-field)))
 
 #+end_src
 
@@ -1179,7 +1210,6 @@ I haven't used this yet, so there may be some issues.
 #+end_src
 
 * Javascript and HTML
-
 Disabling js2 mode. I don't program in javascript at the moment, and I
 want to get other stuff working first.
 #+begin_src emacs-lisp :tangle no
@@ -1228,8 +1258,8 @@ want to get other stuff working first.
         ("C->" . company-select-last))
 
   (:map company-mode-map
-        ("<tab>" . tab-indent-or-complete)
-        ("TAB" . tab-indent-or-complete)))
+        ("M-<tab>" . tab-indent-or-complete)
+        ("M-TAB" . tab-indent-or-complete)))
 
 (defun company-yasnippet-or-completion ()
   (interactive)
@@ -1252,7 +1282,7 @@ want to get other stuff working first.
   (interactive)
   (if (minibufferp)
       (minibuffer-complete)
-    (if (or (not yas/minor-mode)
+    (if (or (not yas-minor-mode)
             (null (do-yas-expand)))
         (if (check-expansion)
             (company-complete-common)
@@ -1620,6 +1650,11 @@ quicklisp leads to the following:
 
 #+end_src
 
+* GNUS
+#+begin_src emacs-lisp
+;; Not yet configured
+
+#+end_src
 * org-caldav
 Still under development
 
