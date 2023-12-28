@@ -1051,22 +1051,6 @@ TODO: Refactor my-org-mode.el file completely.
   ;;.....org mode
   ;;     --------
 
-  (require 'org)
-  ;;  (require 'org-contribdir)
-  (require 'org-agenda)
-  (require 'org-clock)
-  (require 'org-archive)
-  ;;  (require 'org-checklist)
-  (require 'org-crypt)
-  (require 'org-protocol)
-  (require 'ido)
-  (require 'org-id)
-  ;;  (require 'bbdb-com)
-  (require 'ox-html)
-  (require 'ox-latex)
-  (require 'ox-ascii)
-  (require 'org-tempo)
-
   (setq org-agenda-files *pj/org-agenda-files*)
   (load "~/.emacs.d/lisp/my-org-mode.el")
 
