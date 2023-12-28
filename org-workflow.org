@@ -455,19 +455,13 @@ Switch projects and subprojects from NEXT back to TODO"
 If no task is selected set the Organization task as the default task."
   (interactive "p")
   (setq *pj/keep-clock-running* t)
-  (if (equal major-mode 'org-agenda-mode)
-      ;;
-      ;; We're in the agenda
-      ;;
+  (if (equal major-mode 'org-agenda-mode) ;;.....We're in the agenda
       (let* ((marker (org-get-at-bol 'd-marker))
              (tags (org-with-point-at marker (org-get-tags))))
         (if (and (eq arg 4) tags)
             (org-agenda-clock-in '(16))
           (pj/clock-in-organisation-task-as-default)))
-    ;;
-    ;; We are not in the agenda
-    ;;
-    (save-restriction
+    (save-restriction                   ; we are not in the agenda
       (widen)
                                         ; Find the tags on the current task
       (if (and (equal major-mode 'org-mode) (not (org-before-first-heading-p))
