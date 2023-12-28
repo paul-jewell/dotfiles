@@ -3,7 +3,7 @@
 
 Emacs configuration.
 
-* table of contents                                                 :toc:
+* table of contents                                                     :toc:
 :PROPERTIES:
 :TOC: :include all :ignore this
 :END:
@@ -11,11 +11,16 @@ Emacs configuration.
 - [[#preamble][Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
+- [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
+  - [[#initial-settings][Initial settings]]
+  - [[#eliminate-c-z-sleep-in-graphical-mode][Eliminate C-z sleep in graphical mode]]
+  - [[#other-settings-for-appearance-and-layout][Other settings for appearance and layout]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
-- [[#moody][Moody]]
+- [[#doom-modeline][Doom modeline]]
 - [[#tramp][Tramp]]
+- [[#completion-frameworks][Completion Frameworks]]
 - [[#ivy][Ivy]]
 - [[#swiper][Swiper]]
 - [[#which-key][Which-key]]
@@ -33,7 +38,6 @@ Emacs configuration.
 - [[#org-mode][Org-mode]]
 - [[#org-bullet-mode][Org Bullet mode]]
 - [[#org-roam][Org-roam]]
-- [[#licence-boilerplate][Licence Boilerplate]]
 - [[#auctex][Auctex]]
 - [[#reftex][Reftex]]
 - [[#hydra][Hydra]]
@@ -43,7 +47,6 @@ Emacs configuration.
 - [[#flycheck][Flycheck]]
 - [[#all-the-icons][All the icons]]
 - [[#themes][Themes]]
-- [[#eyebrowse][eyebrowse]]
 - [[#projectile][Projectile]]
 - [[#diminish][Diminish]]
 - [[#paredit][Paredit]]
@@ -64,7 +67,12 @@ Emacs configuration.
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 
 * Early init file
-#+begin_src emacs-lisp :mkdirp t :tangle ./.emacs.d/early-init.el
+Currently, it seems that having an early-init.el file is no longer
+necessary, since the only use I had for it is to ensure that the
+configuration worked for emacs versions before and after 27. I leave
+this here, but no longer tangle it, so the file can be removed from ~/.emacs.d/
+
+#+begin_src emacs-lisp :mkdirp t :tangle no ./.emacs.d/early-init.el
 ;;; -*-buffer-read-only: t;-*- 
 ;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
 ;;; Commentary:
@@ -72,12 +80,10 @@ Emacs configuration.
 
 ;;; Code:
 
-(if (> emacs-major-version 27)
-    (setq package-enable-at-startup nil))
-
 #+end_src
 * Preamble
-
+- Make the tangled file read only if loaded into emacs. Hopefully it
+  will be enough to ensure this file remains the primary truth!
 #+begin_src emacs-lisp
 ;;-*- buffer-read-only: t; lexical-binding: t; -*-
 
@@ -89,7 +95,7 @@ Emacs configuration.
 ;; This file is generated from ~/dotfiles/emacs.org and tangled. Changes should
 ;; be made to that file; also for more information - see details there.
 ;;
-;; (c) 2017 - 2021 Paul Jewell
+;; (c) 2017 - 2024 Paul Jewell
 ;; Contributions from many sources, including:
 ;; - David Wilson
 ;; - bbatsov
@@ -102,7 +108,21 @@ Emacs configuration.
 * Startup Performance
 
 #+begin_src emacs-lisp
-;; The default is 800 kb. Measured in bytes.
+
+;;---------------------------------------------------------------------------------
+;; Source: https://github.com/gopar/.emacs.d
+;; Interesting, well configured setup, so borrowing some items from there.
+
+;; recommended to have this at the top.
+
+(setq treesit-extra-load-path `(,(concat user-emacs-directory "var/tree-sitter-dist/")
+                                ,(concat user-emacs-directory "treesitter")))
+
+(setq load-prefer-newer t) ;; Loads the newest version of a file .el or .elc
+;;---------------------------------------------------------------------------------
+
+;; The default is 800 kb. Measured in bytes, so this is 50Mb.
+;; Memory on my machines > 8Gb, so no issue.
 (setq gc-cons-threshold (* 50 1000 1000))
 
 ;; profile emacs startup
@@ -118,133 +138,124 @@ Emacs configuration.
 #+end_src
 
 * Machine specific code, and package initialisation
-
+The following settings are configured depending on which machine and
+which operating system is running:
+- Whether or not to enable mu4e.
+  It doesn't play well on windows
+- Whether or not to load the gentoo-site-file
+  Clearly only appropriate on gentoo systems. Since I use use-package
+  to load modules, the content of this file is quite limited.
+- enable auctex I had issues while working with this, again on windows
+  and they need resolving. TODO: Part of the refactoring activity I am
+  working on will resolve the issues and enable it to be loaded in all
+  systems.
+- Set the fontsize
+  With different resolution monitors, I wanted to be able to set this
+  at the system level.
 #+begin_src emacs-lisp
-       ;; Load machine local definitions
+;; Load machine local definitions
 
-       (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
-       (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
-       (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
-       (defvar *pj/font-size*        "14"  "Fontsize for this system.")
+;; Variables requiring system level configuration
+(defvar *pj/enable-mu4e-mode* t     "Enable mu4e mode.")
+(defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
+(defvar *pj/enable-auctex*    t     "Enable auctex mode.")
+(defvar *pj/font-size*        "14"  "Fontsize for this system.")
 
-       (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
-       (defun pj/is-windows-p ()
-         "True if run in windows environment."
-         (string= "windows-nt" system-type))
-
-       (defun pj/is-linux-p ()
-         "True if run in linux environment."
-         (string= "gnu/linux" system-type))
-
-       (defun pj/is-host-p (name)
-         "True if running on system NAME."
-         (string= (system-name) name))
-
-       ;; Three possibilities for specifying values:
-
-       ;; - Globally, for all systems
-       ;; - By operating system
-       ;; - By system name
-
-       (cond
-        ((pj/is-linux-p)
-         (cond
-          ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-           (progn
-             (require 'gnutls)
-             (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-             (setq *pj/enable-mu4e-mode* t)
-             (setq *pj/load-site-gentoo* nil)
-             (setq *pj/enable-auctex* t)
-
-             ;; define the location of the orgmode code - currently using the built in version.
-             ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-             ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
-             (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "12")))
-          ;; tristan now has a 4K screen, so need to pull out the settings
-          ((string-prefix-p "tristan" (system-name))
-           (progn
-             (setq *pj/enable-mu4e-mode* t)
-             (setq *pj/load-site-gentoo* t)
-             (setq *pj/enable-auctex* t)
-             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "14")))
-          ((string-prefix-p "gandalf" (system-name))
-           (progn
-             (setq *pj/enable-mu4e-mode* nil)
-             (setq *pj/load-site-gentoo* nil)
-             (setq *pj/enable-auctex* t)
-             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "14")))
-          ((string-prefix-p "isolde" (system-name))
-           (progn
-             (setq *pj/enable-mu4e-mode* nil)
-             (setq *pj/load-site-gentoo* nil)
-             (setq *pj/enable-auctex* t)
-             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "14")))
-          (t (progn
-               (setq *pj/enable-mu4e-mode* nil)
-               (setq *pj/load-site-gentoo* t)
-               (setq *pj/enable-auctex* t)
-               (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-               (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-               (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
-        ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
-         (progn
-           (setq *pj/enable-mu4e-mode* nil)
-           (setq *pj/load-site-gentoo* nil)
-           (setq *pj/enable-auctex* nil)
-           (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
-           (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-           (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+(defvar *pj/org-agenda-files* '("~/Nextcloud/org") "Location of org agenda files.")
+(defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/" "Location of org-roam files.")
+(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
 
 
-           :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-           (setq *pj/font-size* "10")))
-        (t
-         (error "Undefined system-type %s" system-type)))
+(defun pj/is-windows-p ()
+  "True if run in windows environment."
+  (string= "windows-nt" system-type))
 
-       (defvar *packages-initialised* nil)
+(defun pj/is-linux-p ()
+  "True if run in linux environment."
+  (string= "gnu/linux" system-type))
 
-       (defun initialise-packages ()
-         "Ensure `package-initialize' is called only once."
-         (unless *packages-initialised*
-           (package-initialize)
-           (setq *packages-initialised* t)))
+(defun pj/is-host-p (name)
+  "True if running on system NAME."
+  (string= (system-name) name))
 
-      (initialise-packages)
+;; Three possibilities for specifying values:
+
+;; - Globally, for all systems
+;; - By operating system
+;; - By system name
+
+(cond
+ ((pj/is-linux-p)
+  (cond
+   ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+    (progn
+      (require 'gnutls)
+      ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
+      ;; with the Debian installation in place when WSL was first installed. Also, if
+      ;; the latest version of Emacs is loaded, this should not be a problem.
+      (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+      (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+      (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+      (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+      (setq *pj/font-size* "12")))
+   ;; tristan now has a 4K screen, so need to pull out the settings
+    ((string-prefix-p "tristan" (system-name))
+     (progn
+       (setq *pj/load-site-gentoo* t)
+       (setq *pj/font-size* "14")))
+    ((string-prefix-p "gandalf" (system-name))
+     (progn
+       (setq *pj/enable-mu4e-mode* nil)
+       (setq *pj/font-size* "14")))
+    ((string-prefix-p "isolde" (system-name))
+     (progn
+       (setq *pj/enable-mu4e-mode* nil)
+       (setq *pj/font-size* "14")))
+    (t (progn
+         (setq *pj/enable-mu4e-mode* nil)
+         (setq *pj/load-site-gentoo* t)))))
+ ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+   (progn
+     (setq *pj/enable-mu4e-mode* nil)
+     (setq *pj/enable-auctex* nil)
+     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+     (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+     :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+     (setq *pj/font-size* "10")))
+  (t
+   (error "Undefined system-type %s" system-type)))
+
+ (defvar *packages-initialised* nil)
+
+ (defun initialise-packages ()
+   "Ensure `package-initialize' is called only once."
+   (unless *packages-initialised*
+     (package-initialize)
+     (setq *packages-initialised* t)))
+
+(initialise-packages)
 
 #+end_src
 
 #+begin_src emacs-lisp
-;; To load external version of org-mode, clone the code from git:
-;; - cd <directory below which you want the org code>
-;; - git clone https://code.orgmode.org/bzg/org-mode.git
-;; - cd org-mode
-;; - make autoloads # creates org-loaddefs.el in the lisp directory
-
-;; Using the built in version of orgmode - no need to use the git version...
-;;;(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
-;;;(use-package org)
-
 (defvar init-dir) ;; Initial directory for emacs configuration
 (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
 
 #+end_src
 
-* General configuration
+* Dashboard
+#+begin_src emacs-lisp
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-items '((recents . 20) (bookmarks . 20)))
+  (setq recentf-exclude '("bookmarks")))
 
+#+end_src
+* General configuration
+** Initial settings
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....General configuration
@@ -270,33 +281,56 @@ Emacs configuration.
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-variable 'confirm-kill-emacs 'yes-or-no-p)
 
-;; Eliminate C-z sleep in graphical mode
+#+end_src
+
+** Eliminate C-z sleep in graphical mode
+When running emacs in a terminal, it is useful to be able to suspend with C-z
+but in graphical mode it causes havoc. This code checks the mode and enables/disables
+C-z as appropriate.
+
+#+begin_src emacs-lisp
 (fset 'original-suspend-frame (symbol-function 'suspend-frame))
 
 (defun my-suspend-frame ()
   "A custom version of suspend frame that does nothing in graphical mode."
   (if (display-graphic-p)
       (message "Frame suspension is disabled in graphical mode.")
-    (original-frame-suspend)))
+    (original-suspend-frame)))
 
 (advice-add 'suspend-frame :override #'my-suspend-frame)
 
-;; The following lines are always needed. Choose your own keys.
+#+end_src
+
+** Other settings for appearance and layout
+
+#+begin_src emacs-lisp
+
+
+;; global-font-lock-mode enables font-lock-mode (syntax highlighting)
+;; when the current major mode supports it.
 (global-font-lock-mode t)
+;; Goto line number. You can display the line numbers in the margin
+;; of the buffer with M-x display-line-numbers-mode
 (global-set-key "\C-x\C-l" 'goto-line)
+;; Copy the marked region to the kill ring
 (global-set-key "\C-x\C-y" 'copy-region-as-kill)
 
 ;; Remove the tool-bar from the top
 (tool-bar-mode -1)
-;; (menu-bar-mode -1)
+;; Currently not disabled - it is good to see the menu options available for the
+;; different modes. I may disable it in the future if I feel I know the available
+;; options well enough.
+;; (menu-bar-mode -1) 
 (scroll-bar-mode -1)
 
 ;; Full path in title bar
 (setq-default frame-title-format "%b (%f)")
 
+;; Easier to remember list-buffers...
 (defalias 'list-buffers 'ibuffer)
 
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups")))
+;; Backup management
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       ;; don't kill my hardlinks
       backup-by-copying t
       ;; Keep multiple versions for each file, but not too many
@@ -308,17 +342,12 @@ Emacs configuration.
 #+end_src
 
 * Package Management
-Packages are currently installed using use-package.
+Packages are currently installed using use-package. 
 
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Package management
 ;;     ------------------
-
-(require 'gnutls)
-
-(defvar pj/python)
-(setq pj/python (executable-find "python"))
 
 ;; Add marmalade to package repos
 (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
@@ -332,7 +361,7 @@ Packages are currently installed using use-package.
              (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
   (package-refresh-contents))
 
-;; Initialise use-package on non-guix systems.
+;; Initialise use-package on non-guix/non-nix systems.
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (require 'use-package)
@@ -353,6 +382,7 @@ Packages are currently installed using use-package.
 (use-package no-littering)
 
 ;; Keep customization settings in a temporary file (thanks Ambrevar!)
+;; This means customisations won't persist after a reboot...
 (setq custom-file
       (if (boundp 'server-socket-dir)
           (expand-file-name "custom.el" server-socket-dir)
@@ -360,26 +390,147 @@ Packages are currently installed using use-package.
 (load custom-file t)
 
 #+end_src
-* Moody
-Moody makes the mode line pretty:
+* Doom modeline
+Better UI for modeline.
+Need to install fonts first by doing this:
+#+begin_example
+M-x all-the-icons-install-fonts
+#+end_example
+
 #+begin_src emacs-lisp
-(use-package moody
-  :config
-  (setq x-underline-at-descent-line t)
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode)
-  (moody-replace-eldoc-minibuffer-message-function))
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :config (column-number-mode 1)
+  :custom
+  (doom-modeline-height 30)
+  (doom-modeline-window-width-limit nil)
+  (doom-modeline-buffer-file-name-style 'truncate-with-project)
+  (doom-modeline-minor-modes nil)
+  (doom-modeline-enable-word-count t)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-buffer-modification-icon t)
+  (doom-modeline-env-python-executable "python")
+  ;; Requires display-time-mode to be 1
+  (doom-modeline-time t)
+  (doom-modeline-vcs-max-length 50))
 
 #+end_src
+
+
+
 * Tramp
+ssh connection to other machines.
 #+begin_src emacs-lisp
 (setq tramp-default-method "ssh")
 ;; Ensure paths are correct for editing files on guix systems (thanks @janneke)
 (with-eval-after-load 'tramp-sh (push 'tramp-own-remote-path tramp-remote-path))
 #+end_src
 
-* Ivy
+* Completion Frameworks
 #+begin_src emacs-lisp
+
+(use-package vertico
+  :init
+  (vertico-mode +1))
+
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (stules partial-completion)))))
+
+                                        ; Persist history over Emacs restarts. Vertico sorts by history position
+(use-package savehist
+  :init
+  (savehist-mode))
+
+(use-package marginalia
+  :config (marginalia-mode))
+
+(use-package consult
+  :bind
+  (("M-y" . 'consult-yank-from-kill-ring)
+   ("C-x b" . 'consult-buffer)))
+
+(recentf-mode)
+(setq completion-ignore-case t)
+(setq read-file-name-completion-ignore-case t)
+
+(use-package corfu
+  ;; Optional customizations
+  :custom
+  (corfu-cycle t)                 ; Allows cycling through candidates
+  (corfu-auto t)                  ; Enable auto completion
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.0)
+  (corfu-echo-documentation 0.25) ; Enable documentation for completions
+  (corfu-preview-current 'insert) ; Do not preview current candidate
+  (corfu-preselect-first nil)
+  (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
+
+  ;; Optionally use TAB for cycling, default is `corfu-complete'.
+  :bind (:map corfu-map
+              ("M-SPC" . corfu-insert-separator)
+              ("TAB"     . corfu-next)
+              ([tab]     . corfu-next)
+              ("S-TAB"   . corfu-previous)
+              ([backtab] . corfu-previous)
+              ("S-<return>" . corfu-insert)
+              ("RET"     . nil) ;; leave my enter alone!
+              )
+
+  :init
+  (global-corfu-mode)
+  ;;(corfu-history-mode)
+
+  :config
+  (setq tab-always-indent 'complete)
+  (add-hook 'eshell-mode-hook
+            (lambda () (setq-local corfu-quit-at-boundary t
+                                   corfu-quit-no-match t
+                                   corfu-auto nil)
+              (corfu-mode))))
+
+
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  
+  :init
+  
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  
+  :config
+  
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :demand t ; only necessary if you have the hook below
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+
+#+end_src
+
+* Ivy
+Completion Framework - currently disabled in favour of vertico etc
+above. I will remove this after a few weeks with vertico et al. if it
+works out OK.
+#+begin_src emacs-lisp :tangle no
 ;;==============================================================================
 ;;.....Ivy
 ;;     ---
@@ -441,7 +592,8 @@ Moody makes the mode line pretty:
 #+end_src
 
 * Swiper
-#+begin_src emacs-lisp
+Also currently disabled in favour of vertico et al.
+#+begin_src emacs-lisp :tangle no
   ;;==============================================================================
   ;;.....Swiper
   ;;     ------
@@ -478,6 +630,8 @@ Moody makes the mode line pretty:
 #+end_src
 
 * Which-key
+Show the key sequences available from the current command key after a
+small delay.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....which-key
@@ -511,6 +665,7 @@ Moody makes the mode line pretty:
 #+end_src
 
 * Ledger
+CLI accounting, as it should be.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ledger
@@ -530,7 +685,9 @@ Moody makes the mode line pretty:
 #+end_src
 
 * Treesitter
-
+Still learning about this, so this is quite fluid. Honestly, I wish
+this worked like it does in neovim, or rather, I wish I knew how to
+configure it accordingly!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....treesitter
@@ -602,6 +759,8 @@ Moody makes the mode line pretty:
 
 #+end_src
 * LSP mode
+As above... lsp-mode is currently setup for rust below. TODO: Generic
+lsp-mode setup for the languages I use.
 #+begin_src emacs-lisp
 ;; (use-package lsp-mode
 ;;   :init
@@ -613,6 +772,7 @@ Moody makes the mode line pretty:
 
 #+end_src
 * Go
+Not currently using go, so not sure if this is complete or not.
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....go
@@ -627,7 +787,7 @@ Moody makes the mode line pretty:
 
 * Python
 
-Not working, and not used currently...
+TODO: Not working, and not used currently...
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Python
@@ -651,21 +811,22 @@ Not working, and not used currently...
 #+end_src
 
 * SQL
+Set up when I was doing stuff with mysql. Currently dormant...
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....SQL
 ;;     ---
-
 
 (require 'sql)
 
 (eval-after-load "sql"
   '(progn (sql-set-product 'mysql)))
 
-
 #+end_src
 
 * C++
+I haven't used this in anger recently, so I am not sure if it
+works. TODO: Needs to be revisited.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....c++
@@ -754,6 +915,8 @@ Not working, and not used currently...
 
 
 * Rust
+Started learning rust. This config snippet is copied from elsewhere,
+but seems to work at the moment. TODO: Improve further.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....rust
@@ -839,12 +1002,13 @@ Not working, and not used currently...
 #+results:
 
 * yasnippet
+Snippet management. TODO: Proper setup
 #+begin_src emacs-lisp
 (use-package yasnippet
   :ensure
   :bind
   (:map yas-minor-mode-map
-        ("C-TAB" . yas-expand)
+        ("C-c y" . yas-expand)
         ([(tab)] . nil)
         ("TAB" . nil))
   :config
@@ -853,6 +1017,7 @@ Not working, and not used currently...
   (add-hook 'text-mode-hook #'yas-minor-mode))
 #+end_src
 
+#+results:
 
 * Multiple Cursors
 #+begin_src emacs-lisp
@@ -866,12 +1031,12 @@ Not working, and not used currently...
 #+end_src
 
 * Org-mode
-
+TODO: Move this all into the my-org-mode.el file, and load it here.
+TODO: Refactor my-org-mode.el file completely.
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....org mode
   ;;     --------
-
 
   (require 'org)
   ;;  (require 'org-contribdir)
@@ -911,6 +1076,7 @@ Not working, and not used currently...
 #+end_src
 
 * Org Bullet mode
+Pretty bullets
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org bullet mode
@@ -920,8 +1086,8 @@ Not working, and not used currently...
   :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
 #+end_src
-
 * Org-roam
+Note taking on steroids. Need to learn how to use it properly.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org roam mode
@@ -970,83 +1136,9 @@ Not working, and not used currently...
 
 #+end_src
 
-* Licence Boilerplate
-
-I set this up a long time ago, before I knew emacs-lisp. 
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....GPL3 File header boilerplate
-;;     ----------------------------
-
-(defun boilerplate-gpl3 ()
-  "Insert boilerplate for c/c++ file with GPLv3 license."
-        (interactive)
-        (insert "
-/********************************************************************************
- ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- ,*                                                                              *
- ,* This program is free software: you can redistribute it and/or modify         *
- ,* it under the terms of the GNU General Public License as published by         *
- ,* the Free Software Foundation, either version 3 of the License, or            *
- ,* (at your option) any later version.                                          *
- ,*                                                                              *
- ,* This program is distributed in the hope that it will be useful,              *
- ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- ,* GNU General Public License for more details.                                 *
- ,*                                                                              *
- ,* You should have received a copy of the GNU General Public License            *
- ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ,********************************************************************************/
-"))
-
-(defun boilerplate-lgpl3 ()
-  "Insert boilerplate for c/c++ file with LGPLv3 license."
-        (interactive)
-        (insert "
-/********************************************************************************
- ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- ,*                                                                              *
- ,* This program is free software: you can redistribute it and/or modify         *
- ,* it under the terms of the GNU Lesser General Public License as published by  *
- ,* the Free Software Foundation, either version 3 of the License, or            *
- ,* (at your option) any later version.                                          *
- ,*                                                                              *
- ,* This program is distributed in the hope that it will be useful,              *
- ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- ,* GNU Lesser General Public License for more details.                          *
- ,*                                                                              *
- ,* You should have received a copy of the GNU Lesser General Public License     *
- ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ,********************************************************************************/
-"))
-
-(defun boilerplate-agpl3 ()
-  "Insert boilerplate for c/c++ file with AGPLv3 license."
-        (interactive)
-        (insert "
-/********************************************************************************
- ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- ,*                                                                              *
- ,* This program is free software: you can redistribute it and/or modify         *
- ,* it under the terms of the GNU Affero General Public License as published by  *
- ,* the Free Software Foundation, either version 3 of the License, or            *
- ,* (at your option) any later version.                                          *
- ,*                                                                              *
- ,* This program is distributed in the hope that it will be useful,              *
- ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- ,* GNU Affero General Public License for more details.                          *
- ,*                                                                              *
- ,* You should have received a copy of the GNU Affero General Public License     *
- ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ,********************************************************************************/
-"))
-
-#+end_src
-
 * Auctex
+TODO: Check the function of this. I want to write my book, and this
+will be usefull for managing references.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....auctex
@@ -1079,10 +1171,9 @@ I set this up a long time ago, before I knew emacs-lisp.
 
 
 #+end_src
-
 * Reftex
 I haven't used this yet, so there may be some issues.
-
+TODO: Sort this out!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....reftex
@@ -1122,8 +1213,8 @@ I haven't used this yet, so there may be some issues.
 
 
 #+end_src
-
 * Hydra
+Useful key programming. 
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....hydra
@@ -1143,11 +1234,12 @@ I haven't used this yet, so there may be some issues.
 	  ("t" toggle-truncate-lines "truncate")
 	  ("w" whitespace-mode "whitespace")
 	  ("q" nil "cancel"))))
+
 (global-set-key
  (kbd "C-x j")
  (defhydra gotoline 
-   (:pre (linum-mode 1)
-	      :post (linum-mode -1))
+   (:pre (display-line-numbers-mode t)
+	      :post (display-line-numbers-mode nil))
    "goto"
    ("t" (move-to-window-line-top-bottom 0) "top")
    ("b" (move-to-window-line-top-bottom -2) "bottom")
@@ -1156,48 +1248,7 @@ I haven't used this yet, so there may be some issues.
    ("c" recenter-top-bottom "recenter")
    ("n" next-line "down")
    ("p" (lambda () (interactive) (forward-line -1))  "up")
-   ("g" goto-line "goto-line")
-   ))
-    ;;    (global-set-key
-;;     (kbd "C-c t")
-;;     (defhydra hydra-global-org (:color blue)
-;;       "Org"
-;;       ("t" org-timer-start "Start Timer")
-;;       ("s" org-timer-stop "Stop Timer")
-;;       ("r" org-timer-set-timer "Set Timer") ; This one requires you be in an orgmode doc, as it sets the timer for the header
-;;       ("p" org-timer "Print Timer") ; output timer value to buffer
-;;       ("w" (org-clock-in '(4)) "Clock-In") ; used with (org-clock-persistence-insinuate) (setq org-clock-persist t)
-;;       ("o" org-clock-out "Clock-Out") ; you might also want (setq org-log-note-clock-out t)
-;;       ("j" org-clock-goto "Clock Goto") ; global visit the clocked task
-;;       ("c" org-capture "Capture") ; Don't forget to define the captures you want http://orgmode.org/manual/Capture.html
-;;     ("l" (or )rg-capture-goto-last-stored "Last Capture"))
-    
-    
-
-;; (defhydra multiple-cursors-hydra (:hint nil)
-;;   "
-;;      ^Up^            ^Down^        ^Other^
-;; ----------------------------------------------
-;; [_p_]   Next    [_n_]   Next    [_l_] Edit lines
-;; [_P_]   Skip    [_N_]   Skip    [_a_] Mark all
-;; [_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp
-;; ^ ^             ^ ^             [_q_] Quit
-;; "
-;;   ("l" mc/edit-lines :exit t)
-;;   ("a" mc/mark-all-like-this :exit t)
-;;   ("n" mc/mark-next-like-this)
-;;   ("N" mc/skip-to-next-like-this)
-;;   ("M-n" mc/unmark-next-like-this)
-;;   ("p" mc/mark-previous-like-this)
-;;   ("P" mc/skip-to-previous-like-this)
-;;   ("M-p" mc/unmark-previous-like-this)
-;;   ("r" mc/mark-all-in-region-regexp :exit t)
-;;   ("q" nil)
-
-;;   ("<mouse-1>" mc/add-cursor-on-click)
-;;   ("<down-mouse-1>" ignore)
-;;   ("<drag-mouse-1>" ignore))
-
+   ("g" goto-line "goto-line")))
 
 ;; font zoom mode example taken from hydra wiki
 (defhydra hydra-zoom (global-map "<f2>")
@@ -1208,8 +1259,8 @@ I haven't used this yet, so there may be some issues.
   ("q" nil "quit" :color blue))
 
 #+end_src
-
 * Javascript and HTML
+TODO: Setup javascript mode
 Disabling js2 mode. I don't program in javascript at the moment, and I
 want to get other stuff working first.
 #+begin_src emacs-lisp :tangle no
@@ -1238,8 +1289,8 @@ want to get other stuff working first.
 ;; (use-package xref-js2)
 
 #+end_src
-
 * Company mode
+Text completion framework.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....company mode
@@ -1288,33 +1339,21 @@ want to get other stuff working first.
             (company-complete-common)
           (indent-for-tab-command)))))
 
-;; (use-package company-irony
+;; Move to python configuration block
+;; (use-package company-jedi
 ;;   :config
-;;   (add-to-list 'company-backends 'company-irony))
+;;   (add-hook 'python-mode-hook 'jedi:setup))
 
-;; (use-package irony
-;;   :config
-;;   (add-hook 'c++-mode-hook 'irony-mode)
-;;   (add-hook 'c-mode-hook 'irony-mode)
-;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+;; (defun my/python-mode-hook ()
+;;   "Python mode hook."
+;;   (add-to-list 'company-backends 'company-jedi))
 
-;; (use-package irony-eldoc
-;;   :config
-;;   (add-hook 'irony-mode-hook #'irony-eldoc))
-
-(use-package company-jedi
-  :config
-  (add-hook 'python-mode-hook 'jedi:setup))
-
-(defun my/python-mode-hook ()
-  "Python mode hook."
-  (add-to-list 'company-backends 'company-jedi))
-
-(add-hook 'python-mode-hook 'my/python-mode-hook)
+;; (add-hook 'python-mode-hook 'my/python-mode-hook)
 
 #+end_src
 
 * Magit
+git processing - the best.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....magit
@@ -1367,6 +1406,7 @@ Git gutter:
 #+end_src
 
 * Flycheck
+Not sure how this interfaces with lsp
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....flycheck
@@ -1399,41 +1439,33 @@ Git gutter:
 
 * Themes
 #+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....themes
-  ;;     ------
-
-  (use-package gruvbox-theme
-    :config
-    (load-theme 'gruvbox t))
-  ;; Font size is localised in site-local.el
-  (defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
-
-  ;; Font size setting for Emacs 27:
-  (set-face-attribute 'default nil :font my:font )
-  ;; (set-frame-font my:font nil t)
-
-  ;; Set font for frames running under emacs daemon
-  (add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
-#+end_src
-
-* eyebrowse
-
-#+begin_src emacs-lisp :tangle no
 ;;==============================================================================
-;;.....eyebrowse
-;;     ---------
+;;.....themes
+;;     ------
 
-;; TODO: currently disabled - clash with org-refile needs to be resolved.
-;;(use-package eyebrowse
-;;  :ensure r
-;;  :config
-;;;;  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-;;  (eyebrowse-mode t))
+(use-package doom-themes
+  :config
+  (doom-themes-org-config)
+  (doom-themes-visual-bell-config)
+  (load-theme 'doom-tokyo-night t))
 
+;; (use-package gruvbox-theme
+;;   :config
+;;   (load-theme 'gruvbox t))
+
+;; Font size is localised in site-local.el
+(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
+
+;; Font size setting for Emacs 27:
+(set-face-attribute 'default nil :font my:font )
+;; (set-frame-font my:font nil t)
+
+;; Set font for frames running under emacs daemon
+(add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
 #+end_src
 
 * Projectile
+Management at a project level, rather than just at file level.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Projectile
@@ -1442,20 +1474,17 @@ Git gutter:
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
+  :custom (setq projectile-completion-system 'ivy)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Projects")
-    (setq projectile-project-search-path '("~/Projects")))
+  (when (file-directory-p "~projects")
+    (setq projectile-project-search-path '("~/projects")))
   (setq projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
-
 #+end_src
 
 * Diminish
+Hide minor mode information from the mode line.
 #+begin_src emacs-lisp
 
 (use-package diminish
@@ -1464,6 +1493,9 @@ Git gutter:
 #+end_src
 
 * Paredit
+Beautiful editing in lisp modes! Never have a problem with unbalanced
+parentheses. Would be good if it worked with other languages...
+TODO: Find out if it does!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Paredit
@@ -1488,17 +1520,11 @@ Git gutter:
   :diminish paredit-everywhere-mode
   :config
   (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
-;;-------------
-;; (use-package highlight-parentheses
-;;   
-;;   :diminish highlight-parentheses-mode
-;;   :config
-;;   (add-hook 'emacs-lisp-mode-hook
-;;             (lambda()
-;;               (highlight-parentheses-mode))))
+
 #+end_src
 
 * Rainbow Delimiters
+Colour those delimiters, for easier comprehension.
 #+begin_src emacs-lisp
 
 (use-package rainbow-delimiters
@@ -1513,6 +1539,9 @@ Git gutter:
 #+end_src
 
 * Clojure
+My first experience of a functional language. Nice setup with cider,
+but I have since moved on to common lisp. I still like the functional
+rigour of clojure though!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Clojure
@@ -1539,21 +1568,7 @@ Git gutter:
          ("C-c ." . cider-reset-test-run-tests)))
 
 
-;; (use-package clj-refactor
-;;   
-;;   :config
-;;   (add-hook 'clojure-mode-hook (lambda ()
-;;                                  (clj-refactor-mode 1)
-;;                                  ;; insert keybinding setup here
-;;                                  ))
-;;   (cljr-add-keybindings-with-prefix "C-c C-m")
-;;   (setq cljr-warn-on-eval nil)
-;;   :bind ("C-c '" . hydra-cljr-help-menu/body)
-;;   )
-
-(use-package cider-hydra
-  :ensure t)
-
+(use-package cider-hydra)
 
 #+end_src
 
@@ -1623,6 +1638,10 @@ quicklisp leads to the following:
 #+end_src
 
 * Haskell
+Like this language as well, but it is still a big learning curve for
+me. Since I use xmonad/xmobar, I have more opportunity to learn
+haskell going forward. Also, learning rust means playing with monads
+without using the name!!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....haskell
@@ -1634,6 +1653,8 @@ quicklisp leads to the following:
 #+end_src
 
 * nix
+Nix, beautiful Nix. I tried guix, but found it challenging, but NixOS
+is wonderful.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....nix
@@ -1645,18 +1666,24 @@ quicklisp leads to the following:
 
 #+end_src
 * email - notmuch
+TODO: Persevere with notmuch - get good at sending emails, and sort out the tagging to improve
+the experience.
 #+begin_src scheme :noweb-ref packages: :noweb-sep "\n"
 (require 'notmuch)
 
 #+end_src
 
 * GNUS
+Watch John Wiegley using gnus - very impressive, so I want to explore further.
 #+begin_src emacs-lisp
 ;; Not yet configured
 
 #+end_src
 * org-caldav
-Still under development
+TODO: Still under development. First time I tried this, I wiped my
+calendars. Need to experiment with an empty calendar to prove it
+works, then take it from there. Website here:
+https://github.com/dengste/org-caldav
 
 #+begin_src emacs-lisp
 
@@ -1670,22 +1697,17 @@ Still under development
                          :inbox "~/Calendars/caldav-org-inbox.org")))
   (setq org-caldav-backup-file "~/org-caldav-backup.org")
   (setq org-caldav-save-directory "~/org-caldav/")
-  (setq org-icalendar-timezone "Europe/London")) 
-
-
-
-
+  (setq org-icalendar-timezone "Europe/London"))
 
 #+end_src
 
 * Helpful
 #+begin_src emacs-lisp
 ;;==============================================================================
-;;.....helpful
+;;.....helpful - improve the help documentation
 ;;     -------
 
 (use-package helpful
-  
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
@@ -1888,11 +1910,10 @@ Make table of contents when saving org-files.
   ;; enable in markdown as well
   (add-hook 'markdown-mode-hook 'toc-org-mode))
 
-
 #+end_src
 
 * ox-hugo
-Not yet set up. Website development with org and hugo.
+TODO: Not yet set up. Website development with org and hugo.
 
 #+begin_src emacs-lisp
 ;;==============================================================================
