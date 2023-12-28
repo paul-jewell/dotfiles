@@ -456,7 +456,8 @@ ssh connection to other machines.
 (use-package consult
   :bind
   (("M-y" . 'consult-yank-from-kill-ring)
-   ("C-x b" . 'consult-buffer)))
+   ("C-x b" . 'consult-buffer)
+   ("C-s" . 'consult-line)))
 
 (recentf-mode)
 (setq completion-ignore-case t)
