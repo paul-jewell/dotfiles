@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.emacs.d/init.el 
+#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.emacs.d/init.el
 
 Emacs configuration.
 
@@ -7,7 +7,7 @@ Emacs configuration.
 :PROPERTIES:
 :TOC: :include all :ignore this
 :END:
-- [[#early-init-file][Early init file]]
+- [[#early-init][Early Init]]
 - [[#preamble][Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
@@ -19,10 +19,9 @@ Emacs configuration.
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
 - [[#doom-modeline][Doom modeline]]
+- [[#treemacs][Treemacs]]
 - [[#tramp][Tramp]]
 - [[#completion-frameworks][Completion Frameworks]]
-- [[#ivy][Ivy]]
-- [[#swiper][Swiper]]
 - [[#which-key][Which-key]]
 - [[#ispell][ispell]]
 - [[#ledger][Ledger]]
@@ -42,9 +41,7 @@ Emacs configuration.
 - [[#reftex][Reftex]]
 - [[#hydra][Hydra]]
 - [[#javascript-and-html][Javascript and HTML]]
-- [[#company-mode][Company mode]]
 - [[#magit][Magit]]
-- [[#flycheck][Flycheck]]
 - [[#all-the-icons][All the icons]]
 - [[#themes][Themes]]
 - [[#projectile][Projectile]]
@@ -70,20 +67,16 @@ Emacs configuration.
 - [[#ox-hugo][ox-hugo]]
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 
-* Early init file
-Currently, it seems that having an early-init.el file is no longer
-necessary, since the only use I had for it is to ensure that the
-configuration worked for emacs versions before and after 27. I leave
-this here, but no longer tangle it, so the file can be removed from ~/.emacs.d/
-
-#+begin_src emacs-lisp :mkdirp t :tangle no ./.emacs.d/early-init.el
-;;; -*-buffer-read-only: t;-*- 
-;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
-;;; Commentary:
-;;; This file is tangled from ~/dotfiles/emacs.org. Any changes should be made there...
-
-;;; Code:
-
+* Early Init
+#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+(setq-default
+ package-native-compile t
+ default-frame-alist
+ '((tool-bar-lines . 0)
+;;   (menu-bar-lines . 0)
+   (undecorated . t)
+   (vertical-scroll-bars . nil)
+   (horizontal-scroll-bars . nil)))
 #+end_src
 * Preamble
 - Make the tangled file read only if loaded into emacs. Hopefully it
@@ -129,8 +122,8 @@ this here, but no longer tangle it, so the file can be removed from ~/.emacs.d/
 ;; Memory on my machines > 8Gb, so no issue.
 (setq gc-cons-threshold (* 50 1000 1000))
 
-;; profile emacs startup
 
+;; profile emacs startup
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "*** Emacs loaded in %s with %d garbage collections."
@@ -419,7 +412,15 @@ M-x all-the-icons-install-fonts
   (doom-modeline-vcs-max-length 50))
 
 #+end_src
-
+* Treemacs
+#+begin_src
+(use-package treemacs
+  :bind ("C-c t" . treemacs)
+  :custom
+  (treemacs-is-never-other-window t)
+  :hook
+  (treemacs-mode . treemacs-project-follow-mode))
+#+end_src
 
 
 * Tramp
@@ -433,188 +434,204 @@ ssh connection to other machines.
 * Completion Frameworks
 #+begin_src emacs-lisp
 
+;;; COMPLETION
 (use-package vertico
   :init
-  (vertico-mode +1))
+  ;; Enable vertico using the vertico-flat-mode
+  (require 'vertico-directory)
+  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
-(use-package orderless
-  :init
-  (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides '((file (stules partial-completion)))))
-
-                                        ; Persist history over Emacs restarts. Vertico sorts by history position
-(use-package savehist
-  :init
-  (savehist-mode))
-
-(use-package marginalia
-  :after vertico
-  :init
-  (marginalia-mode))
-
+  (use-package orderless
+    :commands (orderless)
+    :custom (completion-styles '(orderless flex)))
+  (use-package marginalia
+    :custom
+    (marginalia-annotators
+     '(marginalia-annotators-heavy marginalia-annotators-light nil))
+    :config
+    (marginalia-mode))
+  (vertico-mode t)
+  :config
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+;;;; Extra Completion Functions
 (use-package consult
+  :ensure t
+  :after vertico
+  :bind (("C-x b"       . consult-buffer)
+         ("C-x C-k C-k" . consult-kmacro)
+         ("M-y"         . consult-yank-pop)
+         ("M-g g"       . consult-goto-line)
+         ("M-g M-g"     . consult-goto-line)
+         ("M-g f"       . consult-flymake)
+         ("M-g i"       . consult-imenu)
+         ("M-s l"       . consult-line)
+         ("M-s L"       . consult-line-multi)
+         ("M-s u"       . consult-focus-lines)
+         ("M-s g"       . consult-ripgrep)
+         ("M-s M-g"     . consult-ripgrep)
+         ("C-x C-SPC"   . consult-global-mark)
+         ("C-x M-:"     . consult-complex-command)
+         ;; TODO: Identify new key chords for these two...
+         ;;         ("C-c n"       . consult-org-agenda)
+         ;;         ("C-c m"       . my/notegrep)
+         :map minibuffer-local-map
+         ("M-r" . consult-history))
+  :custom
+  (completion-in-region-function #'consult-completion-in-region)
+  :config
+  (defun my/notegrep ()
+    "Use interactive grepping to search my notes"
+    (interactive)
+    (consult-ripgrep org-directory))
+  (recentf-mode t))
+
+(use-package consult-dir
+  :ensure t
+  :bind (("C-x C-j" . consult-dir)
+         ;; :map minibuffer-local-completion-map
+         :map vertico-map
+         ("C-x C-j" . consult-dir)))
+
+(use-package consult-recoll
+  :ensure t
+  :bind (("M-s r" . consult-recoll))
+  :init
+  (setq consult-recoll-inline-snippets t)
+  :config
+  (defun recoll-index (&optional args)
+    "Start indexing deamon if there is not one running already.
+This way our searches are kept up to date"
+    (interactive)
+    (let ((recollindex-buffer "*RECOLLINDEX*"))
+      (unless (process-live-p (get-buffer-process (get-buffer recollindex-buffer)))
+        (make-process :name "recollindex"
+                      :buffer recollindex-buffer
+                      :command '("recollindex" "-m" "-D")))))
+  (eval-after-load 'consult-recoll
+    (recoll-index)))
+
+(use-package embark
   :bind
-  (("M-y" . 'consult-yank-from-kill-ring)
-   ("C-x b" . 'consult-buffer)
-   ("C-s" . 'consult-line)))
+  ;; pick some comfortable binding
+  (("C-="                     . embark-act)
+   ("C-<escape>"              . embark-act)
+   ([remap describe-bindings] . embark-bindings)
+   :map embark-file-map
+   ("C-d"                     . dragon-drop))
+  :custom
+  (embark-indicators
+   '(embark-highlight-indicator
+     embark-isearch-highlight-indicator
+     embark-minimal-indicator))
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  (setq embark-prompter 'embark-completing-read-prompter)
+  :config
+  (defun search-in-source-graph (text))
+  (defun dragon-drop (file)
+    (start-process-shell-command "dragon-drop" nil
+                                 (concat "dragon-drop " file)))
 
-(recentf-mode)
-(setq completion-ignore-case t)
-(setq read-file-name-completion-ignore-case t)
+  ;; Preview any command with M-.
+  (define-key minibuffer-local-map (kbd "M-.") #'my-embark-preview)
+  (defun my-embark-preview ()
+    "Previews candidate in vertico buffer, unless it's a consult command"
+    (interactive)
+    (unless (bound-and-true-p consult--preview-function)
+      (save-selected-window
+        (let ((embark-quit-after-action nil))
+          (embark-dwim))))))
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :after (:all embark consult)
+  :demand t
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+;; For uploading files
+(use-package 0x0
+  :after embark
+  :bind (
+         :map embark-file-map
+         ("U"    . 0x0-upload-file)
+         :map embark-region-map
+         ("U"    . 0x0-dwim))
+  :commands (0x0-dwim 0x0-upload-file))
 
+;;;; Code Completion
 (use-package corfu
+  ;; Optional customizations
+  :custom
+  (corfu-cycle t)                 ; Allows cycling through candidates
+  (corfu-auto t)                  ; Enable auto completion
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.5)
+  (corfu-popupinfo-delay '(0.5 . 0.2))
+  (corfu-preview-current 'insert) ; insert previewed candidate
+  (corfu-preselect 'prompt)
+  (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
+  ;; Optionally use TAB for cycling, default is `corfu-complete'.
+  :bind (:map corfu-map
+              ("M-SPC"      . corfu-insert-separator)
+              ("TAB"        . corfu-next)
+              ([tab]        . corfu-next)
+              ("S-TAB"      . corfu-previous)
+              ([backtab]    . corfu-previous)
+              ("S-<return>" . corfu-insert)
+              ("RET"        . nil))
+
   :init
   (global-corfu-mode)
-  :custom
-  (corfu-auto t)
-  ;; You may want to play with delay/prefix/styles to suit your preferences.
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 0)
-  (completion-styles '(basic)))
-  (corfu-echo-documentation 0.25) ; Enable documentation for completions
+  (corfu-history-mode)
+  (corfu-popupinfo-mode) ; Popup completion info
   :config
-  (setq tab-always-indent 'complete)
   (add-hook 'eshell-mode-hook
             (lambda () (setq-local corfu-quit-at-boundary t
                                    corfu-quit-no-match t
                                    corfu-auto nil)
               (corfu-mode))))
 
-(use-package embark
-  :ensure t
-
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-  
+(use-package cape
+  :defer 10
+  :bind ("C-c f" . cape-file)
   :init
-  
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
-  
+  ;; Add `completion-at-point-functions', used by `completion-at-point'.
+  ;; (defalias 'dabbrev-after-2 (cape-capf-prefix-length #'cape-dabbrev 2))
+  ;; (add-to-list 'completion-at-point-functions 'dabbrev-after-2 t)
+  (cl-pushnew #'cape-file completion-at-point-functions)
   :config
-  
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
+  ;; Silence then pcomplete capf, no errors or messages!
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
 
-;; Consult users will also want the embark-consult package.
-(use-package embark-consult
-  :ensure t
-  :after (embark consult)
-  :demand t ; only necessary if you have the hook below
-  ;; if you want to have consult previews as you move around an
-  ;; auto-updating embark collect buffer
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+  ;; Ensure that pcomplete does not write to the buffer
+  ;; and behaves as a pure `completion-at-point-function'.
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
 
-
-#+end_src
-
-* Ivy
-Completion Framework - currently disabled in favour of vertico etc
-above. I will remove this after a few weeks with vertico et al. if it
-works out OK.
-#+begin_src emacs-lisp :tangle no
-;;==============================================================================
-;;.....Ivy
-;;     ---
-
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-wrap t)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq enable-recursive-minibuffers t)
-
-  (push '(completion-at-point . ivy--regex-fuzzy) ivy-re-builders-alist)
-  (push '(swiper . ivy--regex-ignore-order) ivy-re-builders-alist)
-  (push '(counsel-M-x . ivy--regex-ignore-order) ivy-re-builders-alist)
-
-  (setf (alist-get 'swiper ivy-height-alist) 15)
-  (setf (alist-get 'counsel-switch-buffer ivy-height-alist) 7))
-
-(use-package ivy-hydra
-  :defer t
-  :after hydra)
-
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1)
-  :config
-  (setcdr  (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-  (setq ivy-rich-display-transformers-list
-        (plist-put ivy-rich-display-transformers-list
-                   'ivy-switch-buffer
-                   '(:columns
-                     ((ivy-rich-candidate (:width 40))
-                      (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right)); return the buffer indicators
-                      (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))          ; return the major mode info
-                      (ivy-rich-switch-buffer-project (:width 15 :face success))             ; return project name using `projectile'
-                      (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
-                     :predicate
-                     (lambda (cand)
-                       (if-let ((buffer (get-buffer cand)))
-                           ;; Don't mess with EXWM buffers
-                           (with-current-buffer buffer
-                             (not (derived-mode-p 'exwm-mode)))))))))
-
-#+end_src
-
-* Swiper
-Also currently disabled in favour of vertico et al.
-#+begin_src emacs-lisp :tangle no
-  ;;==============================================================================
-  ;;.....Swiper
-  ;;     ------
-
-  ;; Counsel - completion package working with ivy.
-  (use-package counsel
-    :bind (("M-x" . counsel-M-x)
-           ("C-x b" . counsel-ibuffer)
-           :map minibuffer-local-map
-           ("C-r" . 'counsel-minibuffer-history))
-    :custom
-    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-    :config
-    (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
-
-  ;; TODO: Configure counsel-bbdb to work eith email, or configure a different
-  ;;       package to manage contacts (synced with cardDAV)
-  (use-package counsel-bbdb
-    :ensure t)
-
-  (use-package swiper
-    :bind (("C-s" . swiper)
-           ("C-r" . swiper)
-           ("C-c C-r" . ivy-resume)
-           ("M-x" . counsel-M-x)
-           ("C-x C-f" . counsel-find-file))
-    :config
-    (progn
-      (ivy-mode 1)
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-display-style 'fancy)
-      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+(use-package yasnippet-snippets
+  :after yasnippet)
+;; (use-package yasnippet-capf
+;;   :ensure nil
+;;   :quelpa (yasnippet-capf :fetcher github :repo "elken/yasnippet-capf")
+;;   :after yasnippet
+;;   :hook ((prog-mode . yas-setup-capf)
+;;          (text-mode . yas-setup-capf)
+;;          (lsp-mode  . yas-setup-capf)
+;;          (sly-mode  . yas-setup-capf))
+;;   :bind (("C-c y" . yasnippet-capf)
+;;          ("M-+"   . yas-insert-snippet))
+;;   :config
+;;   (defun yas-setup-capf ()
+;;     (setq-local completion-at-point-functions
+;;                 (cons 'yasnippet-capf
+;;                       completion-at-point-functions)))
+;;   (push 'yasnippet-capf completion-at-point-functions))
 
 #+end_src
 
@@ -670,6 +687,7 @@ CLI accounting, as it should be.
   :config
   (add-to-list 'auto-mode-alist '("\\.dat$" . ledger-mode))
   (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
+
 
 #+end_src
 
@@ -756,7 +774,6 @@ lsp-mode setup for the languages I use.
 ;; server installed on your machine to use it with Eglot. e.g.
 ;; rust-analyzer to use Eglot with `rust-mode'.
 (use-package eglot
-  :ensure t
   :bind (("s-<mouse-1>" . eglot-find-implementation)
          ("C-c ." . eglot-code-action-quickfix))
   ;; Add your programming modes here to automatically start Eglot,
@@ -836,80 +853,6 @@ works. TODO: Needs to be revisited.
   (c-set-style "stroustrup"))
 
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
-
-;;==============================================================================
-;;.....smex
-;;     ----
-;; M-x enhancement - show most recently used commands which match as typing.
-
-;; (use-package smex
-;; 
-;; :bind (("M-x" . smex)
-;;        ("M-X" . smex-major-mode-commands)
-;;        ("C-c C-c M-x" . 'execute-extended-command)) ;; Original M-x command
-;; :config (smex-initialize))
-
-(defadvice ido-set-matches-1 (around ido-smex-acronym-matches activate)
-  "Filters ITEMS by setting acronynms first."
-  (if (and (fboundp 'smex-already-running) (smex-already-running) (> (length ido-text) 1))
-      
-      ;; We use a hash table for the matches, <type> => <list of items>, where
-      ;; <type> can be one of (e.g. `ido-text' is "ff"):
-      ;; - strict: strict acronym match (i.e. "^f[^-]*-f[^-]*$");
-      ;; - relaxed: for relaxed match (i.e. "^f[^-]*-f[^-]*");
-      ;; - start: the text start with (i.e. "^ff.*");
-      ;; - contains: the text contains (i.e. ".*ff.*");
-      (let ((regex (concat "^" (mapconcat 'char-to-string ido-text "[^-]*-")))
-            (matches (make-hash-table :test 'eq)))
-
-        ;; Filtering
-        (dolist (item items)
-          (let ((key))
-            (cond
-             ;; strict match
-             ((string-match (concat regex "[^-]*$") item)
-              (setq key 'strict))
-
-             ;; relaxed match
-             ((string-match regex item)
-              (setq key 'relaxed))
-
-             ;; text that start with ido-text
-             ((string-match (concat "^" ido-text) item)
-              (setq key 'start))
-
-             ;; text that contains ido-text
-             ((string-match ido-text item)
-              (setq key 'contains)))
-
-            (when key
-              ;; We have a winner! Update its list.
-              (let ((list (gethash key matches ())))
-                (puthash key (push item list) matches)))))
-
-        ;; Finally, we can order and return the results
-        (setq ad-return-value (append (gethash 'strict matches)
-                                      (gethash 'relaxed matches)
-                                      (gethash 'start matches)
-                                      (gethash 'contains matches))))
-
-    ;; ...else, run the original ido-set-matches-1
-    ad-do-it))
-
-;; Delayed loading - initialisation when used for the first time
-;; (global-set-key [(meta x)]
-;;   (lambda ()
-;;     (interactive)
-;;     (or (boundp 'smex-cache)
-;;         (smex-initialize))
-;;     (global-set-key [(meta x)] 'smex) (smex)))
-
-;; (global-set-key [(shift meta x)]
-;;   (lambda () (interactive)
-;;   (or (boundp 'smex-cache) (smex-initialize))
-;;   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
-;;   (smex-major-mode-commands)))
-
 #+end_src
 
 
@@ -919,7 +862,6 @@ but seems to work at the moment. TODO: Improve further.
 
 #+begin_src emacs-lisp
 (use-package rust-mode
-  :ensure t
   :bind (:map rust-mode-map
 	      ("C-c C-r" . 'rust-run)
 	      ("C-c C-c" . 'rust-compile)
@@ -930,7 +872,7 @@ but seems to work at the moment. TODO: Improve further.
 
 
 This version is currently disabled - the above should do it for emacs29++
-#+begin_src emacs-lisp :tangle :no
+#+begin_src emacs-lisp :tangle no
 ;;==============================================================================
 ;;.....rust
 ;;     ----
@@ -945,7 +887,6 @@ This version is currently disabled - the above should do it for emacs29++
 ;; (add-hook 'rustic-mode-hook 'rustic-mode-auto-save-hook)
 
 (use-package rustic
-  :ensure
   :mode ("\\.rs\\'" . rustic-mode)
   ;; :bind (:map rustic-mode-map
   ;;             ("M-j" . lsp-ui-imenu)
@@ -981,7 +922,6 @@ This version is currently disabled - the above should do it for emacs29++
 ;; for rust-analyzer integration
 
 (use-package lsp-mode
-  :ensure
   :commands lsp
   :custom
   ;; what to use when checking on-save. "check" is default, I prefer clippy
@@ -1002,7 +942,6 @@ This version is currently disabled - the above should do it for emacs29++
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (use-package lsp-ui
-  :ensure
   :commands lsp-ui-mode
   :custom
   (lsp-ui-peek-always-show t)
@@ -1012,13 +951,10 @@ This version is currently disabled - the above should do it for emacs29++
 
 #+end_src
 
-#+results:
-
 * yasnippet
 Snippet management. TODO: Proper setup
 #+begin_src emacs-lisp
 (use-package yasnippet
-  :ensure
   :bind
   (:map yas-minor-mode-map
         ("C-c y" . yas-expand)
@@ -1095,7 +1031,6 @@ Note taking on steroids. Need to learn how to use it properly.
 ;; and also the System Crafters videos on org-roam (from v2 onwards).
 
 (use-package org-roam
-  :ensure t
   :init
   (setq org-roam-v2-ack t) ;; Silence version 2 update message  
   :custom
@@ -1286,69 +1221,6 @@ want to get other stuff working first.
 ;; (use-package xref-js2)
 
 #+end_src
-* Company mode
-Text completion framework.
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....company mode
-;;     ------------
-
-(use-package company
-  :config
-;;  (setq company-idle-delay 0)
-;;  (setq company-minimum-prefix-length 3)
-  (global-company-mode 1)
-  :bind
-  (:map company-active-map
-        ("C-n" . company-select-next)
-        ("C-p" . company-select-previous)
-        ("C-<" . company-select-first)
-        ("C->" . company-select-last))
-
-  (:map company-mode-map
-        ("M-<tab>" . tab-indent-or-complete)
-        ("M-TAB" . tab-indent-or-complete)))
-
-(defun company-yasnippet-or-completion ()
-  (interactive)
-  (or (do-yas-expand)
-      (company-complete-common)))
-
-(defun check-expansion ()
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-        (backward-char 1)
-        (if (looking-at "::") t nil)))))
-
-(defun do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
-
-(defun tab-indent-or-complete ()
-  (interactive)
-  (if (minibufferp)
-      (minibuffer-complete)
-    (if (or (not yas-minor-mode)
-            (null (do-yas-expand)))
-        (if (check-expansion)
-            (company-complete-common)
-          (indent-for-tab-command)))))
-
-;; Move to python configuration block
-;; (use-package company-jedi
-;;   :config
-;;   (add-hook 'python-mode-hook 'jedi:setup))
-
-;; (defun my/python-mode-hook ()
-;;   "Python mode hook."
-;;   (add-to-list 'company-backends 'company-jedi))
-
-;; (add-hook 'python-mode-hook 'my/python-mode-hook)
-
-#+end_src
-
 * Magit
 git processing - the best.
 #+begin_src emacs-lisp
@@ -1399,19 +1271,6 @@ Git gutter:
               (sit-for 0.1)
               (git-gutter:clear))
    :color blue))
-
-#+end_src
-
-* Flycheck
-Not sure how this interfaces with lsp
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....flycheck
-;;     --------
-
-(use-package flycheck
-  :init
-  (global-flycheck-mode 1))
 
 #+end_src
 
@@ -1513,7 +1372,6 @@ TODO: Find out if it does!
 
 ;; Ensure paredit is used EVERYWHERE!
 (use-package paredit-everywhere
-  :ensure t
   :diminish paredit-everywhere-mode
   :config
   (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
@@ -1676,12 +1534,12 @@ without using the name!!
 ;;     ------------------------------------
 
 (use-package web-mode
-  :ensure t
-  :mode (("\\.ts\\'" . web-mode)
-         ("\\.js\\'" . web-mode)
-         ("\\.mjs\\'" . web-mode)
-         ("\\.tsx\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
+  :mode (("\\.ts\\'"    . web-mode)
+         ("\\.js\\'"    . web-mode)
+         ("\\.mjs\\'"   . web-mode)
+         ("\\.tsx\\'"   . web-mode)
+         ("\\.html?\\'" . web-mode)
+         ("\\.jsx\\'"   . web-mode))
   :custom
   (web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
   (web-mode-code-indent-offset 2)
@@ -1752,7 +1610,6 @@ https://github.com/dengste/org-caldav
 ;;     -------
 
 (use-package helpful
-  :ensure t
   :bind (("C-h f" . #'helpful-callable)
          ("C-h v" . #'helpful-variable)
          ("C-h k" . #'helpful-key)
@@ -1973,20 +1830,24 @@ TODO: Not yet set up. Website development with org and hugo.
 #+end_src
 
 * Auto-tangle Configuration files
+
 #+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....Auto tangle configuration files
-  ;;     -------------------------------
-
-  (defun pj/org-babel-tangle-config ()
-    (when (string-equal (file-name-directory (buffer-file-name))
-                        (expand-file-name "~/dotfiles/"))
-      (let ((org-confirm-babel-evaluate nil))
-        (org-babel-tangle))))
+;;==============================================================================
+;;.....Auto tangle configuration files
+;;     -------------------------------
 
 
-  (add-hook 'org-mode-hook 
-            (lambda () 
-              (add-hook 'after-save-hook
-                        #'pj/org-babel-tangle-config)))
+(defun pj/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name "~/dotfiles/"))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+
+(add-hook 'org-mode-hook 
+          (lambda () 
+            (add-hook 'after-save-hook
+                      #'pj/org-babel-tangle-config)))
+
+
 #+end_src
