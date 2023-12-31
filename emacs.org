@@ -11,6 +11,7 @@ Emacs configuration.
 - [[#preamble][Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
+  - [[#scrolling-precision][Scrolling precision]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
   - [[#initial-settings][Initial settings]]
@@ -65,6 +66,7 @@ Emacs configuration.
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
+- [[#hammy][Hammy]]
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 
 * Early Init
@@ -118,19 +120,13 @@ Emacs configuration.
 (setq load-prefer-newer t) ;; Loads the newest version of a file .el or .elc
 ;;---------------------------------------------------------------------------------
 
-;; The default is 800 kb. Measured in bytes, so this is 50Mb.
-;; Memory on my machines > 8Gb, so no issue.
-(setq gc-cons-threshold (* 50 1000 1000))
-
-
-;; profile emacs startup
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s with %d garbage collections."
-                     (format "%2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
+;; Avoid GC during init, then reset after init completed
+(setq gc-cons-threshold most-positive-fixnum)
+(add-hook 'after-init-hook
+          `(lambda ()
+            (setq gc-cons-threshold (* 2 1024 1024)
+                  gc-cons-percentage 0.1))
+          t)
 
 #+end_src
 
@@ -234,6 +230,16 @@ which operating system is running:
 
 (initialise-packages)
 
+;; Install and load `quelpa-use-package'.
+
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+(setq quelpa-update-melpa-p nil)
+(package-install 'quelpa-use-package)
+(require 'quelpa-use-package)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -241,7 +247,12 @@ which operating system is running:
 (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
 
 #+end_src
+** Scrolling precision
+#+begin_src
+(setq pixel-scroll-precision-interpolate-page t)
+(pixel-scroll-precision-mode t)
 
+#+end_src
 * Dashboard
 #+begin_src emacs-lisp
 (use-package dashboard
@@ -361,12 +372,27 @@ Packages are currently installed using use-package.
 ;; Initialise use-package on non-guix/non-nix systems.
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
-(require 'use-package)
+
+(eval-when-compile (require 'use-package))
+(setq use-package-verbose t
+      native-comp-async-report-warnings-errors nil)
 
 ;; This ensures packages are available - if using nix/guix declarative package
 ;; installation, this needs to be removed
 (setq use-package-always-ensure t)
 
+(use-package async
+  :defer t
+  :init
+  (dired-async-mode 1))
+
+(use-package savehist
+  :defer 2
+  :init (savehist-mode t))
+
+(use-package repeat
+  :defer 10
+  :init (repeat-mode +1))
 #+end_src
 
 * Keep .emacs.d Clean
@@ -443,7 +469,11 @@ ssh connection to other machines.
 
   (use-package orderless
     :commands (orderless)
-    :custom (completion-styles '(orderless flex)))
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-categur-defaults nil)
+    (completion-category-overrides '((file (styles partial-completion)))))
+
   (use-package marginalia
     :custom
     (marginalia-annotators
@@ -569,14 +599,14 @@ This way our searches are kept up to date"
 (use-package corfu
   ;; Optional customizations
   :custom
-  (corfu-cycle t)                 ; Allows cycling through candidates
-  (corfu-auto t)                  ; Enable auto completion
-  (corfu-auto-prefix 2)
+  ;;(corfu-cycle t)                 ; Allows cycling through candidates
+  (corfu-auto t)                    ; Enable auto completion
+  ;;(corfu-auto-prefix 2)
   (corfu-auto-delay 0.5)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preview-current 'insert) ; insert previewed candidate
-  (corfu-preselect 'prompt)
-  (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
+  ;;(corfu-preview-current 'insert) ; insert previewed candidate
+  ;;(corfu-preselect 'prompt)
+  ;;(corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
   ;; Optionally use TAB for cycling, default is `corfu-complete'.
   :bind (:map corfu-map
               ("M-SPC"      . corfu-insert-separator)
@@ -586,7 +616,7 @@ This way our searches are kept up to date"
               ([backtab]    . corfu-previous)
               ("S-<return>" . corfu-insert)
               ("RET"        . nil))
-
+  
   :init
   (global-corfu-mode)
   (corfu-history-mode)
@@ -597,6 +627,11 @@ This way our searches are kept up to date"
                                    corfu-quit-no-match t
                                    corfu-auto nil)
               (corfu-mode))))
+
+(use-package emacs
+  :init
+  (setq completion-cycle-threshold 3)
+  (setq tab-always-indent 'complete))
 
 (use-package cape
   :defer 10
@@ -609,7 +644,7 @@ This way our searches are kept up to date"
   :config
   ;; Silence then pcomplete capf, no errors or messages!
   (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
-
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
   ;; Ensure that pcomplete does not write to the buffer
   ;; and behaves as a pure `completion-at-point-function'.
   (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
@@ -692,9 +727,7 @@ CLI accounting, as it should be.
 #+end_src
 
 * Treesitter
-Still learning about this, so this is quite fluid. Honestly, I wish
-this worked like it does in neovim, or rather, I wish I knew how to
-configure it accordingly!
+Still learning about this, so this is quite fluid.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....treesitter
@@ -753,6 +786,7 @@ configure it accordingly!
   :custom
   (treesit-auto-install 'prompt)
   :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
   (defun pj/treesit-install-all-languages ()
     "Install all languages specified by `treeesit-language-source-alist'."
     (interactive)
@@ -766,8 +800,7 @@ configure it accordingly!
 
 #+end_src
 * LSP mode
-As above... lsp-mode is currently setup for rust below. TODO: Generic
-lsp-mode setup for the languages I use.
+eglot configuration for lsp mode functionality.
 #+begin_src emacs-lisp
 
 ;; Adds LSP support. Note that you must have the respective LSP
@@ -785,7 +818,10 @@ lsp-mode setup for the languages I use.
   ;; `eglot-server-programs'. The following tells eglot to use TypeScript
   ;; language server when working in `web-mode'.
   (add-to-list 'eglot-server-programs
-               '(web-mode . ("typescript-language-server" "--stdio"))))
+               '(web-mode . ("typescript-language-server" "--stdio")))
+  ;; use orderless for completion filtering
+  (setq completion-category-overrides '((eglot (styles orderless))
+                                        (eglot-capf (styles orderless)))))
 #+end_src
 * Go
 Not currently using go, so not sure if this is complete or not.
@@ -1310,8 +1346,8 @@ Git gutter:
 ;;   (load-theme 'gruvbox t))
 
 ;; Font size is localised in site-local.el
-(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
-
+;;(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
+(defvar my:font (concat "Firacode-" *pj/font-size*))
 ;; Font size setting for Emacs 27:
 (set-face-attribute 'default nil :font my:font )
 ;; (set-frame-font my:font nil t)
@@ -1828,6 +1864,40 @@ TODO: Not yet set up. Website development with org and hugo.
 ;;; init.el ends here
 
 #+end_src
+
+
+
+* Hammy
+#+begin_src emacs-lisp
+(use-package hammy
+:quelpa (hammy :fetcher github :repo "alphapapa/hammy.el")
+:commands (happy-start hammy-start-org-clock-in)
+:config
+(hammy-define (propertize "🍅" 'face '(:foreground "tomato"))
+  :documentation "The classic pomodoro timer."
+  :intervals
+  (list
+   (interval :name "Work"
+             :duration "25 minutes"
+             :before (do (announce "Starting work time.")
+                         (notify "Starting work time."))
+             :advance (do (announce "Break time!")
+                          (notify "Break time!")))
+   (interval :name "Break"
+             :duration (do (if (and (not (zerop cycles))
+                                    (zerop (mod cycles 3)))
+                               ;; If a multiple of three cycles have
+                               ;; elapsed, the fourth work period was
+                               ;; just completed, so take a longer break.
+                               "30 minutes"
+                             "5 minutes"))
+             :before (do (announce "Starting break time.")
+                         (notify "Starting break time."))
+             :advance (do (announce "Break time is over!")
+                          (notify "Break time is over!"))))))
+#+end_src
+
+#+results:
 
 * Auto-tangle Configuration files
 
