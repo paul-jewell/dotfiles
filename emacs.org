@@ -1348,104 +1348,117 @@ Git gutter:
 
 ;; Font size is localised in site-local.el
 ;;(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
-;;(defvar my:font (concat "Firacodenerdfontmono-" *pj/font-size*))
+(defvar my:font (concat "Firacodenerdfontmono-" *pj/font-size*))
 ;; Font size setting for Emacs 27:
-;;(set-face-attribute 'default nil :font my:font )
-;; (set-frame-font my:font nil t)
+(set-face-attribute 'default nil :font my:font )
+;(set-frame-font my:font nil t)
 
 ;; Set font for frames running under emacs daemon
-;;(add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
+(add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
 #+end_src
 * Fonts
 #+begin_src emacs-lisp
-(use-package faces
-  :ensure nil  
-  :config
-  (defvar ap/random-fonts
-    `(
-      ;; A list of lists or alists. Alists should be in (STRING
-      ;; . STRING) format, with the first string being the frame-font, and
-      ;; the second the variable-pitch font.  If an element is a list
-      ;; rather than an alist, it will be set as the frame-font, and the
-      ;; variable-pitch font will be set to a default.
-      ("Fantasque Sans Mono-15")
-      ("DejaVu Sans Mono-14" . "DejaVu Sans")
-      ("Ubuntu Mono-15" . "Ubuntu")
-      ("Droid Sans Mono-14" . "Droid Sans")
-;;      ("Input Mono Narrow-9" . "Input Sans Condensed")
-;;      ("Input Sans Condensed-9" . "Input Sans Condensed")
-;;      ("Consolas-10")
-      ("Inconsolata-14")
-      ("Anonymous Pro-14")
-      ("Liberation Mono-14")
-      ("Fira Mono-14" . "Fira Sans")
-      ("Fira Code-14" . "Fira Sans")
-      ("Hack-14")
-;;      ("NK57 Monospace-9:width=semi-condensed")
-;;      ("NK57 Monospace-9")
-      ))
+;; (use-package faces
+;;   :ensure nil  
+;;   :config
+;;   (defvar ap/random-fonts
+;;     `(
+;;       ;; A list of lists or alists. Alists should be in (STRING
+;;       ;; . STRING) format, with the first string being the frame-font, and
+;;       ;; the second the variable-pitch font.  If an element is a list
+;;       ;; rather than an alist, it will be set as the frame-font, and the
+;;       ;; variable-pitch font will be set to a default.
+;;       ("Fantasque Sans Mono-15")
+;;       ("DejaVu Sans Mono-14" . "DejaVu Sans")
+;;       ("Ubuntu Mono-15" . "Ubuntu")
+;;       ("Droid Sans Mono-14" . "Droid Sans")
+;; ;;      ("Input Mono Narrow-9" . "Input Sans Condensed")
+;; ;;      ("Input Sans Condensed-9" . "Input Sans Condensed")
+;; ;;      ("Consolas-10")
+;;       ("Inconsolata-14")
+;;       ("Anonymous Pro-14")
+;;       ("Liberation Mono-14")
+;;       ("Fira Mono-14" . "Fira Sans")
+;;       ("Fira Code-14" . "Fira Sans")
+;;       ("Hack-14")
+;; ;;      ("NK57 Monospace-9:width=semi-condensed")
+;; ;;      ("NK57 Monospace-9")
+;;       ))
 
-  (defun ap/set-random-frame-font ()
-    "Set random fonts from ap/random-fonts list."
-    (interactive)
-    (ap/set-custom-fonts (seq-random-elt ap/random-fonts)))
+;;   (defun ap/set-random-frame-font ()
+;;     "Set random fonts from ap/random-fonts list."
+;;     (interactive)
+;;     (ap/set-custom-fonts (seq-random-elt ap/random-fonts)))
 
-  (defun ap/set-custom-fonts (font)
-    "Set frame-font and variable-pitch font using FONT.
+;;   (defun ap/set-custom-fonts (font)
+;;     "Set frame-font and variable-pitch font using FONT.
 
-FONT should be either a single-element list containing the
-frame-font, or a cons cell in (FRAME-FONT . VARIABLE-PITCH-FONT)
-format."
-    (interactive
-     (list (let ((choice (completing-read "Font: " ap/random-fonts)))
-             (assoc choice ap/random-fonts))))
-    (let ((frame-font (car font))
-          (variable-font (or (cdr font) "DejaVu Sans")))
-      (set-frame-font frame-font t)
-      (set-face-font 'default frame-font)
-      (set-face-font 'variable-pitch variable-font)
-      ;; Set org faces
-      (dolist (face '(org-block org-block-begin-line org-meta-line))
-        (when (facep face)
-          (set-face-attribute face nil :font frame-font)))
-      ;; Set buffer-face for org buffers
-      (when (symbol-function 'org-buffer-list)
-        (dolist (buffer (org-buffer-list))
-          (with-current-buffer buffer
-            (buffer-face-set :family (face-attribute 'variable-pitch :family)
-                             :height (face-attribute 'variable-pitch :height)))))
-      (message "%s" frame-font))))
+;; FONT should be either a single-element list containing the
+;; frame-font, or a cons cell in (FRAME-FONT . VARIABLE-PITCH-FONT)
+;; format."
+;;     (interactive
+;;      (list (let ((choice (completing-read "Font: " ap/random-fonts)))
+;;              (assoc choice ap/random-fonts))))
+;;     (let ((frame-font (car font))
+;;           (variable-font (or (cdr font) "DejaVu Sans")))
+;;       (set-frame-font frame-font t)
+;;       (set-face-font 'default frame-font)
+;;       (set-face-font 'variable-pitch variable-font)
+;;       ;; Set org faces
+;;       (dolist (face '(org-block org-block-begin-line org-meta-line))
+;;         (when (facep face)
+;;           (set-face-attribute face nil :font frame-font)))
+;;       ;; Set buffer-face for org buffers
+;;       (when (symbol-function 'org-buffer-list)
+;;         (dolist (buffer (org-buffer-list))
+;;           (with-current-buffer buffer
+;;             (buffer-face-set :family (face-attribute 'variable-pitch :family)
+;;                              :height (face-attribute 'variable-pitch :height)))))
+;;       (message "%s" frame-font))))
 
-(use-package fontaine
-  :custom
-  (fontaine-presets
-   '((t :default-family "Monospace"
-        :default-weight regular
-        :default-height 140
-        :fixed-pitch-height 2.0
-        :fixed-pitch-serif-height 2.0
-        :variable-pitch-family "Sans"
-        :variable-pitch-height 2.0
-        :bold-weight bold
-        :italic-slant italic
-        :line-spacing nil
-        :fixed-pitch-family nil
-        :fixed-pitch-weight nil
-        :fixed-pitch-serif-family nil
-        :fixed-pitch-serif-weight nil
-        :variable-pitch-weight nil
-        :bold-family nil
-        :italic-family nil)
-     (regular :default-height 140)
-     (large :default-weight semilight
-            :default-height 180
-            :bold-weight extrabold)
+;; (use-package fontaine
+;;   :custom
+;;   (fontaine-presets
+;;    '((t :default-family "Monospace"
+;;         :default-weight regular
+;;         :default-height 140
+;;         :fixed-pitch-height 2.0
+;;         :fixed-pitch-serif-height 2.0
+;;         :variable-pitch-family "Sans"
+;;         :variable-pitch-height 2.0
+;;         :bold-weight bold
+;;         :italic-slant italic
+;;         :line-spacing nil
+;;         :fixed-pitch-family nil
+;;         :fixed-pitch-weight nil
+;;         :fixed-pitch-serif-family nil
+;;         :fixed-pitch-serif-weight nil
+;;         :variable-pitch-weight nil
+;;         :bold-family nil
+;;         :italic-family nil)
+;;      (regular :default-height 140)
+;;      (large :default-weight semilight
+;;             :default-height 180
+;;             :bold-weight extrabold)
 
-     (fantasque-sans-mono :default-family "Fantasque Sans Mono"
-                          :default-height 140)
+;;      (fantasque-sans-mono :default-family "Fantasque Sans Mono"
+;;                           :default-height 140)
 
-     (iosevka-comfy :default-family "Iosevka Comfy Motion")
-     (iosevka-comfy-wide :default-family "Iosevka Comfy Wide Motion"))))
+;;      (iosevka-comfy :default-family "Iosevka Comfy Motion")
+;;      (iosevka-comfy-wide :default-family "Iosevka Comfy Wide Motion"))))
+
+;; (use-package emojify
+;;   :config
+;;   (when (member "Noto Color Emoji" (font-family-list))
+;;     (progn
+;;       (set-fontset-font
+;;        t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)
+;;       (set-fontset-font
+;;        t 'unicode (font-spec :family "Noto Color Emoji") nil 'append)))
+;;   (setq emojify-display-style 'unicode)
+;;   (setq emojify-emoji-styles '(unicode))
+;;   (bind-key* (kbd "C-c .") #'emojify-insert-emoji)) ; override binding in any mode
+
 
 #+end_src
 
@@ -1966,7 +1979,7 @@ TODO: Not yet set up. Website development with org and hugo.
 :quelpa (hammy :fetcher github :repo "alphapapa/hammy.el")
 :commands (happy-start hammy-start-org-clock-in)
 :config
-(hammy-define (propertize " " 'face '(:foreground "tomato"))
+(hammy-define (propertize "🍅" 'face '(:foreground "tomato"))
   :documentation "The classic pomodoro timer."
   :intervals
   (list
@@ -2014,3 +2027,6 @@ TODO: Not yet set up. Website development with org and hugo.
 
 
 #+end_src
+
+
+
