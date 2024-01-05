@@ -142,7 +142,10 @@ which operating system is running:
   and they need resolving. TODO: Part of the refactoring activity I am
   working on will resolve the issues and enable it to be loaded in all
   systems.
-- Set the fontsize
+- Font handling
+  Different systems have different font names for the same font, and
+  the font spacing should also be settable by system.
+- Set the font-size
   With different resolution monitors, I wanted to be able to set this
   at the system level.
 #+begin_src emacs-lisp
