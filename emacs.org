@@ -133,8 +133,6 @@ Emacs configuration.
 * Machine specific code, and package initialisation
 The following settings are configured depending on which machine and
 which operating system is running:
-- Whether or not to enable mu4e.
-  It doesn't play well on windows
 - Whether or not to load the gentoo-site-file
   Clearly only appropriate on gentoo systems. Since I use use-package
   to load modules, the content of this file is quite limited.
@@ -152,7 +150,6 @@ which operating system is running:
    ;; Load machine local definitions
 
    ;; Variables requiring system level configuration
-   (defvar *pj/enable-mu4e-mode* t              "Enable mu4e mode.")
    (defvar *pj/load-site-gentoo* nil            "Load gentoo's config file.")
    (defvar *pj/enable-auctex*    t              "Enable auctex mode.")
    (defvar *pj/font-size*        "14"           "Fontsize for this system.")
@@ -206,19 +203,15 @@ which operating system is running:
 	 (setq *pj/font-spacing* "")))
       ((string-prefix-p "gandalf" (system-name))
        (progn
-	 (setq *pj/enable-mu4e-mode* nil)
 	 (setq *pj/font-size* "14")))
       ((string-prefix-p "isolde" (system-name))
        (progn
-	 (setq *pj/enable-mu4e-mode* nil)
 	 (setq *pj/font-size* "14")))
       (t
        (progn
-	 (setq *pj/enable-mu4e-mode* nil)
 	 (setq *pj/load-site-gentoo* t)))))
     ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
      (progn
-       (setq *pj/enable-mu4e-mode* nil)
        (setq *pj/enable-auctex* nil)
        (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
        (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
