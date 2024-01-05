@@ -146,100 +146,105 @@ which operating system is running:
   With different resolution monitors, I wanted to be able to set this
   at the system level.
 #+begin_src emacs-lisp
-;; Load machine local definitions
+ ;; Load machine local definitions
 
-;; Variables requiring system level configuration
-(defvar *pj/enable-mu4e-mode* t     "Enable mu4e mode.")
-(defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
-(defvar *pj/enable-auctex*    t     "Enable auctex mode.")
-(defvar *pj/font-size*        "14"  "Fontsize for this system.")
+ ;; Variables requiring system level configuration
+ (defvar *pj/enable-mu4e-mode* t     "Enable mu4e mode.")
+ (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
+ (defvar *pj/enable-auctex*    t     "Enable auctex mode.")
+ (defvar *pj/font-size*        "14"  "Fontsize for this system.")
 
-(defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+ (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
-(defvar *pj/org-agenda-files* '("~/Nextcloud/org") "Location of org agenda files.")
-(defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/" "Location of org-roam files.")
-(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
+ (defvar *pj/org-agenda-files* '("~/Nextcloud/org") "Location of org agenda files.")
+ (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/" "Location of org-roam files.")
+ (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
 
 
-(defun pj/is-windows-p ()
-  "True if run in windows environment."
-  (string= "windows-nt" system-type))
+ (defun pj/is-windows-p ()
+   "True if run in windows environment."
+   (string= "windows-nt" system-type))
 
-(defun pj/is-linux-p ()
-  "True if run in linux environment."
-  (string= "gnu/linux" system-type))
+ (defun pj/is-linux-p ()
+   "True if run in linux environment."
+   (string= "gnu/linux" system-type))
 
-(defun pj/is-host-p (name)
-  "True if running on system NAME."
-  (string= (system-name) name))
+ (defun pj/is-host-p (name)
+   "True if running on system NAME."
+   (string= (system-name) name))
 
-;; Three possibilities for specifying values:
+ ;; Three possibilities for specifying values:
 
-;; - Globally, for all systems
-;; - By operating system
-;; - By system name
+ ;; - Globally, for all systems
+ ;; - By operating system
+ ;; - By system name
 
-(cond
- ((pj/is-linux-p)
-  (cond
-   ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+ (cond
+  ((pj/is-linux-p)
+   (cond
+    ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+(progn
+  (require 'gnutls)
+  ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
+  ;; with the Debian installation in place when WSL was first installed. Also, if
+  ;; the latest version of Emacs is loaded, this should not be a problem.
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+  (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+  (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+  (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+  (setq *pj/font-size* "12")))
+    ;; tristan now has a 4K screen, so need to pull out the settings
+((string-prefix-p "tristan" (system-name))
+ (progn
+	(setq *pj/load-site-gentoo* t)
+	(setq *pj/font-size* "14")))
+((string-prefix-p "gandalf" (system-name))
+ (progn
+	(setq *pj/enable-mu4e-mode* nil)
+	(setq *pj/font-size* "14")))
+((string-prefix-p "isolde" (system-name))
+ (progn
+	(setq *pj/enable-mu4e-mode* nil)
+	(setq *pj/font-size* "14")))
+(t (progn
+	  (setq *pj/enable-mu4e-mode* nil)
+	  (setq *pj/load-site-gentoo* t)))))
+  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
     (progn
-      (require 'gnutls)
-      ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
-      ;; with the Debian installation in place when WSL was first installed. Also, if
-      ;; the latest version of Emacs is loaded, this should not be a problem.
-      (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-      (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-      (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-      (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-      (setq *pj/font-size* "12")))
-   ;; tristan now has a 4K screen, so need to pull out the settings
-    ((string-prefix-p "tristan" (system-name))
-     (progn
-       (setq *pj/load-site-gentoo* t)
-       (setq *pj/font-size* "14")))
-    ((string-prefix-p "gandalf" (system-name))
-     (progn
-       (setq *pj/enable-mu4e-mode* nil)
-       (setq *pj/font-size* "14")))
-    ((string-prefix-p "isolde" (system-name))
-     (progn
-       (setq *pj/enable-mu4e-mode* nil)
-       (setq *pj/font-size* "14")))
-    (t (progn
-         (setq *pj/enable-mu4e-mode* nil)
-         (setq *pj/load-site-gentoo* t)))))
- ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
-   (progn
-     (setq *pj/enable-mu4e-mode* nil)
-     (setq *pj/enable-auctex* nil)
-     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-     (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-     :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-     (setq *pj/font-size* "10")))
-  (t
-   (error "Undefined system-type %s" system-type)))
+ (setq *pj/enable-mu4e-mode* nil)
+ (setq *pj/enable-auctex* nil)
+ (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+ (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+ :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+ (setq *pj/font-size* "10")))
+   (t
+    (error "Undefined system-type %s" system-type)))
 
- (defvar *packages-initialised* nil)
+  (defvar *packages-initialised* nil)
 
- (defun initialise-packages ()
-   "Ensure `package-initialize' is called only once."
-   (unless *packages-initialised*
-     (package-initialize)
-     (setq *packages-initialised* t)))
+  (defun initialise-packages ()
+    "Ensure `package-initialize' is called only once."
+    (unless *packages-initialised*
+ (package-initialize)
+ (setq *packages-initialised* t)))
 
-(initialise-packages)
+ (initialise-packages)
 
-;; Install and load `quelpa-use-package'.
+ ;; Install and load `quelpa-use-package'.
 
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
-(setq quelpa-update-melpa-p nil)
-(package-install 'quelpa-use-package)
+ (unless (package-installed-p 'quelpa)
+   (with-temp-buffer
+(url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+(eval-buffer)
+(quelpa-self-upgrade)))
+ (setq quelpa-update-melpa-p nil)
+ (unless (package-installed-p 'quelpa-use-package)
+   (quelpa
+    '(quelpa-use-package
+ :fetcher git
+ :url "https://github.com/quelpa/quelpa-use-package.git")))
 (require 'quelpa-use-package)
+
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1346,8 +1351,8 @@ Git gutter:
 ;;   (load-theme 'gruvbox t))
 
 ;; Font size is localised in site-local.el
-;;(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
-(defvar my:font (concat "Firacodenerdfontmono-" *pj/font-size*))
+(defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
+;;(defvar my:font (concat "Firacodenerdfontmono-" *pj/font-size*))
 ;; Font size setting for Emacs 27:
 (set-face-attribute 'default nil :font my:font )
 ;(set-frame-font my:font nil t)
