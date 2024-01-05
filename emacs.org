@@ -1611,7 +1611,7 @@ is wonderful.
 * email - notmuch
 TODO: Persevere with notmuch - get good at sending emails, and sort out the tagging to improve
 the experience.
-#+begin_src scheme :noweb-ref packages: :noweb-sep "\n"
+#+begin_src emacs-lisp
 (require 'notmuch)
 
 #+end_src
