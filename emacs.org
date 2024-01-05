@@ -476,8 +476,8 @@ ssh connection to other machines.
     :commands (orderless)
     :custom
     (completion-styles '(orderless basic))
-    (completion-categur-defaults nil)
-    (completion-category-overrides '((file (styles partial-completion)))))
+    (completion-category-overrides '((file (styles partial-completion))
+                                     (ledger (styles basic)))))
 
   (use-package marginalia
     :custom
