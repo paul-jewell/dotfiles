@@ -1684,12 +1684,13 @@ Developed from bbatsov's code on his github.
                                      "#emacs"
                                      "#gentoo"
                                      "#gentoo-haskell"
-                                     "#guile"
+                           ;;          "#guile"
                                      "#lisp"
-                                     "#clojure"
+                           ;;          "#clojure"
                                      "#haskell"
-                                     "#debian"
-                                     "#scheme")))
+                           ;;          "#debian"
+                           ;;          "#scheme"
+                                     )))
 
 ;; Interpret mIRC-style colour commands in IRC chats
 (setq erc-interpret-mirc-color t)
@@ -1742,8 +1743,8 @@ Developed from bbatsov's code on his github.
 (defun call-libnotify (matched-type nick msg)
   "Notify when NICK is mentioned in MSG (MATCHED-TYPE)."
   (let* ((cmsg  (split-string (clean-message msg)))
-         (nick   (first (split-string nick "!")))
-         (msg    (mapconcat 'identity (rest cmsg) " ")))
+         (nick   (car (split-string nick "!")))
+         (msg    (mapconcat 'identity (cdr cmsg) " ")))
     (shell-command-to-string
      (format "notify-send -t 5000 -u normal '%s says:' '%s'" nick msg))))
 
@@ -1807,10 +1808,12 @@ that can occur between two notifications.  The default is
 (setq erc-server-coding-system '(utf-8 . utf-8))
 
 (defun start-irc ()
-  "Connect to IRC."
+  "Connect to IRC, or switch to last active buffer."
   (interactive)
-  (when (y-or-n-p "Do you want to start IRC? ")
-    (erc :server "irc.libera.chat" :port 6667 :nick "paul_j")))
+  (if (get-buffer "irc.libera.chat:6667")
+      (erc-track-switch-buffer 1)
+    (when (y-or-n-p "Do you want to start IRC? ")
+      (erc :server "irc.libera.chat" :port 6667 :nick "paul_j"))))
 
 (defun filter-server-buffers ()
   (delq nil
