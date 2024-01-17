@@ -467,9 +467,6 @@ the variable =*pj/regular-font-size*=
 (setq major-mode 'text-mode)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
-;; Go straight to scratch buffer on startup
-(setq inhibit-startup-screen t)
-
 ;; dont use tabs for indenting
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 3)
@@ -520,7 +517,6 @@ C-z as appropriate.
 ;; different modes. I may disable it in the future if I feel I know the available
 ;; options well enough.
 ;; (menu-bar-mode -1) 
-(scroll-bar-mode -1)
 
 ;; Full path in title bar
 (setq-default frame-title-format "%b (%f)")
