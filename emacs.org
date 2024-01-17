@@ -1,7 +1,13 @@
 #+TITLE: Emacs Configuration
+#+author: Paul Jewell
+#+email: paul@teulu.org
+#+language: en
 #+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.emacs.d/init.el
+#+macro: latest-export-date (eval (format-time-string "%F %T %z"))
 
 Emacs configuration.
+
+*Last revised and exported on {{{latest-export-date}}}.*
 
 * table of contents                                                     :toc:
 :PROPERTIES:
@@ -1035,7 +1041,6 @@ TODO: Refactor my-org-mode.el file completely.
 ;;  (eval-after-load "org" (add-to-list 'org-modules 'org-habit))
 ;;  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
   (global-set-key (kbd "C-c w") 'org-refile)
-
 
 ;; Resolving conflict between org-mode and yasnippet
 ;; (defun yas/org-very-safe-expand ()
