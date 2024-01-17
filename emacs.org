@@ -1667,7 +1667,7 @@ https://github.com/dengste/org-caldav
 #+end_src
 * Password-store
 #+begin_src emacs-lisp
-(require 'password-store)
+(use-package password-store)
 #+end_src
 * ERC
 Developed from bbatsov's code on his github.
