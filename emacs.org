@@ -1346,11 +1346,7 @@ Git gutter:
 ;;.....themes
 ;;     ------
 
-(use-package doom-themes
-  :config
-  (doom-themes-org-config)
-  (doom-themes-visual-bell-config)
-  (load-theme 'doom-tokyo-night t))
+(load-theme 'modus-vivendi t)
 
 ;; Font size is localised
 (defvar my:font (concat *pj/font-name* *pj/font-size* *pj/font-spacing*))
