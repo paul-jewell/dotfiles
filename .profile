@@ -1,6 +1,8 @@
 # Define PATH
-export PATH=$(find -L  ~/.bin -type d -printf %p:)$PATH
+export PATH=$(find -L ~/.bin -type d -printf %p:)$PATH
 
+# Define which gpg key to use for password-store
+export PASSWORD_STORE_GPG_OPTS="--default-key 32089A9C90EAF4BB"
 # .profile setup for gentoo systems
 
 # Invoke GnuPG-Agent the first time we login.
