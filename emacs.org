@@ -1370,6 +1370,8 @@ Currently trialing Prot's themes from his ef-themes package
 
 #+end_src
 * Fonts
+Using the fontaine package from Prot. Font sizes are calculated from
+the variable =*pj/regular-font-size*= 
 #+begin_src emacs-lisp
 ;; Font size is localised
 ;;(defvar my:font (concat *pj/font-name* *pj/regular-font-size* *pj/font-spacing*))
@@ -1427,7 +1429,10 @@ Currently trialing Prot's themes from his ef-themes package
   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
 
   ;; The other side of `fontaine-restore-latest-preset'.
-  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
+
+  ;; Persist font configurations while switching themes
+  (add-hook 'ef-themes-after-load-theme-hook #'fontaine-apply-current-preset))
   
 #+end_src
 * Projectile
