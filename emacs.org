@@ -102,6 +102,7 @@ Emacs configuration.
 ;; Contributions from many sources, including:
 ;; - David Wilson
 ;; - bbatsov
+;; - prot
 ;;
 ;; Licence: BSD
 
@@ -188,6 +189,7 @@ is undesirable.
 ;; Contributions from many sources, including:
 ;; - David Wilson
 ;; - bbatsov
+;; - prot
 ;;
 ;; Licence: BSD
 
