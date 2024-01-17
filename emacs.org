@@ -16,13 +16,15 @@ Emacs configuration.
 - [[#early-init][Early Init]]
   - [[#initel-preamble][init.el Preamble]]
   - [[#early-initel---native-compile-packages][early-init.el - Native compile packages]]
-  - [[#early-initel-macro-to-run-code-only-in-a-non-tiling-wm-environment][early-init.el macro to run code only in a non tiling wm environment]]
-  - [[#early-initel-code-to-set-frame-parameters][early-init.el code to set frame parameters]]
+  - [[#early-initel---macro-to-run-code-only-in-a-non-tiling-wm-environment][early-init.el - macro to run code only in a non tiling wm environment]]
+  - [[#early-initel---code-to-set-frame-parameters][early-init.el - code to set frame parameters]]
   - [[#early-initel---basic-frame-settings][early-init.el - basic frame settings]]
 - [[#initel-preamble-1][init.el Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
   - [[#scrolling-precision][Scrolling precision]]
+- [[#themes][Themes]]
+- [[#fonts][Fonts]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
   - [[#initial-settings][Initial settings]]
@@ -55,8 +57,6 @@ Emacs configuration.
 - [[#javascript-and-html][Javascript and HTML]]
 - [[#magit][Magit]]
 - [[#all-the-icons][All the icons]]
-- [[#themes][Themes]]
-- [[#fonts][Fonts]]
 - [[#projectile][Projectile]]
 - [[#diminish][Diminish]]
 - [[#paredit][Paredit]]
@@ -83,7 +83,6 @@ Emacs configuration.
 - [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
 
 * Early Init
-
 ** init.el Preamble
 - Make the tangled file read only if loaded into emacs. Hopefully it
   will be enough to ensure this file remains the primary truth!
@@ -113,7 +112,7 @@ Recommended to have this at the top of the configuration files.
 #+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
 (setq-default package-native-compile t)
 #+end_src
-** early-init.el macro to run code only in a non tiling wm environment
+** early-init.el - macro to run code only in a non tiling wm environment
 Slightly adapted from code in Prot's configuration renamed for consistency.
 #+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
 (defvar pj/emacs-tiling-wm-regexp
@@ -127,7 +126,7 @@ Slightly adapted from code in Prot's configuration renamed for consistency.
               ((not (string-match-p session pj/emacs-tiling-wm-regexp))))
      ,@body))
 #+end_src
-** early-init.el code to set frame parameters
+** early-init.el - code to set frame parameters
 If the window manager is not a tiling wm, then set the default size of
 the initial and subsequent frames.
 #+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
@@ -214,10 +213,11 @@ is undesirable.
 
 ;; Avoid GC during init, then reset after init completed
 (setq gc-cons-threshold most-positive-fixnum)
-(add-hook 'after-init-hook
-          `(lambda ()
+
+(add-hook 'after-startup-hook
+          (lambda ()
             (setq gc-cons-threshold (* 2 1024 1024)
-                  gc-cons-percentage 0.1))
+                  gc-cons-percentage 0.2))
           t)
 
 #+end_src
@@ -349,6 +349,100 @@ which operating system is running:
 (setq pixel-scroll-precision-interpolate-page t)
 (pixel-scroll-precision-mode t)
 
+#+end_src
+* Themes
+Currently trialing Prot's themes from his ef-themes package
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....themes
+;;     ------
+
+(use-package ef-themes
+  :config
+  (setq ef-themes-to-toggle '(ef-melissa-dark ef-dark))
+  (setq ef-theme-headings
+        '((0 variable-pitch light 1.9)
+          (1 variable-pitch light 1.8)
+          (2 variable-pitch regular 1.7)
+          (3 variable-pitch regular 1.6)
+          (4 variable-pitch regular 1.5)
+          (5 variable-pitch 1.4)
+          (6 variable-pitch 1.3)
+          (7 variable-pitch 1.2)
+          (t variable-pitch 1.1)))
+  (setq ef-themes-mixed-fonts t
+        ef-themes-variable-pitch-ui t) ; Use variable pitch for all UI elements
+  ;; Disable all other themese to avoid blending
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'ef-dark :no-confirm))
+
+
+#+end_src
+* Fonts
+Using the fontaine package from Prot. Font sizes are calculated from
+the variable =*pj/regular-font-size*= 
+#+begin_src emacs-lisp
+;; Font size is localised
+;;(defvar my:font (concat *pj/font-name* *pj/regular-font-size* *pj/font-spacing*))
+;;(set-face-attribute 'default nil :font my:font)
+
+;; Set font for frames running under emacs daemon
+;;(add-to-list 'default-frame-alist `(font . ,(concat *pj/font-name* *pj/regular-font-size*)))
+
+(use-package fontaine
+  :config
+  (setq fontaine-latest-state-file
+        (locate-user-emacs-file "fontaine-latest-state.eld"))
+  (setq fontaine-presets
+      `((tiny
+         :default-family "Iosevka Comfy Wide Fixed"
+         :default-height ,(* (round (* *pj/regular-font-size* 0.7) 10) 10))
+        (small
+         :default-family "Iosevka Comfy Fixed"
+         :default-height ,(* (round (* *pj/regular-font-size* 0.8) 10) 10))
+        (regular
+         :default-height ,*pj/regular-font-size*)
+        (medium
+         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10))
+        (large
+         :default-weight semilight
+         :default-height ,(* (round (* *pj/regular-font-size* 1.3) 10) 10)
+         :bold-weight extrabold)
+        (presentation
+         :default-weight semilight
+         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10)
+         :bold-weight extrabold)
+        (t
+         ;; I keep all properties for didactic purposes, but most can be
+         ;; omitted.  See the fontaine manual for the technicalities:
+         ;; <https://protesilaos.com/emacs/fontaine>.
+         :default-family "Iosevka Comfy"
+         :default-weight regular
+         :default-height ,*pj/regular-font-size*
+         :fixed-pitch-family nil ; falls back to :default-family
+         :fixed-pitch-weight nil ; falls back to :default-weight
+         :fixed-pitch-height 1.0
+         :fixed-pitch-serif-family nil ; falls back to :default-family
+         :fixed-pitch-serif-weight nil ; falls back to :default-weight
+         :fixed-pitch-serif-height 1.0
+         :variable-pitch-family "Iosevka Comfy Duo"
+         :variable-pitch-weight nil
+         :variable-pitch-height 1.0
+         :bold-family nil ; use whatever the underlying face has
+         :bold-weight bold
+         :italic-family nil
+         :italic-slant italic
+         :line-spacing nil)))
+  ;; Recover last preset or fall back to desired style from
+  ;; `fontaine-presets'.
+  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+
+  ;; The other side of `fontaine-restore-latest-preset'.
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
+
+  ;; Persist font configurations while switching themes
+  (add-hook 'ef-themes-after-load-theme-hook #'fontaine-apply-current-preset))
+  
 #+end_src
 * Dashboard
 #+begin_src emacs-lisp
@@ -1425,100 +1519,6 @@ Git gutter:
 
 #+end_src
 
-* Themes
-Currently trialing Prot's themes from his ef-themes package
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....themes
-;;     ------
-
-(use-package ef-themes
-  :config
-  (setq ef-themes-to-toggle '(ef-melissa-dark ef-dark))
-  (setq ef-theme-headings
-        '((0 variable-pitch light 1.9)
-          (1 variable-pitch light 1.8)
-          (2 variable-pitch regular 1.7)
-          (3 variable-pitch regular 1.6)
-          (4 variable-pitch regular 1.5)
-          (5 variable-pitch 1.4)
-          (6 variable-pitch 1.3)
-          (7 variable-pitch 1.2)
-          (t variable-pitch 1.1)))
-  (setq ef-themes-mixed-fonts t
-        ef-themes-variable-pitch-ui t) ; Use variable pitch for all UI elements
-  ;; Disable all other themese to avoid blending
-  (mapc #'disable-theme custom-enabled-themes)
-  (load-theme 'ef-dark :no-confirm))
-
-
-#+end_src
-* Fonts
-Using the fontaine package from Prot. Font sizes are calculated from
-the variable =*pj/regular-font-size*= 
-#+begin_src emacs-lisp
-;; Font size is localised
-;;(defvar my:font (concat *pj/font-name* *pj/regular-font-size* *pj/font-spacing*))
-;;(set-face-attribute 'default nil :font my:font)
-
-;; Set font for frames running under emacs daemon
-;;(add-to-list 'default-frame-alist `(font . ,(concat *pj/font-name* *pj/regular-font-size*)))
-
-(use-package fontaine
-  :config
-  (setq fontaine-latest-state-file
-        (locate-user-emacs-file "fontaine-latest-state.eld"))
-  (setq fontaine-presets
-      `((tiny
-         :default-family "Iosevka Comfy Wide Fixed"
-         :default-height ,(* (round (* *pj/regular-font-size* 0.7) 10) 10))
-        (small
-         :default-family "Iosevka Comfy Fixed"
-         :default-height ,(* (round (* *pj/regular-font-size* 0.8) 10) 10))
-        (regular
-         :default-height ,*pj/regular-font-size*)
-        (medium
-         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10))
-        (large
-         :default-weight semilight
-         :default-height ,(* (round (* *pj/regular-font-size* 1.3) 10) 10)
-         :bold-weight extrabold)
-        (presentation
-         :default-weight semilight
-         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10)
-         :bold-weight extrabold)
-        (t
-         ;; I keep all properties for didactic purposes, but most can be
-         ;; omitted.  See the fontaine manual for the technicalities:
-         ;; <https://protesilaos.com/emacs/fontaine>.
-         :default-family "Iosevka Comfy"
-         :default-weight regular
-         :default-height ,*pj/regular-font-size*
-         :fixed-pitch-family nil ; falls back to :default-family
-         :fixed-pitch-weight nil ; falls back to :default-weight
-         :fixed-pitch-height 1.0
-         :fixed-pitch-serif-family nil ; falls back to :default-family
-         :fixed-pitch-serif-weight nil ; falls back to :default-weight
-         :fixed-pitch-serif-height 1.0
-         :variable-pitch-family "Iosevka Comfy Duo"
-         :variable-pitch-weight nil
-         :variable-pitch-height 1.0
-         :bold-family nil ; use whatever the underlying face has
-         :bold-weight bold
-         :italic-family nil
-         :italic-slant italic
-         :line-spacing nil)))
-  ;; Recover last preset or fall back to desired style from
-  ;; `fontaine-presets'.
-  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
-
-  ;; The other side of `fontaine-restore-latest-preset'.
-  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
-
-  ;; Persist font configurations while switching themes
-  (add-hook 'ef-themes-after-load-theme-hook #'fontaine-apply-current-preset))
-  
-#+end_src
 * Projectile
 Management at a project level, rather than just at file level.
 #+begin_src emacs-lisp
