@@ -51,6 +51,7 @@ Emacs configuration.
 - [[#magit][Magit]]
 - [[#all-the-icons][All the icons]]
 - [[#themes][Themes]]
+- [[#fonts][Fonts]]
 - [[#projectile][Projectile]]
 - [[#diminish][Diminish]]
 - [[#paredit][Paredit]]
@@ -154,103 +155,103 @@ which operating system is running:
   With different resolution monitors, I wanted to be able to set this
   at the system level.
 #+begin_src emacs-lisp
-   ;; Load machine local definitions
+ ;; Load machine local definitions
 
-   ;; Variables requiring system level configuration
-   (defvar *pj/load-site-gentoo* nil            "Load gentoo's config file.")
-   (defvar *pj/enable-auctex*    t              "Enable auctex mode.")
-   (defvar *pj/font-size*        "14"           "Fontsize for this system.")
-   (defvar *pj/font-name*        "Iosevka-"     "Font name for this system.")
-   (defvar *pj/font-spacing*     ":spacing=110" "Font spacing, where required.")
-   (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
+ ;; Variables requiring system level configuration
+ (defvar *pj/load-site-gentoo*  nil            "Load gentoo's config file.")
+ (defvar *pj/enable-auctex*     t              "Enable auctex mode.")
+ (defvar *pj/regular-font-size* 140           "Fontsize for this system.")
+ (defvar *pj/font-name*         "Iosevka-"     "Font name for this system.")
+ (defvar *pj/font-spacing*      ":spacing=110" "Font spacing, where required.")
+ (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
-   (defvar *pj/org-agenda-files* '("~/Nextcloud/org") "Location of org agenda files.")
-   (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/" "Location of org-roam files.")
-   (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
+ (defvar *pj/org-agenda-files* '("~/Nextcloud/org") "Location of org agenda files.")
+ (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/" "Location of org-roam files.")
+ (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
 
 
-   (defun pj/is-windows-p ()
-     "True if run in windows environment."
-     (string= "windows-nt" system-type))
+ (defun pj/is-windows-p ()
+   "True if run in windows environment."
+   (string= "windows-nt" system-type))
 
-   (defun pj/is-linux-p ()
-     "True if run in linux environment."
-     (string= "gnu/linux" system-type))
+ (defun pj/is-linux-p ()
+   "True if run in linux environment."
+   (string= "gnu/linux" system-type))
 
-   (defun pj/is-host-p (name)
-     "True if running on system NAME."
-     (string= (system-name) name))
+ (defun pj/is-host-p (name)
+   "True if running on system NAME."
+   (string= (system-name) name))
 
-   ;; Three possibilities for specifying values:
+ ;; Three possibilities for specifying values:
 
-   ;; - Globally, for all systems
-   ;; - By operating system
-   ;; - By system name
+ ;; - Globally, for all systems
+ ;; - By operating system
+ ;; - By system name
 
+ (cond
+  ((pj/is-linux-p)
    (cond
-    ((pj/is-linux-p)
-     (cond
-      ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-       (progn
-	 (require 'gnutls)
-	 ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
-	 ;; with the Debian installation in place when WSL was first installed. Also, if
-	 ;; the latest version of Emacs is loaded, this should not be a problem.
-	 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-	 (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-	 (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-	 (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-	 (setq *pj/font-size* "12")))
-      ;; tristan now has a 4K screen, so need to pull out the settings
-      ((string-prefix-p "tristan" (system-name))
-       (progn
-	 (setq *pj/load-site-gentoo* t)
-	 (setq *pj/font-size* "14")
-	 (setq *pj/font-name* "Firacodenerdfontmono-")
-	 (setq *pj/font-spacing* "")))
-      ((string-prefix-p "gandalf" (system-name))
-       (progn
-	 (setq *pj/font-size* "14")))
-      ((string-prefix-p "isolde" (system-name))
-       (progn
-	 (setq *pj/font-size* "14")))
-      (t
-       (progn
-	 (setq *pj/load-site-gentoo* t)))))
-    ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+    ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
      (progn
-       (setq *pj/enable-auctex* nil)
-       (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-       (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-       :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-       (setq *pj/font-size* "10")))
+  (require 'gnutls)
+  ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
+  ;; with the Debian installation in place when WSL was first installed. Also, if
+  ;; the latest version of Emacs is loaded, this should not be a problem.
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+  (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+  (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+  (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+  (setq *pj/regular-font-size* 120)))
+    ;; tristan now has a 4K screen, so need to pull out the settings
+    ((string-prefix-p "tristan" (system-name))
+     (progn
+  (setq *pj/load-site-gentoo* t)
+  (setq *pj/regular-font-size* 150)
+  (setq *pj/font-name* "Firacodenerdfontmono-")
+  (setq *pj/font-spacing* "")))
+    ((string-prefix-p "gandalf" (system-name))
+     (progn
+       (setq *pj/regular-font-size* 150)))
+    ((string-prefix-p "isolde" (system-name))
+     (progn
+  (setq *pj/regular-font-size* 150)))
     (t
-     (error "Undefined system-type %s" system-type)))
-  
-  (defvar *packages-initialised* nil)
+     (progn
+  (setq *pj/load-site-gentoo* t)))))
+  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+   (progn
+     (setq *pj/enable-auctex* nil)
+     (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
+     (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+     :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+     (setq *pj/regular-font-size* 120)))
+  (t
+   (error "Undefined system-type %s" system-type)))
 
-  (defun initialise-packages ()
-    "Ensure `package-initialize' is called only once."
-    (unless *packages-initialised*
-      (package-initialize)
-      (setq *packages-initialised* t)))
+(defvar *packages-initialised* nil)
 
-  (initialise-packages)
+(defun initialise-packages ()
+  "Ensure `package-initialize' is called only once."
+  (unless *packages-initialised*
+    (package-initialize)
+    (setq *packages-initialised* t)))
 
-   ;; Install and load `quelpa-use-package'.
+(initialise-packages)
 
-   (unless (package-installed-p 'quelpa)
-     (with-temp-buffer
-  (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-  (eval-buffer)
-  (quelpa-self-upgrade)))
-   (setq quelpa-update-melpa-p nil)
-   (unless (package-installed-p 'quelpa-use-package)
-     (quelpa
-      '(quelpa-use-package
-   :fetcher git
-   :url "https://github.com/quelpa/quelpa-use-package.git")))
-  (require 'quelpa-use-package)
+ ;; Install and load `quelpa-use-package'.
+
+ (unless (package-installed-p 'quelpa)
+   (with-temp-buffer
+(url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+(eval-buffer)
+(quelpa-self-upgrade)))
+ (setq quelpa-update-melpa-p nil)
+ (unless (package-installed-p 'quelpa-use-package)
+   (quelpa
+    '(quelpa-use-package
+ :fetcher git
+ :url "https://github.com/quelpa/quelpa-use-package.git")))
+(require 'quelpa-use-package)
 
 #+end_src
 
@@ -1361,18 +1362,73 @@ Currently trialing Prot's themes from his ef-themes package
           (7 variable-pitch 1.2)
           (t variable-pitch 1.1)))
   (setq ef-themes-mixed-fonts t
-        ef-themes-variable-pitch-ui t)
+        ef-themes-variable-pitch-ui t) ; Use variable pitch for all UI elements
   ;; Disable all other themese to avoid blending
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme 'ef-dark :no-confirm))
 
+
+#+end_src
+* Fonts
+#+begin_src emacs-lisp
 ;; Font size is localised
-(defvar my:font (concat *pj/font-name* *pj/font-size* *pj/font-spacing*))
-(set-face-attribute 'default nil :font my:font)
+;;(defvar my:font (concat *pj/font-name* *pj/regular-font-size* *pj/font-spacing*))
+;;(set-face-attribute 'default nil :font my:font)
 
 ;; Set font for frames running under emacs daemon
-(add-to-list 'default-frame-alist `(font . ,(concat *pj/font-name* *pj/font-size*)))
+;;(add-to-list 'default-frame-alist `(font . ,(concat *pj/font-name* *pj/regular-font-size*)))
 
+(use-package fontaine
+  :config
+  (setq fontaine-latest-state-file
+        (locate-user-emacs-file "fontaine-latest-state.eld"))
+  (setq fontaine-presets
+      `((tiny
+         :default-family "Iosevka Comfy Wide Fixed"
+         :default-height ,(* (round (* *pj/regular-font-size* 0.7) 10) 10))
+        (small
+         :default-family "Iosevka Comfy Fixed"
+         :default-height ,(* (round (* *pj/regular-font-size* 0.8) 10) 10))
+        (regular
+         :default-height ,*pj/regular-font-size*)
+        (medium
+         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10))
+        (large
+         :default-weight semilight
+         :default-height ,(* (round (* *pj/regular-font-size* 1.3) 10) 10)
+         :bold-weight extrabold)
+        (presentation
+         :default-weight semilight
+         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10)
+         :bold-weight extrabold)
+        (t
+         ;; I keep all properties for didactic purposes, but most can be
+         ;; omitted.  See the fontaine manual for the technicalities:
+         ;; <https://protesilaos.com/emacs/fontaine>.
+         :default-family "Iosevka Comfy"
+         :default-weight regular
+         :default-height ,*pj/regular-font-size*
+         :fixed-pitch-family nil ; falls back to :default-family
+         :fixed-pitch-weight nil ; falls back to :default-weight
+         :fixed-pitch-height 1.0
+         :fixed-pitch-serif-family nil ; falls back to :default-family
+         :fixed-pitch-serif-weight nil ; falls back to :default-weight
+         :fixed-pitch-serif-height 1.0
+         :variable-pitch-family "Iosevka Comfy Duo"
+         :variable-pitch-weight nil
+         :variable-pitch-height 1.0
+         :bold-family nil ; use whatever the underlying face has
+         :bold-weight bold
+         :italic-family nil
+         :italic-slant italic
+         :line-spacing nil)))
+  ;; Recover last preset or fall back to desired style from
+  ;; `fontaine-presets'.
+  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+
+  ;; The other side of `fontaine-restore-latest-preset'.
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
+  
 #+end_src
 * Projectile
 Management at a project level, rather than just at file level.
