@@ -80,7 +80,7 @@ Emacs configuration.
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
 - [[#hammy][Hammy]]
-- [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
+- [[#auto-tangle-configuration-files][Auto tangle configuration files]]
 
 * Early Init
 ** init.el Preamble
@@ -2066,11 +2066,7 @@ TODO: Not yet set up. Website development with org and hugo.
              :advance (do (announce "Break time is over!")
                           (notify "Break time is over!"))))))
 #+end_src
-
-#+results:
-
-* Auto-tangle Configuration files
-
+* Auto tangle configuration files
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Auto tangle configuration files
@@ -2091,6 +2087,3 @@ TODO: Not yet set up. Website development with org and hugo.
 
 
 #+end_src
-
-
-
