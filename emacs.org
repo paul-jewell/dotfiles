@@ -245,16 +245,17 @@ which operating system is running:
  ;; Load machine local definitions
 
  ;; Variables requiring system level configuration
- (defvar *pj/load-site-gentoo*  nil            "Load gentoo's config file.")
- (defvar *pj/enable-auctex*     t              "Enable auctex mode.")
- (defvar *pj/enable-email*      t              "Enable email management.")
- (defvar *pj/regular-font-size* 140           "Fontsize for this system.")
- (defvar *pj/font-name*         "Iosevka-"     "Font name for this system.")
- (defvar *pj/font-spacing*      ":spacing=110" "Font spacing, where required.")
+ (defvar *pj/load-site-gentoo*  nil                        "Load gentoo's config file.")
+ (defvar *pj/enable-auctex*     t                          "Enable auctex mode.")
+ (defvar *pj/enable-email*      t                          "Enable email management.")
+ (defvar *pj/regular-font-size* 140                        "Fontsize for this system.")
+ (defvar *pj/tiny-font-name*    "Iosevka Comfy Wide Fixed" "Font name for tiny fontaine config")
+ (defvar *pj/default-font-name* "Iosevka Comfy Fixed"      "Font name for this system.")
+ (defvar *pj/prop-font-name*    "Iosevka Comfy Duo"        "Variable pitch font for this system")
  (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
- (defvar *pj/org-agenda-files* '("~/Nextcloud/org") "Location of org agenda files.")
- (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/" "Location of org-roam files.")
+ (defvar *pj/org-agenda-files* '("~/Nextcloud/org")              "Location of org agenda files.")
+ (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/"       "Location of org-roam files.")
  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
 
 
@@ -295,8 +296,9 @@ which operating system is running:
      (progn
        (setq *pj/load-site-gentoo* t)
        (setq *pj/regular-font-size* 150)
-       (setq *pj/font-name* "Firacodenerdfontmono-")
-       (setq *pj/font-spacing* "")))
+       (setq *pj/tiny-font-name*    "FiraCode Nerd Font Mono")
+       (setq *pj/default-font-name* "FiraCode Nerd Font Mono")
+       (setq *pj/prop-font-name*    "FiraCode Nerd Font Propo")
     ((string-prefix-p "gandalf" (system-name))
      (progn
        (setq *pj/regular-font-size* 150)))
@@ -532,23 +534,16 @@ Currently trialing Prot's themes from his ef-themes package
 Using the fontaine package from Prot. Font sizes are calculated from
 the variable =*pj/regular-font-size*= 
 #+begin_src emacs-lisp
-;; Font size is localised
-;;(defvar my:font (concat *pj/font-name* *pj/regular-font-size* *pj/font-spacing*))
-;;(set-face-attribute 'default nil :font my:font)
-
-;; Set font for frames running under emacs daemon
-;;(add-to-list 'default-frame-alist `(font . ,(concat *pj/font-name* *pj/regular-font-size*)))
-
 (use-package fontaine
   :config
   (setq fontaine-latest-state-file
         (locate-user-emacs-file "fontaine-latest-state.eld"))
   (setq fontaine-presets
       `((tiny
-         :default-family "Iosevka Comfy Wide Fixed"
+         :default-family ,*pj/tiny-font-name*
          :default-height ,(* (round (* *pj/regular-font-size* 0.7) 10) 10))
         (small
-         :default-family "Iosevka Comfy Fixed"
+         :default-family ,*pj/default-font-name*
          :default-height ,(* (round (* *pj/regular-font-size* 0.8) 10) 10))
         (regular
          :default-height ,*pj/regular-font-size*)
@@ -566,7 +561,7 @@ the variable =*pj/regular-font-size*=
          ;; I keep all properties for didactic purposes, but most can be
          ;; omitted.  See the fontaine manual for the technicalities:
          ;; <https://protesilaos.com/emacs/fontaine>.
-         :default-family "Iosevka Comfy"
+         :default-family ,*pj/default-font-name*
          :default-weight regular
          :default-height ,*pj/regular-font-size*
          :fixed-pitch-family nil ; falls back to :default-family
@@ -575,7 +570,7 @@ the variable =*pj/regular-font-size*=
          :fixed-pitch-serif-family nil ; falls back to :default-family
          :fixed-pitch-serif-weight nil ; falls back to :default-weight
          :fixed-pitch-serif-height 1.0
-         :variable-pitch-family "Iosevka Comfy Duo"
+         :variable-pitch-family ,*pj/prop-font-name* 
          :variable-pitch-weight nil
          :variable-pitch-height 1.0
          :bold-family nil ; use whatever the underlying face has
@@ -1209,16 +1204,16 @@ Snippet management. TODO: Proper setup
 TODO: Move this all into the my-org-mode.el file, and load it here.
 TODO: Refactor my-org-mode.el file completely.
 #+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....org mode
-  ;;     --------
+;;==============================================================================
+;;.....org mode
+;;     --------
 
-  (setq org-agenda-files *pj/org-agenda-files*)
-  (load "~/.emacs.d/lisp/my-org-mode.el")
-
+(setq org-agenda-files *pj/org-agenda-files*)
+(load "~/.emacs.d/lisp/my-org-mode.el")  
+(org-toggle-pretty-entities)
 ;;  (eval-after-load "org" (add-to-list 'org-modules 'org-habit))
 ;;  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
-  (global-set-key (kbd "C-c w") 'org-refile)
+(global-set-key (kbd "C-c w") 'org-refile)
 
 ;; Resolving conflict between org-mode and yasnippet
 ;; (defun yas/org-very-safe-expand ()
