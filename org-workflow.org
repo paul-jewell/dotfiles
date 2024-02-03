@@ -18,6 +18,7 @@ TODO: Complete the breakdown and documentation in this file.
 - [[#keybindings][Keybindings]]
 - [[#functions][Functions]]
 - [[#capture-templates][Capture templates]]
+- [[#org-agenda-setup][Org Agenda Setup]]
 - [[#clocking-functions][Clocking functions]]
 - [[#helper-functions][Helper functions]]
 - [[#publishing][Publishing]]
@@ -282,6 +283,9 @@ TODO: Complete the breakdown and documentation in this file.
 
 (setq org-refile-target-verify-function 'pj/verify-refile-target)
 
+#+end_src
+* Org Agenda Setup
+#+begin_src emacs-lisp
 ;; Do not dim blocked tasks
 
 (setq org-agenda-dim-blocked-tasks nil)
@@ -300,7 +304,7 @@ TODO: Complete the breakdown and documentation in this file.
                ((org-agenda-overriding-header "Habits")
                 (org-agenda-sorting-strategy
                  '(todo-state-down effort-up category-keep))))
-              (" " "Agenda"
+              ("Z" "Agenda"
                ((agenda "" nil)
                 (tags "REFILE"
                       ((org-agenda-overriding-header "Tasks to Refile")
