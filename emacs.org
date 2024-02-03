@@ -569,8 +569,6 @@ the variable =*pj/regular-font-size*=
          :fixed-pitch-family *pj/default-font-name*
          :fixed-pitch-weight nil ; falls back to :default-weight
          :fixed-pitch-height 1.0
-         :fixed-pitch-serif-family nil ; falls back to :default-family
-         :fixed-pitch-serif-weight nil ; falls back to :default-weight
          :fixed-pitch-serif-height 1.0
          :variable-pitch-family ,*pj/prop-font-name* 
          :variable-pitch-weight nil
@@ -588,7 +586,8 @@ the variable =*pj/regular-font-size*=
 
   ;; Persist font configurations while switching themes
   (add-hook 'ef-themes-after-load-theme-hook #'fontaine-apply-current-preset))
-  
+
+(fontaine-restore-latest-preset)
 #+end_src
 * Dashboard
 #+begin_src emacs-lisp
