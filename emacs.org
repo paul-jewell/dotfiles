@@ -295,10 +295,7 @@ which operating system is running:
    ((string-prefix-p "tristan" (system-name))
     (progn
       (setq *pj/load-site-gentoo* t)
-      (setq *pj/regular-font-size* 150)
-      (setq *pj/tiny-font-name*    "FiraCode Nerd Font Mono")
-      (setq *pj/default-font-name* "FiraCode Nerd Font Mono")
-      (setq *pj/prop-font-name*    "FiraCode Nerd Font Propo"))
+      (setq *pj/regular-font-size* 150))
     ((string-prefix-p "gandalf" (system-name))
      (progn
        (setq *pj/regular-font-size* 150)))
@@ -312,6 +309,9 @@ which operating system is running:
   (progn
     (setq *pj/enable-auctex* nil)
     (setq *pj/enable-email* nil)
+    (setq *pj/tiny-font-name*    "FiraCode Nerd Font Reg")
+    (setq *pj/default-font-name* "FiraCode Nerd Font Reg")
+    (setq *pj/prop-font-name*    "FiraCode Nerd Font Propo Reg")
     (setq *pj/org-agenda-files* '("~/Nextcloud/org"))
     (setq *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
     (setq *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
