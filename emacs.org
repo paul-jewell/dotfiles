@@ -149,27 +149,27 @@ minimal. Note =frame-resize-pixelwise= and =frame-inhibit-implied-resize=: by
 default Emacs will resize the frame if you adjust the font size, which
 is undesirable.
 #+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
-    (setq frame-resize-pixelwise t
-	  frame-inhibit-implied-resize t
-	  frame-title-format '("%b")
-	  ring-bell-function 'ignore
-    ;;      use-dialog-box t
-    ;;      use-file-dialog nil
-	  use-short-answers t
-	  inhibit-splash-screen t
-	  inhibit-startup-screen t
-    ;;      inhibit-x-resources t
-    ;;      inhibit-startup-buffer-menu t
-	  )
+  (setq frame-resize-pixelwise t
+        frame-inhibit-implied-resize t
+        frame-title-format '("%b")
+        ring-bell-function 'ignore
+        ;;      use-dialog-box t
+        ;;      use-file-dialog nil
+        use-short-answers t
+        inhibit-splash-screen t
+        inhibit-startup-screen t
+        ;;      inhibit-x-resources t
+        ;;      inhibit-startup-buffer-menu t
+        )
 
-    ;;   (menu-bar-lines . 0)
-     (setq-default
-      default-frame-alist
-      '(; (tool-bar-lines . 0)
-	; (undecorated . t)
-	;(vertical-scroll-bars . nil)
-	;(horizontal-scroll-bars . nil)
-	))
+  ;;   (menu-bar-lines . 0)
+  (setq-default
+   default-frame-alist
+   '(; (tool-bar-lines . 0)
+     ;; (undecorated . t)
+     ;;(vertical-scroll-bars . nil)
+     ;;(horizontal-scroll-bars . nil)
+     ))
 
 #+end_src
 * init.el Preamble
@@ -277,28 +277,28 @@ which operating system is running:
  ;; - By operating system
  ;; - By system name
 
- (cond
-  ((pj/is-linux-p)
-   (cond
-    ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-     (progn
-       (require 'gnutls)
-       ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
-       ;; with the Debian installation in place when WSL was first installed. Also, if
-       ;; the latest version of Emacs is loaded, this should not be a problem.
-       (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-       (setq *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-       (setq *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-       (setq *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-       (setq *pj/regular-font-size* 120)))
-    ;; tristan now has a 4K screen, so need to pull out the settings
-    ((string-prefix-p "tristan" (system-name))
-     (progn
-       (setq *pj/load-site-gentoo* t)
-       (setq *pj/regular-font-size* 150)
-       (setq *pj/tiny-font-name*    "FiraCode Nerd Font Mono")
-       (setq *pj/default-font-name* "FiraCode Nerd Font Mono")
-       (setq *pj/prop-font-name*    "FiraCode Nerd Font Propo")
+(cond
+ ((pj/is-linux-p)
+  (cond
+   ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+    (progn
+      (require 'gnutls)
+      ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
+      ;; with the Debian installation in place when WSL was first installed. Also, if
+      ;; the latest version of Emacs is loaded, this should not be a problem.
+      (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+      (setq *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+      (setq *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+      (setq *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+      (setq *pj/regular-font-size* 120)))
+   ;; tristan now has a 4K screen, so need to pull out the settings
+   ((string-prefix-p "tristan" (system-name))
+    (progn
+      (setq *pj/load-site-gentoo* t)
+      (setq *pj/regular-font-size* 150)
+      (setq *pj/tiny-font-name*    "FiraCode Nerd Font Mono")
+      (setq *pj/default-font-name* "FiraCode Nerd Font Mono")
+      (setq *pj/prop-font-name*    "FiraCode Nerd Font Propo"))
     ((string-prefix-p "gandalf" (system-name))
      (progn
        (setq *pj/regular-font-size* 150)))
@@ -307,17 +307,17 @@ which operating system is running:
        (setq *pj/regular-font-size* 150)))
     (t
      (progn
-       (setq *pj/load-site-gentoo* t)))))
-  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
-   (progn
-     (setq *pj/enable-auctex* nil)
-     (setq *pj/enable-email* nil)
-     (setq *pj/org-agenda-files* '("~/Nextcloud/org"))
-     (setq *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-     (setq *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-     (setq *pj/regular-font-size* 120)))
-  (t
-   (error "Undefined system-type %s" system-type)))
+       (setq *pj/load-site-gentoo* t))))))
+ ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+  (progn
+    (setq *pj/enable-auctex* nil)
+    (setq *pj/enable-email* nil)
+    (setq *pj/org-agenda-files* '("~/Nextcloud/org"))
+    (setq *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+    (setq *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+    (setq *pj/regular-font-size* 120)))
+ (t
+  (error "Undefined system-type %s" system-type)))
 
 (defvar *packages-initialised* nil)
 
@@ -329,26 +329,26 @@ which operating system is running:
 
 (initialise-packages)
 
- ;; Install and load `quelpa-use-package'.
+;; Install and load `quelpa-use-package'.
 
- (unless (package-installed-p 'quelpa)
+(unless (package-installed-p 'quelpa)
    (with-temp-buffer
 (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
 (eval-buffer)
 (quelpa-self-upgrade)))
- (setq quelpa-update-melpa-p nil)
- (unless (package-installed-p 'quelpa-use-package)
-   (quelpa
-    '(quelpa-use-package
- :fetcher git
- :url "https://github.com/quelpa/quelpa-use-package.git")))
+(setq quelpa-update-melpa-p nil)
+(unless (package-installed-p 'quelpa-use-package)
+  (quelpa
+   '(quelpa-use-package
+     :fetcher git
+     :url "https://github.com/quelpa/quelpa-use-package.git")))
 (require 'quelpa-use-package)
 
 #+end_src
 
 #+begin_src emacs-lisp
-(defvar init-dir) ;; Initial directory for emacs configuration
-(setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
+  (defvar init-dir) ;; Initial directory for emacs configuration
+  (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
 
 #+end_src
 ** Scrolling precision
@@ -546,7 +546,7 @@ the variable =*pj/regular-font-size*=
          :default-family ,*pj/default-font-name*
          :default-height ,(* (round (* *pj/regular-font-size* 0.8) 10) 10))
         (regular
-         :default-height ,*pj/regular-font-size*)
+         :default-height ,*pj/regular-font-size*
         (medium
          :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10))
         (large
@@ -577,11 +577,10 @@ the variable =*pj/regular-font-size*=
          :bold-weight bold
          :italic-family nil
          :italic-slant italic
-         :line-spacing nil)))
+         :line-spacing nil))))
   ;; Recover last preset or fall back to desired style from
   ;; `fontaine-presets'.
-  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
-
+ 
   ;; The other side of `fontaine-restore-latest-preset'.
   (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
 
