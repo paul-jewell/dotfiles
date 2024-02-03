@@ -546,8 +546,10 @@ the variable =*pj/regular-font-size*=
          :default-family ,*pj/default-font-name*
          :default-height ,(* (round (* *pj/regular-font-size* 0.8) 10) 10))
         (regular
+         :default-family ,*pj/default-font-name*
          :default-height ,*pj/regular-font-size*
         (medium
+         :default-family ,*pj/default-font-name*
          :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10))
         (large
          :default-weight semilight
@@ -564,7 +566,7 @@ the variable =*pj/regular-font-size*=
          :default-family ,*pj/default-font-name*
          :default-weight regular
          :default-height ,*pj/regular-font-size*
-         :fixed-pitch-family nil ; falls back to :default-family
+         :fixed-pitch-family *pj/default-font-name*
          :fixed-pitch-weight nil ; falls back to :default-weight
          :fixed-pitch-height 1.0
          :fixed-pitch-serif-family nil ; falls back to :default-family
