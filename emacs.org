@@ -443,46 +443,46 @@ C-z as appropriate.
 Packages are currently installed using use-package. 
 
 #+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....Package management
-  ;;     ------------------
+;;==============================================================================
+;;.....Package management
+;;     ------------------
 
-  ;; Add marmalade to package repos
-  (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
-                           ("melpa" . "https://melpa.org/packages/")
-                           ("melpa-stable" . "https://stable.melpa.org/packages/")))
-      
-  (initialise-packages)
+;; Add marmalade to package repos
+(setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
-  (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
-               (file-exists-p (concat init-dir "elpa/archives/melpa"))
-               (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
-    (package-refresh-contents))
+(initialise-packages)
 
-  ;; Initialise use-package on non-guix/non-nix systems.
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
+(unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
+             (file-exists-p (concat init-dir "elpa/archives/melpa"))
+             (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
+  (package-refresh-contents))
 
-  (eval-when-compile (require 'use-package))
-  (setq use-package-verbose t)
-  (setq native-comp-async-report-warnings-errors 'silent)
+;; Initialise use-package on non-guix/non-nix systems.
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
 
-  ;; This ensures packages are available - if using nix/guix declarative package
-  ;; installation, this needs to be removed
-  (setq use-package-always-ensure t)
+(eval-when-compile (require 'use-package))
+(setq use-package-verbose t)
+(setq native-comp-async-report-warnings-errors 'silent)
 
-  (use-package async
-    :defer t
-    :init
-    (dired-async-mode 1))
+;; This ensures packages are available - if using nix/guix declarative package
+;; installation, this needs to be removed
+(setq use-package-always-ensure t)
 
-  (use-package savehist
-    :defer 2
-    :init (savehist-mode t))
+(use-package async
+  :defer t
+  :init
+  (dired-async-mode 1))
 
-  (use-package repeat
-    :defer 10
-    :init (repeat-mode +1))
+;; (use-package savehist
+;;   :defer 2
+;;   :init (savehist-mode t))
+
+;; (use-package repeat
+;;   :defer 10
+;;   :init (repeat-mode +1))
 #+end_src
 
 * Keep .emacs.d Clean
