@@ -149,27 +149,25 @@ minimal. Note =frame-resize-pixelwise= and =frame-inhibit-implied-resize=: by
 default Emacs will resize the frame if you adjust the font size, which
 is undesirable.
 #+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
-  (setq frame-resize-pixelwise t
-        frame-inhibit-implied-resize t
-        frame-title-format '("%b")
-        ring-bell-function 'ignore
-        ;;      use-dialog-box t
-        ;;      use-file-dialog nil
-        use-short-answers t
-        inhibit-splash-screen t
-        inhibit-startup-screen t
-        ;;      inhibit-x-resources t
-        ;;      inhibit-startup-buffer-menu t
-        )
+(setq frame-resize-pixelwise t
+      frame-inhibit-implied-resize t
+      frame-title-format '("%b")
+      ring-bell-function 'ignore
+      use-dialog-box t
+      use-file-dialog nil
+      use-short-answers t
+      inhibit-splash-screen t
+      inhibit-startup-screen t
+      ;inhibit-x-resources t
+      inhibit-startup-buffer-menu t)
 
-  ;;   (menu-bar-lines . 0)
-  (setq-default
-   default-frame-alist
-   '(; (tool-bar-lines . 0)
-     ;; (undecorated . t)
-     ;;(vertical-scroll-bars . nil)
-     ;;(horizontal-scroll-bars . nil)
-     ))
+;;   (menu-bar-lines . 0)
+ (setq-default
+  default-frame-alist
+  '((tool-bar-lines . 0)
+    ;;(undecorated . t)
+    (vertical-scroll-bars . nil)
+    (horizontal-scroll-bars . nil)))
 
 #+end_src
 * init.el Preamble
@@ -444,46 +442,46 @@ C-z as appropriate.
 Packages are currently installed using use-package. 
 
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....Package management
-;;     ------------------
+  ;;==============================================================================
+  ;;.....Package management
+  ;;     ------------------
 
-;; Add marmalade to package repos
-(setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/")))
+  ;; Add marmalade to package repos
+  (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
+                           ("melpa" . "https://melpa.org/packages/")
+                           ("melpa-stable" . "https://stable.melpa.org/packages/")))
       
-(initialise-packages)
+  (initialise-packages)
 
-(unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
-             (file-exists-p (concat init-dir "elpa/archives/melpa"))
-             (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
-  (package-refresh-contents))
+  (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
+               (file-exists-p (concat init-dir "elpa/archives/melpa"))
+               (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
+    (package-refresh-contents))
 
-;; Initialise use-package on non-guix/non-nix systems.
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+  ;; Initialise use-package on non-guix/non-nix systems.
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
 
-(eval-when-compile (require 'use-package))
-(setq use-package-verbose t
-      native-comp-async-report-warnings-errors nil)
+  (eval-when-compile (require 'use-package))
+  (setq use-package-verbose t)
+  (setq native-comp-async-report-warnings-errors 'silent)
 
-;; This ensures packages are available - if using nix/guix declarative package
-;; installation, this needs to be removed
-(setq use-package-always-ensure t)
+  ;; This ensures packages are available - if using nix/guix declarative package
+  ;; installation, this needs to be removed
+  (setq use-package-always-ensure t)
 
-(use-package async
-  :defer t
-  :init
-  (dired-async-mode 1))
+  (use-package async
+    :defer t
+    :init
+    (dired-async-mode 1))
 
-(use-package savehist
-  :defer 2
-  :init (savehist-mode t))
+  (use-package savehist
+    :defer 2
+    :init (savehist-mode t))
 
-(use-package repeat
-  :defer 10
-  :init (repeat-mode +1))
+  (use-package repeat
+    :defer 10
+    :init (repeat-mode +1))
 #+end_src
 
 * Keep .emacs.d Clean
