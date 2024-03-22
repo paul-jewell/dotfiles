@@ -299,7 +299,7 @@ which operating system is running:
        (setq *pj/regular-font-size* 150)))
     ((string-prefix-p "isolde" (system-name))
      (progn
-       (setq *pj/regular-font-size* 150)
+       (setq *pj/regular-font-size* 50)
        (setq *pj/enable-email* nil)))
     (t
      (progn
