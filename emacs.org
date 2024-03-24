@@ -203,11 +203,6 @@ is undesirable.
 ;; Source: https://github.com/gopar/.emacs.d
 ;; Interesting, well configured setup, so borrowing some items from there.
 
-;; recommended to have this at the top.
-
-(setq treesit-extra-load-path `(,(concat user-emacs-directory "var/tree-sitter-dist/")
-                                ,(concat user-emacs-directory "treesitter")))
-
 (setq load-prefer-newer t) ;; Loads the newest version of a file .el or .elc
 ;;---------------------------------------------------------------------------------
 
@@ -293,17 +288,17 @@ which operating system is running:
    ((string-prefix-p "tristan" (system-name))
     (progn
       (setq *pj/load-site-gentoo* t)
-      (setq *pj/regular-font-size* 150))
-    ((string-prefix-p "gandalf" (system-name))
-     (progn
-       (setq *pj/regular-font-size* 150)))
-    ((string-prefix-p "isolde" (system-name))
-     (progn
-       (setq *pj/regular-font-size* 50)
-       (setq *pj/enable-email* nil)))
-    (t
-     (progn
-       (setq *pj/load-site-gentoo* t))))))
+      (setq *pj/regular-font-size* 150)))
+   ((string-prefix-p "gandalf" (system-name))
+    (progn
+      (setq *pj/regular-font-size* 150)))
+   ((string-prefix-p "isolde" (system-name))
+    (progn
+      (setq *pj/regular-font-size* 130)
+      (setq *pj/enable-email* nil)))
+   (t
+    (progn
+      (setq *pj/load-site-gentoo* t)))))
  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
   (progn
     (setq *pj/enable-auctex* nil)
