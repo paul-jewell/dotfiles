@@ -1,23 +1,41 @@
-#+TITLE: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.emacs.d/init.el 
++TITLE: Emacs Configuration
+#+author: Paul Jewell
+#+email: paul@teulu.org
+#+language: en
+#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.emacs.d/init.el
+#+macro: latest-export-date (eval (format-time-string "%F %T %z"))
 
 Emacs configuration.
 
-* table of contents                                                 :toc:
+*Last revised and exported on {{{latest-export-date}}}.*
+
+* table of contents                                                     :toc:
 :PROPERTIES:
 :TOC: :include all :ignore this
 :END:
-- [[#early-init-file][Early init file]]
-- [[#preamble][Preamble]]
+- [[#early-init][Early Init]]
+  - [[#initel-preamble][init.el Preamble]]
+  - [[#early-initel---native-compile-packages][early-init.el - Native compile packages]]
+  - [[#early-initel---macro-to-run-code-only-in-a-non-tiling-wm-environment][early-init.el - macro to run code only in a non tiling wm environment]]
+  - [[#early-initel---code-to-set-frame-parameters][early-init.el - code to set frame parameters]]
+  - [[#early-initel---basic-frame-settings][early-init.el - basic frame settings]]
+- [[#initel-preamble-1][init.el Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
+- [[#scrolling-precision][Scrolling precision]]
 - [[#general-configuration][General configuration]]
+  - [[#initial-settings][Initial settings]]
+  - [[#eliminate-c-z-sleep-in-graphical-mode][Eliminate C-z sleep in graphical mode]]
+  - [[#other-settings-for-appearance-and-layout][Other settings for appearance and layout]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
-- [[#moody][Moody]]
+- [[#themes][Themes]]
+- [[#fonts][Fonts]]
+- [[#dashboard][Dashboard]]
+- [[#doom-modeline][Doom modeline]]
+- [[#treemacs][Treemacs]]
 - [[#tramp][Tramp]]
-- [[#ivy][Ivy]]
-- [[#swiper][Swiper]]
+- [[#completion-frameworks][Completion Frameworks]]
 - [[#which-key][Which-key]]
 - [[#ispell][ispell]]
 - [[#ledger][Ledger]]
@@ -33,17 +51,12 @@ Emacs configuration.
 - [[#org-mode][Org-mode]]
 - [[#org-bullet-mode][Org Bullet mode]]
 - [[#org-roam][Org-roam]]
-- [[#licence-boilerplate][Licence Boilerplate]]
 - [[#auctex][Auctex]]
 - [[#reftex][Reftex]]
 - [[#hydra][Hydra]]
 - [[#javascript-and-html][Javascript and HTML]]
-- [[#company-mode][Company mode]]
 - [[#magit][Magit]]
-- [[#flycheck][Flycheck]]
 - [[#all-the-icons][All the icons]]
-- [[#themes][Themes]]
-- [[#eyebrowse][eyebrowse]]
 - [[#projectile][Projectile]]
 - [[#diminish][Diminish]]
 - [[#paredit][Paredit]]
@@ -52,32 +65,114 @@ Emacs configuration.
 - [[#lisp][Lisp]]
 - [[#emacs-lisp][emacs-lisp]]
 - [[#haskell][Haskell]]
+- [[#lua][lua]]
+- [[#markdown][Markdown]]
+- [[#typescript-ja-and-jsxtsx-support][Typescript, JA and JSX/TSX support]]
+- [[#yaml-mode][yaml mode]]
 - [[#nix][nix]]
 - [[#email---notmuch][email - notmuch]]
 - [[#gnus][GNUS]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
 - [[#gnupg---key-management][gnupg - Key management]]
+- [[#password-store][Password-store]]
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
-- [[#auto-tangle-configuration-files][Auto-tangle Configuration files]]
+- [[#hammy][Hammy]]
+- [[#auto-tangle-configuration-files][Auto tangle configuration files]]
 
-* Early init file
-#+begin_src emacs-lisp :mkdirp t :tangle ./.emacs.d/early-init.el
-;;; -*-buffer-read-only: t;-*- 
-;;; package ---  early-init.el: Prevent package-initialize being called before loading the init file
+* Early Init
+** init.el Preamble
+- Make the tangled file read only if loaded into emacs. Hopefully it
+  will be enough to ensure this file remains the primary truth!
+#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+;;-*- buffer-read-only: t; lexical-binding: t; -*-
+
+;;; early-init.el --- Startup file for emacs
+
 ;;; Commentary:
-;;; This file is tangled from ~/dotfiles/emacs.org. Any changes should be made there...
+;; Initial configuration file loaded by Emacs.
+;;  - Sets the custom configuration file location
+;; This file is generated from ~/dotfiles/emacs.org and tangled. Changes should
+;; be made to that file; also for more information - see details there.
+;;
+;; (c) 2017 - 2024 Paul Jewell
+;; Contributions from many sources, including:
+;; - David Wilson
+;; - bbatsov
+;; - prot
+;;
+;; Licence: BSD
 
 ;;; Code:
+#+end_src
+** early-init.el - Native compile packages
+Recommended to have this at the top of the configuration files.
+#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+(setq-default package-native-compile t)
+#+end_src
+** early-init.el - macro to run code only in a non tiling wm environment
+Slightly adapted from code in Prot's configuration renamed for consistency.
+#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+(defvar pj/emacs-tiling-wm-regexp
+  (regexp-opt '("xmonad" "i3"))
+  "Regular expression for tiling window managers.")
 
-(if (> emacs-major-version 27)
-    (setq package-enable-at-startup nil))
+(defmacro pj/emacs-with-desktop-session (&rest body)
+  "Expand BODY if desktop session is not a tiling window manager"
+  (declare (indent 0))
+  `(when-let ((session (getenv "DESKTOP_SESSION"))
+              ((not (string-match-p session pj/emacs-tiling-wm-regexp))))
+     ,@body))
+#+end_src
+** early-init.el - code to set frame parameters
+If the window manager is not a tiling wm, then set the default size of
+the initial and subsequent frames.
+#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+(defun pj/add-to-list (list element)
+  "Add ELEMENT to symbol of LIST
+Simplified version of `add-to-list'."
+  (set list (cons element (symbol-value list))))
+
+(pj/emacs-with-desktop-session
+  (mapc
+   (lambda (var)
+     (pj/add-to-list var '(width . (text-pixels . 1200)))
+     (pj/add-to-list var '(height . (text-pixels . 900)))
+     (pj/add-to-list var '(scroll-bar-width . 10)))
+   '(default-frame-alist initial-frame-alist)))
+#+end_src
+** early-init.el - basic frame settings
+General settings for frames to keep things
+minimal. Note =frame-resize-pixelwise= and =frame-inhibit-implied-resize=: by
+default Emacs will resize the frame if you adjust the font size, which
+is undesirable.
+#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+(setq frame-resize-pixelwise t
+      frame-inhibit-implied-resize t
+      frame-title-format '("%b")
+      ring-bell-function 'ignore
+      use-dialog-box t
+      use-file-dialog nil
+      use-short-answers t
+      inhibit-splash-screen t
+      inhibit-startup-screen t
+      ;inhibit-x-resources t
+      inhibit-startup-buffer-menu t)
+
+;;   (menu-bar-lines . 0)
+ (setq-default
+  default-frame-alist
+  '((tool-bar-lines . 0)
+    ;;(undecorated . t)
+    (vertical-scroll-bars . nil)
+    (horizontal-scroll-bars . nil)))
 
 #+end_src
-* Preamble
-
+* init.el Preamble
+- Make the tangled file read only if loaded into emacs. Hopefully it
+  will be enough to ensure this file remains the primary truth!
 #+begin_src emacs-lisp
 ;;-*- buffer-read-only: t; lexical-binding: t; -*-
 
@@ -89,10 +184,11 @@ Emacs configuration.
 ;; This file is generated from ~/dotfiles/emacs.org and tangled. Changes should
 ;; be made to that file; also for more information - see details there.
 ;;
-;; (c) 2017 - 2021 Paul Jewell
+;; (c) 2017 - 2024 Paul Jewell
 ;; Contributions from many sources, including:
 ;; - David Wilson
 ;; - bbatsov
+;; - prot
 ;;
 ;; Licence: BSD
 
@@ -102,149 +198,161 @@ Emacs configuration.
 * Startup Performance
 
 #+begin_src emacs-lisp
-;; The default is 800 kb. Measured in bytes.
-(setq gc-cons-threshold (* 50 1000 1000))
 
-;; profile emacs startup
+;;---------------------------------------------------------------------------------
+;; Source: https://github.com/gopar/.emacs.d
+;; Interesting, well configured setup, so borrowing some items from there.
 
-(add-hook 'emacs-startup-hook
+(setq load-prefer-newer t) ;; Loads the newest version of a file .el or .elc
+;;---------------------------------------------------------------------------------
+
+;; Avoid GC during init, then reset after init completed
+(setq gc-cons-threshold most-positive-fixnum)
+
+(add-hook 'after-startup-hook
           (lambda ()
-            (message "*** Emacs loaded in %s with %d garbage collections."
-                     (format "%2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
+            (setq gc-cons-threshold (* 2 1024 1024)
+                  gc-cons-percentage 0.2))
+          t)
 
 #+end_src
 
 * Machine specific code, and package initialisation
-
+The following settings are configured depending on which machine and
+which operating system is running:
+- Whether or not to load the gentoo-site-file
+  Clearly only appropriate on gentoo systems. Since I use use-package
+  to load modules, the content of this file is quite limited.
+- enable auctex I had issues while working with this, again on windows
+  and they need resolving. TODO: Part of the refactoring activity I am
+  working on will resolve the issues and enable it to be loaded in all
+  systems.
+- Font handling
+  Different systems have different font names for the same font, and
+  the font spacing should also be settable by system.
+- Set the font-size
+  With different resolution monitors, I wanted to be able to set this
+  at the system level.
+- Whether to load email packages
 #+begin_src emacs-lisp
-       ;; Load machine local definitions
+ ;; Load machine local definitions
 
-       (defvar *pj/enable-mu4e-mode* nil   "Enable mu4e mode.")
-       (defvar *pj/load-site-gentoo* nil   "Load gentoo's config file.")
-       (defvar *pj/enable-auctex*    nil   "Enable auctex mode.")
-       (defvar *pj/font-size*        "14"  "Fontsize for this system.")
+ ;; Variables requiring system level configuration
+ (defvar *pj/load-site-gentoo*  nil                        "Load gentoo's config file.")
+ (defvar *pj/enable-auctex*     t                          "Enable auctex mode.")
+ (defvar *pj/enable-email*      t                          "Enable email management.")
+ (defvar *pj/regular-font-size* 140                        "Fontsize for this system.")
+ (defvar *pj/tiny-font-name*    "Iosevka Comfy Wide Fixed" "Font name for tiny fontaine config")
+ (defvar *pj/default-font-name* "Iosevka Comfy Fixed"      "Font name for this system.")
+ (defvar *pj/prop-font-name*    "Iosevka Comfy Duo"        "Variable pitch font for this system")
+ (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
-       (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
-
-       (defun pj/is-windows-p ()
-         "True if run in windows environment."
-         (string= "windows-nt" system-type))
-
-       (defun pj/is-linux-p ()
-         "True if run in linux environment."
-         (string= "gnu/linux" system-type))
-
-       (defun pj/is-host-p (name)
-         "True if running on system NAME."
-         (string= (system-name) name))
-
-       ;; Three possibilities for specifying values:
-
-       ;; - Globally, for all systems
-       ;; - By operating system
-       ;; - By system name
-
-       (cond
-        ((pj/is-linux-p)
-         (cond
-          ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
-           (progn
-             (require 'gnutls)
-             (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-             (setq *pj/enable-mu4e-mode* t)
-             (setq *pj/load-site-gentoo* nil)
-             (setq *pj/enable-auctex* t)
-
-             ;; define the location of the orgmode code - currently using the built in version.
-             ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/lisp")
-             ;;(add-to-list 'load-path "/mnt/c/Users/paul/Nextcloud/git/org-mode/contrib/lisp")
-             (defvar *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "12")))
-          ;; tristan now has a 4K screen, so need to pull out the settings
-          ((string-prefix-p "tristan" (system-name))
-           (progn
-             (setq *pj/enable-mu4e-mode* t)
-             (setq *pj/load-site-gentoo* t)
-             (setq *pj/enable-auctex* t)
-             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "14")))
-          ((string-prefix-p "gandalf" (system-name))
-           (progn
-             (setq *pj/enable-mu4e-mode* nil)
-             (setq *pj/load-site-gentoo* nil)
-             (setq *pj/enable-auctex* t)
-             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "14")))
-          ((string-prefix-p "isolde" (system-name))
-           (progn
-             (setq *pj/enable-mu4e-mode* nil)
-             (setq *pj/load-site-gentoo* nil)
-             (setq *pj/enable-auctex* t)
-             (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-             (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-             (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-             (setq *pj/font-size* "14")))
-          (t (progn
-               (setq *pj/enable-mu4e-mode* nil)
-               (setq *pj/load-site-gentoo* t)
-               (setq *pj/enable-auctex* t)
-               (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-               (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
-               (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")))))
-        ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
-         (progn
-           (setq *pj/enable-mu4e-mode* nil)
-           (setq *pj/load-site-gentoo* nil)
-           (setq *pj/enable-auctex* nil)
-           (defvar *pj/my-org-roam-directory* "c:/users/Paul/Nextcloud/org/roam/")
-           (defvar *pj/org-agenda-files* '("~/Nextcloud/org"))
-           (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+ (defvar *pj/org-agenda-files* '("~/Nextcloud/org")              "Location of org agenda files.")
+ (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/"       "Location of org-roam files.")
+ (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
 
 
-           :(defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
-           (setq *pj/font-size* "10")))
-        (t
-         (error "Undefined system-type %s" system-type)))
+ (defun pj/is-windows-p ()
+   "True if run in windows environment."
+   (string= "windows-nt" system-type))
 
-       (defvar *packages-initialised* nil)
+ (defun pj/is-linux-p ()
+   "True if run in linux environment."
+   (string= "gnu/linux" system-type))
 
-       (defun initialise-packages ()
-         "Ensure `package-initialize' is called only once."
-         (unless *packages-initialised*
-           (package-initialize)
-           (setq *packages-initialised* t)))
+ (defun pj/is-host-p (name)
+   "True if running on system NAME."
+   (string= (system-name) name))
 
-      (initialise-packages)
+ ;; Three possibilities for specifying values:
+
+ ;; - Globally, for all systems
+ ;; - By operating system
+ ;; - By system name
+
+(cond
+ ((pj/is-linux-p)
+  (cond
+   ((string-prefix-p "DESKTOP" (system-name)) ;; Windows WSL2 on Tristan
+    (progn
+      (require 'gnutls)
+      ;; TODO: Check whether this is still a requirement on WSL2. It may have been necessary
+      ;; with the Debian installation in place when WSL was first installed. Also, if
+      ;; the latest version of Emacs is loaded, this should not be a problem.
+      (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+      (setq *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+      (setq *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
+      (setq *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
+      (setq *pj/regular-font-size* 120)))
+   ;; tristan now has a 4K screen, so need to pull out the settings
+   ((string-prefix-p "tristan" (system-name))
+    (progn
+      (setq *pj/load-site-gentoo* t)
+      (setq *pj/regular-font-size* 150)))
+   ((string-prefix-p "gandalf" (system-name))
+    (progn
+      (setq *pj/regular-font-size* 150)))
+   ((string-prefix-p "isolde" (system-name))
+    (progn
+      (setq *pj/regular-font-size* 130)
+      (setq *pj/enable-email* nil)))
+   (t
+    (progn
+      (setq *pj/load-site-gentoo* t)))))
+ ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
+  (progn
+    (setq *pj/enable-auctex* nil)
+    (setq *pj/enable-email* nil)
+    (setq *pj/tiny-font-name*    "FiraCode Nerd Font Reg")
+    (setq *pj/default-font-name* "FiraCode Nerd Font Reg")
+    (setq *pj/prop-font-name*    "FiraCode Nerd Font Propo Reg")
+    (setq *pj/org-agenda-files* '("~/Nextcloud/org"))
+    (setq *pj/org-roam-directory*   "~/Nextcloud/org/roam/")
+    (setq *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db")
+    (setq *pj/regular-font-size* 120)))
+ (t
+  (error "Undefined system-type %s" system-type)))
+
+(defvar *packages-initialised* nil)
+
+(defun initialise-packages ()
+  "Ensure `package-initialize' is called only once."
+  (unless *packages-initialised*
+    (package-initialize)
+    (setq *packages-initialised* t)))
+
+(initialise-packages)
+
+;; Install and load `quelpa-use-package'.
+
+(unless (package-installed-p 'quelpa)
+   (with-temp-buffer
+(url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+(eval-buffer)
+(quelpa-self-upgrade)))
+(setq quelpa-update-melpa-p nil)
+(unless (package-installed-p 'quelpa-use-package)
+  (quelpa
+   '(quelpa-use-package
+     :fetcher git
+     :url "https://github.com/quelpa/quelpa-use-package.git")))
+(require 'quelpa-use-package)
 
 #+end_src
 
 #+begin_src emacs-lisp
-;; To load external version of org-mode, clone the code from git:
-;; - cd <directory below which you want the org code>
-;; - git clone https://code.orgmode.org/bzg/org-mode.git
-;; - cd org-mode
-;; - make autoloads # creates org-loaddefs.el in the lisp directory
-
-;; Using the built in version of orgmode - no need to use the git version...
-;;;(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
-;;;(use-package org)
-
-(defvar init-dir) ;; Initial directory for emacs configuration
-(setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
+  (defvar init-dir) ;; Initial directory for emacs configuration
+  (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
 
 #+end_src
+* Scrolling precision
+#+begin_src
+(setq pixel-scroll-precision-interpolate-page t)
+(pixel-scroll-precision-mode t)
 
+#+end_src
 * General configuration
-
+** Initial settings
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....General configuration
@@ -257,9 +365,6 @@ Emacs configuration.
 (setq major-mode 'text-mode)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
-;; Go straight to scratch buffer on startup
-(setq inhibit-startup-screen t)
-
 ;; dont use tabs for indenting
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 3)
@@ -270,33 +375,55 @@ Emacs configuration.
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-variable 'confirm-kill-emacs 'yes-or-no-p)
 
-;; Eliminate C-z sleep in graphical mode
+#+end_src
+
+** Eliminate C-z sleep in graphical mode
+When running emacs in a terminal, it is useful to be able to suspend with C-z
+but in graphical mode it causes havoc. This code checks the mode and enables/disables
+C-z as appropriate.
+
+#+begin_src emacs-lisp
 (fset 'original-suspend-frame (symbol-function 'suspend-frame))
 
 (defun my-suspend-frame ()
   "A custom version of suspend frame that does nothing in graphical mode."
   (if (display-graphic-p)
       (message "Frame suspension is disabled in graphical mode.")
-    (original-frame-suspend)))
+    (original-suspend-frame)))
 
 (advice-add 'suspend-frame :override #'my-suspend-frame)
 
-;; The following lines are always needed. Choose your own keys.
+#+end_src
+
+** Other settings for appearance and layout
+
+#+begin_src emacs-lisp
+
+
+;; global-font-lock-mode enables font-lock-mode (syntax highlighting)
+;; when the current major mode supports it.
 (global-font-lock-mode t)
+;; Goto line number. You can display the line numbers in the margin
+;; of the buffer with M-x display-line-numbers-mode
 (global-set-key "\C-x\C-l" 'goto-line)
+;; Copy the marked region to the kill ring
 (global-set-key "\C-x\C-y" 'copy-region-as-kill)
 
 ;; Remove the tool-bar from the top
 (tool-bar-mode -1)
-;; (menu-bar-mode -1)
-(scroll-bar-mode -1)
+;; Currently not disabled - it is good to see the menu options available for the
+;; different modes. I may disable it in the future if I feel I know the available
+;; options well enough.
+;; (menu-bar-mode -1) 
 
 ;; Full path in title bar
 (setq-default frame-title-format "%b (%f)")
 
+;; Easier to remember list-buffers...
 (defalias 'list-buffers 'ibuffer)
 
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "Backups")))
+;; Backup management
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       ;; don't kill my hardlinks
       backup-by-copying t
       ;; Keep multiple versions for each file, but not too many
@@ -308,23 +435,18 @@ Emacs configuration.
 #+end_src
 
 * Package Management
-Packages are currently installed using use-package.
+Packages are currently installed using use-package. 
 
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Package management
 ;;     ------------------
 
-(require 'gnutls)
-
-(defvar pj/python)
-(setq pj/python (executable-find "python"))
-
 ;; Add marmalade to package repos
 (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")))
-      
+
 (initialise-packages)
 
 (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
@@ -332,15 +454,30 @@ Packages are currently installed using use-package.
              (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
   (package-refresh-contents))
 
-;; Initialise use-package on non-guix systems.
+;; Initialise use-package on non-guix/non-nix systems.
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
-(require 'use-package)
+
+(eval-when-compile (require 'use-package))
+(setq use-package-verbose t)
+(setq native-comp-async-report-warnings-errors 'silent)
 
 ;; This ensures packages are available - if using nix/guix declarative package
 ;; installation, this needs to be removed
 (setq use-package-always-ensure t)
 
+(use-package async
+  :defer t
+  :init
+  (dired-async-mode 1))
+
+;; (use-package savehist
+;;   :defer 2
+;;   :init (savehist-mode t))
+
+;; (use-package repeat
+;;   :defer 10
+;;   :init (repeat-mode +1))
 #+end_src
 
 * Keep .emacs.d Clean
@@ -353,6 +490,7 @@ Packages are currently installed using use-package.
 (use-package no-littering)
 
 ;; Keep customization settings in a temporary file (thanks Ambrevar!)
+;; This means customisations won't persist after a reboot...
 (setq custom-file
       (if (boundp 'server-socket-dir)
           (expand-file-name "custom.el" server-socket-dir)
@@ -360,124 +498,360 @@ Packages are currently installed using use-package.
 (load custom-file t)
 
 #+end_src
-* Moody
-Moody makes the mode line pretty:
+* Themes
+Currently trialing Prot's themes from his ef-themes package
 #+begin_src emacs-lisp
-(use-package moody
+;;==============================================================================
+;;.....themes
+;;     ------
+
+(use-package ef-themes
   :config
-  (setq x-underline-at-descent-line t)
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode)
-  (moody-replace-eldoc-minibuffer-message-function))
+  (setq ef-themes-to-toggle '(ef-melissa-dark ef-dark))
+  (setq ef-theme-headings
+        '((0 variable-pitch light 1.9)
+          (1 variable-pitch light 1.8)
+          (2 variable-pitch regular 1.7)
+          (3 variable-pitch regular 1.6)
+          (4 variable-pitch regular 1.5)
+          (5 variable-pitch 1.4)
+          (6 variable-pitch 1.3)
+          (7 variable-pitch 1.2)
+          (t variable-pitch 1.1)))
+  (setq ef-themes-mixed-fonts t
+        ef-themes-variable-pitch-ui t) ; Use variable pitch for all UI elements
+  ;; Disable all other themese to avoid blending
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'ef-dark :no-confirm))
+#+end_src
+* Fonts
+Using the fontaine package from Prot. Font sizes are calculated from
+the variable =*pj/regular-font-size*= 
+#+begin_src emacs-lisp
+(use-package fontaine
+  :config
+  (setq fontaine-latest-state-file
+        (locate-user-emacs-file "fontaine-latest-state.eld"))
+  (setq fontaine-presets
+      `((tiny
+         :default-family ,*pj/tiny-font-name*
+         :default-height ,(* (round (* *pj/regular-font-size* 0.7) 10) 10))
+        (small
+         :default-family ,*pj/default-font-name*
+         :default-height ,(* (round (* *pj/regular-font-size* 0.8) 10) 10))
+        (regular
+         :default-family ,*pj/default-font-name*
+         :default-height ,*pj/regular-font-size*
+        (medium
+         :default-family ,*pj/default-font-name*
+         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10))
+        (large
+         :default-weight semilight
+         :default-height ,(* (round (* *pj/regular-font-size* 1.3) 10) 10)
+         :bold-weight extrabold)
+        (presentation
+         :default-weight semilight
+         :default-height ,(* (round (* *pj/regular-font-size* 1.2) 10) 10)
+         :bold-weight extrabold)
+        (t
+         ;; I keep all properties for didactic purposes, but most can be
+         ;; omitted.  See the fontaine manual for the technicalities:
+         ;; <https://protesilaos.com/emacs/fontaine>.
+         :default-family ,*pj/default-font-name*
+         :default-weight regular
+         :default-height ,*pj/regular-font-size*
+         :fixed-pitch-family *pj/default-font-name*
+         :fixed-pitch-weight nil ; falls back to :default-weight
+         :fixed-pitch-height 1.0
+         :fixed-pitch-serif-height 1.0
+         :variable-pitch-family ,*pj/prop-font-name* 
+         :variable-pitch-weight nil
+         :variable-pitch-height 1.0
+         :bold-family nil ; use whatever the underlying face has
+         :bold-weight bold
+         :italic-family nil
+         :italic-slant italic
+         :line-spacing nil))))
+  ;; Recover last preset or fall back to desired style from
+  ;; `fontaine-presets'.
+ 
+  ;; The other side of `fontaine-restore-latest-preset'.
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
+
+  ;; Persist font configurations while switching themes
+  (add-hook 'ef-themes-after-load-theme-hook #'fontaine-apply-current-preset))
+
+(fontaine-restore-latest-preset)
+#+end_src
+* Dashboard
+#+begin_src emacs-lisp
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-items '((recents . 20) (bookmarks . 20)))
+  (setq recentf-exclude '("bookmarks")))
 
 #+end_src
+* Doom modeline
+Better UI for modeline.
+Need to install fonts first by doing this:
+#+begin_example
+M-x all-the-icons-install-fonts
+#+end_example
+
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :config (column-number-mode 1)
+  :custom
+  (doom-modeline-height 30)
+  (doom-modeline-window-width-limit nil)
+  (doom-modeline-buffer-file-name-style 'truncate-with-project)
+  (doom-modeline-minor-modes nil)
+  (doom-modeline-enable-word-count t)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-buffer-modification-icon t)
+  (doom-modeline-env-python-executable "python")
+  ;; Requires display-time-mode to be 1
+  (doom-modeline-time t)
+  (doom-modeline-vcs-max-length 50))
+
+#+end_src
+* Treemacs
+#+begin_src
+(use-package treemacs
+  :bind ("C-c t" . treemacs)
+  :custom
+  (treemacs-is-never-other-window t)
+  :hook
+  (treemacs-mode . treemacs-project-follow-mode))
+#+end_src
+
+
 * Tramp
+ssh connection to other machines.
 #+begin_src emacs-lisp
 (setq tramp-default-method "ssh")
 ;; Ensure paths are correct for editing files on guix systems (thanks @janneke)
 (with-eval-after-load 'tramp-sh (push 'tramp-own-remote-path tramp-remote-path))
 #+end_src
 
-* Ivy
+* Completion Frameworks
 #+begin_src emacs-lisp
-;;==============================================================================
-;;.....Ivy
-;;     ---
 
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-wrap t)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq enable-recursive-minibuffers t)
-
-  (push '(completion-at-point . ivy--regex-fuzzy) ivy-re-builders-alist)
-  (push '(swiper . ivy--regex-ignore-order) ivy-re-builders-alist)
-  (push '(counsel-M-x . ivy--regex-ignore-order) ivy-re-builders-alist)
-
-  (setf (alist-get 'swiper ivy-height-alist) 15)
-  (setf (alist-get 'counsel-switch-buffer ivy-height-alist) 7))
-
-(use-package ivy-hydra
-  :defer t
-  :after hydra)
-
-(use-package ivy-rich
+;;; COMPLETION
+(use-package vertico
   :init
-  (ivy-rich-mode 1)
-  :config
-  (setcdr  (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-  (setq ivy-rich-display-transformers-list
-        (plist-put ivy-rich-display-transformers-list
-                   'ivy-switch-buffer
-                   '(:columns
-                     ((ivy-rich-candidate (:width 40))
-                      (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right)); return the buffer indicators
-                      (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))          ; return the major mode info
-                      (ivy-rich-switch-buffer-project (:width 15 :face success))             ; return project name using `projectile'
-                      (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
-                     :predicate
-                     (lambda (cand)
-                       (if-let ((buffer (get-buffer cand)))
-                           ;; Don't mess with EXWM buffers
-                           (with-current-buffer buffer
-                             (not (derived-mode-p 'exwm-mode)))))))))
+  ;; Enable vertico using the vertico-flat-mode
+  (require 'vertico-directory)
+  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
-#+end_src
-
-* Swiper
-#+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....Swiper
-  ;;     ------
-
-  ;; Counsel - completion package working with ivy.
-  (use-package counsel
-    :bind (("M-x" . counsel-M-x)
-           ("C-x b" . counsel-ibuffer)
-           :map minibuffer-local-map
-           ("C-r" . 'counsel-minibuffer-history))
+  (use-package orderless
+    :commands (orderless)
     :custom
-    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-    :config
-    (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles partial-completion))
+                                     (ledger (styles basic)))))
 
-  ;; TODO: Configure counsel-bbdb to work eith email, or configure a different
-  ;;       package to manage contacts (synced with cardDAV)
-  (use-package counsel-bbdb
-    :ensure t)
-
-  (use-package swiper
-    :bind (("C-s" . swiper)
-           ("C-r" . swiper)
-           ("C-c C-r" . ivy-resume)
-           ("M-x" . counsel-M-x)
-           ("C-x C-f" . counsel-find-file))
+  (use-package marginalia
+    :custom
+    (marginalia-annotators
+     '(marginalia-annotators-heavy marginalia-annotators-light nil))
     :config
-    (progn
-      (ivy-mode 1)
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-display-style 'fancy)
-      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+    (marginalia-mode))
+  (vertico-mode t)
+  :config
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+;;;; Extra Completion Functions
+(use-package consult
+  :ensure t
+  :after vertico
+  :bind (("C-x b"       . consult-buffer)
+         ("C-x C-k C-k" . consult-kmacro)
+         ("M-y"         . consult-yank-pop)
+         ("M-g g"       . consult-goto-line)
+         ("M-g M-g"     . consult-goto-line)
+         ("M-g f"       . consult-flymake)
+         ("M-g i"       . consult-imenu)
+         ("M-s l"       . consult-line)
+         ("M-s L"       . consult-line-multi)
+         ("M-s u"       . consult-focus-lines)
+         ("M-s g"       . consult-ripgrep)
+         ("M-s M-g"     . consult-ripgrep)
+         ("C-x C-SPC"   . consult-global-mark)
+         ("C-x M-:"     . consult-complex-command)
+         ;; TODO: Identify new key chords for these two...
+         ;;         ("C-c n"       . consult-org-agenda)
+         ;;         ("C-c m"       . my/notegrep)
+         :map minibuffer-local-map
+         ("M-r" . consult-history))
+  :custom
+  (completion-in-region-function #'consult-completion-in-region)
+  :config
+  (defun my/notegrep ()
+    "Use interactive grepping to search my notes"
+    (interactive)
+    (consult-ripgrep org-directory))
+  (recentf-mode t))
+
+(use-package consult-dir
+  :ensure t
+  :bind (("C-x C-j" . consult-dir)
+         ;; :map minibuffer-local-completion-map
+         :map vertico-map
+         ("C-x C-j" . consult-dir)))
+
+(use-package consult-recoll
+  :ensure t
+  :bind (("M-s r" . consult-recoll))
+  :init
+  (setq consult-recoll-inline-snippets t)
+  :config
+  (defun recoll-index (&optional args)
+    "Start indexing deamon if there is not one running already.
+This way our searches are kept up to date"
+    (interactive)
+    (let ((recollindex-buffer "*RECOLLINDEX*"))
+      (unless (process-live-p (get-buffer-process (get-buffer recollindex-buffer)))
+        (make-process :name "recollindex"
+                      :buffer recollindex-buffer
+                      :command '("recollindex" "-m" "-D")))))
+  (eval-after-load 'consult-recoll
+    (recoll-index)))
+
+(use-package embark
+  :bind
+  ;; pick some comfortable binding
+  (("C-="                     . embark-act)
+   ("C-<escape>"              . embark-act)
+   ([remap describe-bindings] . embark-bindings)
+   :map embark-file-map
+   ("C-d"                     . dragon-drop))
+  :custom
+  (embark-indicators
+   '(embark-highlight-indicator
+     embark-isearch-highlight-indicator
+     embark-minimal-indicator))
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  (setq embark-prompter 'embark-completing-read-prompter)
+  :config
+  (defun search-in-source-graph (text))
+  (defun dragon-drop (file)
+    (start-process-shell-command "dragon-drop" nil
+                                 (concat "dragon-drop " file)))
+
+  ;; Preview any command with M-.
+  (define-key minibuffer-local-map (kbd "M-.") #'my-embark-preview)
+  (defun my-embark-preview ()
+    "Previews candidate in vertico buffer, unless it's a consult command"
+    (interactive)
+    (unless (bound-and-true-p consult--preview-function)
+      (save-selected-window
+        (let ((embark-quit-after-action nil))
+          (embark-dwim))))))
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :after (:all embark consult)
+  :demand t
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+;; For uploading files
+(use-package 0x0
+  :after embark
+  :bind (
+         :map embark-file-map
+         ("U"    . 0x0-upload-file)
+         :map embark-region-map
+         ("U"    . 0x0-dwim))
+  :commands (0x0-dwim 0x0-upload-file))
+
+;;;; Code Completion
+(use-package corfu
+  ;; Optional customizations
+  :custom
+  ;;(corfu-cycle t)                 ; Allows cycling through candidates
+  (corfu-auto t)                    ; Enable auto completion
+  ;;(corfu-auto-prefix 2)
+  (corfu-auto-delay 0.5)
+  (corfu-popupinfo-delay '(0.5 . 0.2))
+  ;;(corfu-preview-current 'insert) ; insert previewed candidate
+  ;;(corfu-preselect 'prompt)
+  ;;(corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
+  ;; Optionally use TAB for cycling, default is `corfu-complete'.
+  :bind (:map corfu-map
+              ("M-SPC"      . corfu-insert-separator)
+              ("TAB"        . corfu-next)
+              ([tab]        . corfu-next)
+              ("S-TAB"      . corfu-previous)
+              ([backtab]    . corfu-previous)
+              ("S-<return>" . corfu-insert)
+              ("RET"        . nil))
+  
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  (corfu-popupinfo-mode) ; Popup completion info
+  :config
+  (add-hook 'eshell-mode-hook
+            (lambda () (setq-local corfu-quit-at-boundary t
+                                   corfu-quit-no-match t
+                                   corfu-auto nil)
+              (corfu-mode))))
+
+(use-package emacs
+  :init
+  (setq completion-cycle-threshold 3)
+  (setq tab-always-indent 'complete))
+
+(use-package cape
+  :defer 10
+  :bind ("C-c f" . cape-file)
+  :init
+  ;; Add `completion-at-point-functions', used by `completion-at-point'.
+  ;; (defalias 'dabbrev-after-2 (cape-capf-prefix-length #'cape-dabbrev 2))
+  ;; (add-to-list 'completion-at-point-functions 'dabbrev-after-2 t)
+  (cl-pushnew #'cape-file completion-at-point-functions)
+  :config
+  ;; Silence then pcomplete capf, no errors or messages!
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+  ;; Ensure that pcomplete does not write to the buffer
+  ;; and behaves as a pure `completion-at-point-function'.
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
+;; (use-package yasnippet-capf
+;;   :ensure nil
+;;   :quelpa (yasnippet-capf :fetcher github :repo "elken/yasnippet-capf")
+;;   :after yasnippet
+;;   :hook ((prog-mode . yas-setup-capf)
+;;          (text-mode . yas-setup-capf)
+;;          (lsp-mode  . yas-setup-capf)
+;;          (sly-mode  . yas-setup-capf))
+;;   :bind (("C-c y" . yasnippet-capf)
+;;          ("M-+"   . yas-insert-snippet))
+;;   :config
+;;   (defun yas-setup-capf ()
+;;     (setq-local completion-at-point-functions
+;;                 (cons 'yasnippet-capf
+;;                       completion-at-point-functions)))
+;;   (push 'yasnippet-capf completion-at-point-functions))
 
 #+end_src
 
 * Which-key
+Show the key sequences available from the current command key after a
+small delay.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....which-key
@@ -511,6 +885,7 @@ Moody makes the mode line pretty:
 #+end_src
 
 * Ledger
+CLI accounting, as it should be.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....ledger
@@ -527,10 +902,11 @@ Moody makes the mode line pretty:
   (add-to-list 'auto-mode-alist '("\\.dat$" . ledger-mode))
   (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode)))
 
+
 #+end_src
 
 * Treesitter
-
+Still learning about this, so this is quite fluid.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....treesitter
@@ -589,6 +965,7 @@ Moody makes the mode line pretty:
   :custom
   (treesit-auto-install 'prompt)
   :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
   (defun pj/treesit-install-all-languages ()
     "Install all languages specified by `treeesit-language-source-alist'."
     (interactive)
@@ -602,17 +979,31 @@ Moody makes the mode line pretty:
 
 #+end_src
 * LSP mode
+eglot configuration for lsp mode functionality.
 #+begin_src emacs-lisp
-;; (use-package lsp-mode
-;;   :init
-;;   (setq lsp-keymap-prefix "C-c l")
-;;   :hook (
-;;          (c++-mode . lsp)
-;;          (lsp-mode . lsp-enable-which-key-integration))
-;;   :commands lsp)
 
+;; Adds LSP support. Note that you must have the respective LSP
+;; server installed on your machine to use it with Eglot. e.g.
+;; rust-analyzer to use Eglot with `rust-mode'.
+(use-package eglot
+  :bind (("s-<mouse-1>" . eglot-find-implementation)
+         ("C-c ." . eglot-code-action-quickfix))
+  ;; Add your programming modes here to automatically start Eglot,
+  ;; assuming you have the respective LSP server installed.
+  :hook ((web-mode . eglot-ensure)
+         (rust-mode . eglot-ensure))
+  :config
+  ;; You can configure additional LSP servers by modifying
+  ;; `eglot-server-programs'. The following tells eglot to use TypeScript
+  ;; language server when working in `web-mode'.
+  (add-to-list 'eglot-server-programs
+               '(web-mode . ("typescript-language-server" "--stdio")))
+  ;; use orderless for completion filtering
+  (setq completion-category-overrides '((eglot (styles orderless))
+                                        (eglot-capf (styles orderless)))))
 #+end_src
 * Go
+Not currently using go, so not sure if this is complete or not.
 #+begin_src emacs-lisp
   ;;==============================================================================
   ;;.....go
@@ -627,7 +1018,7 @@ Moody makes the mode line pretty:
 
 * Python
 
-Not working, and not used currently...
+TODO: Not working, and not used currently...
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Python
@@ -651,21 +1042,22 @@ Not working, and not used currently...
 #+end_src
 
 * SQL
+Set up when I was doing stuff with mysql. Currently dormant...
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....SQL
 ;;     ---
-
 
 (require 'sql)
 
 (eval-after-load "sql"
   '(progn (sql-set-product 'mysql)))
 
-
 #+end_src
 
 * C++
+I haven't used this in anger recently, so I am not sure if it
+works. TODO: Needs to be revisited.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....c++
@@ -676,85 +1068,26 @@ Not working, and not used currently...
   (c-set-style "stroustrup"))
 
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
-
-;;==============================================================================
-;;.....smex
-;;     ----
-;; M-x enhancement - show most recently used commands which match as typing.
-
-;; (use-package smex
-;; 
-;; :bind (("M-x" . smex)
-;;        ("M-X" . smex-major-mode-commands)
-;;        ("C-c C-c M-x" . 'execute-extended-command)) ;; Original M-x command
-;; :config (smex-initialize))
-
-(defadvice ido-set-matches-1 (around ido-smex-acronym-matches activate)
-  "Filters ITEMS by setting acronynms first."
-  (if (and (fboundp 'smex-already-running) (smex-already-running) (> (length ido-text) 1))
-      
-      ;; We use a hash table for the matches, <type> => <list of items>, where
-      ;; <type> can be one of (e.g. `ido-text' is "ff"):
-      ;; - strict: strict acronym match (i.e. "^f[^-]*-f[^-]*$");
-      ;; - relaxed: for relaxed match (i.e. "^f[^-]*-f[^-]*");
-      ;; - start: the text start with (i.e. "^ff.*");
-      ;; - contains: the text contains (i.e. ".*ff.*");
-      (let ((regex (concat "^" (mapconcat 'char-to-string ido-text "[^-]*-")))
-            (matches (make-hash-table :test 'eq)))
-
-        ;; Filtering
-        (dolist (item items)
-          (let ((key))
-            (cond
-             ;; strict match
-             ((string-match (concat regex "[^-]*$") item)
-              (setq key 'strict))
-
-             ;; relaxed match
-             ((string-match regex item)
-              (setq key 'relaxed))
-
-             ;; text that start with ido-text
-             ((string-match (concat "^" ido-text) item)
-              (setq key 'start))
-
-             ;; text that contains ido-text
-             ((string-match ido-text item)
-              (setq key 'contains)))
-
-            (when key
-              ;; We have a winner! Update its list.
-              (let ((list (gethash key matches ())))
-                (puthash key (push item list) matches)))))
-
-        ;; Finally, we can order and return the results
-        (setq ad-return-value (append (gethash 'strict matches)
-                                      (gethash 'relaxed matches)
-                                      (gethash 'start matches)
-                                      (gethash 'contains matches))))
-
-    ;; ...else, run the original ido-set-matches-1
-    ad-do-it))
-
-;; Delayed loading - initialisation when used for the first time
-;; (global-set-key [(meta x)]
-;;   (lambda ()
-;;     (interactive)
-;;     (or (boundp 'smex-cache)
-;;         (smex-initialize))
-;;     (global-set-key [(meta x)] 'smex) (smex)))
-
-;; (global-set-key [(shift meta x)]
-;;   (lambda () (interactive)
-;;   (or (boundp 'smex-cache) (smex-initialize))
-;;   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
-;;   (smex-major-mode-commands)))
-
 #+end_src
 
 
 * Rust
+Started learning rust. This config snippet is copied from elsewhere,
+but seems to work at the moment. TODO: Improve further.
+
 #+begin_src emacs-lisp
+(use-package rust-mode
+  :bind (:map rust-mode-map
+	      ("C-c C-r" . 'rust-run)
+	      ("C-c C-c" . 'rust-compile)
+	      ("C-c C-f" . 'rust-format-buffer)
+	      ("C-c C-t" . 'rust-test))
+  :hook (rust-mode . prettify-symbols-mode))
+#+end_src
+
+
+This version is currently disabled - the above should do it for emacs29++
+#+begin_src emacs-lisp :tangle no
 ;;==============================================================================
 ;;.....rust
 ;;     ----
@@ -769,7 +1102,6 @@ Not working, and not used currently...
 ;; (add-hook 'rustic-mode-hook 'rustic-mode-auto-save-hook)
 
 (use-package rustic
-  :ensure
   :mode ("\\.rs\\'" . rustic-mode)
   ;; :bind (:map rustic-mode-map
   ;;             ("M-j" . lsp-ui-imenu)
@@ -805,7 +1137,6 @@ Not working, and not used currently...
 ;; for rust-analyzer integration
 
 (use-package lsp-mode
-  :ensure
   :commands lsp
   :custom
   ;; what to use when checking on-save. "check" is default, I prefer clippy
@@ -826,7 +1157,6 @@ Not working, and not used currently...
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (use-package lsp-ui
-  :ensure
   :commands lsp-ui-mode
   :custom
   (lsp-ui-peek-always-show t)
@@ -836,15 +1166,13 @@ Not working, and not used currently...
 
 #+end_src
 
-#+results:
-
 * yasnippet
+Snippet management. TODO: Proper setup
 #+begin_src emacs-lisp
 (use-package yasnippet
-  :ensure
   :bind
   (:map yas-minor-mode-map
-        ("C-TAB" . yas-expand)
+        ("C-c y" . yas-expand)
         ([(tab)] . nil)
         ("TAB" . nil))
   :config
@@ -853,6 +1181,7 @@ Not working, and not used currently...
   (add-hook 'text-mode-hook #'yas-minor-mode))
 #+end_src
 
+#+results:
 
 * Multiple Cursors
 #+begin_src emacs-lisp
@@ -866,36 +1195,19 @@ Not working, and not used currently...
 #+end_src
 
 * Org-mode
-
+TODO: Move this all into the my-org-mode.el file, and load it here.
+TODO: Refactor my-org-mode.el file completely.
 #+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....org mode
-  ;;     --------
+;;==============================================================================
+;;.....org mode
+;;     --------
 
-
-  (require 'org)
-  ;;  (require 'org-contribdir)
-  (require 'org-agenda)
-  (require 'org-clock)
-  (require 'org-archive)
-  ;;  (require 'org-checklist)
-  (require 'org-crypt)
-  (require 'org-protocol)
-  (require 'ido)
-  (require 'org-id)
-  ;;  (require 'bbdb-com)
-  (require 'ox-html)
-  (require 'ox-latex)
-  (require 'ox-ascii)
-  (require 'org-tempo)
-
-  (setq org-agenda-files *pj/org-agenda-files*)
-  (load "~/.emacs.d/lisp/my-org-mode.el")
-
+(setq org-agenda-files *pj/org-agenda-files*)
+(load "~/.emacs.d/lisp/my-org-mode.el")  
+(org-toggle-pretty-entities)
 ;;  (eval-after-load "org" (add-to-list 'org-modules 'org-habit))
 ;;  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
-  (global-set-key (kbd "C-c w") 'org-refile)
-
+(global-set-key (kbd "C-c w") 'org-refile)
 
 ;; Resolving conflict between org-mode and yasnippet
 ;; (defun yas/org-very-safe-expand ()
@@ -911,6 +1223,7 @@ Not working, and not used currently...
 #+end_src
 
 * Org Bullet mode
+Pretty bullets
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org bullet mode
@@ -920,8 +1233,8 @@ Not working, and not used currently...
   :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
 #+end_src
-
 * Org-roam
+Note taking on steroids. Need to learn how to use it properly.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....org roam mode
@@ -932,7 +1245,6 @@ Not working, and not used currently...
 ;; and also the System Crafters videos on org-roam (from v2 onwards).
 
 (use-package org-roam
-  :ensure t
   :init
   (setq org-roam-v2-ack t) ;; Silence version 2 update message  
   :custom
@@ -970,83 +1282,9 @@ Not working, and not used currently...
 
 #+end_src
 
-* Licence Boilerplate
-
-I set this up a long time ago, before I knew emacs-lisp. 
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....GPL3 File header boilerplate
-;;     ----------------------------
-
-(defun boilerplate-gpl3 ()
-  "Insert boilerplate for c/c++ file with GPLv3 license."
-        (interactive)
-        (insert "
-/********************************************************************************
- ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- ,*                                                                              *
- ,* This program is free software: you can redistribute it and/or modify         *
- ,* it under the terms of the GNU General Public License as published by         *
- ,* the Free Software Foundation, either version 3 of the License, or            *
- ,* (at your option) any later version.                                          *
- ,*                                                                              *
- ,* This program is distributed in the hope that it will be useful,              *
- ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- ,* GNU General Public License for more details.                                 *
- ,*                                                                              *
- ,* You should have received a copy of the GNU General Public License            *
- ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ,********************************************************************************/
-"))
-
-(defun boilerplate-lgpl3 ()
-  "Insert boilerplate for c/c++ file with LGPLv3 license."
-        (interactive)
-        (insert "
-/********************************************************************************
- ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- ,*                                                                              *
- ,* This program is free software: you can redistribute it and/or modify         *
- ,* it under the terms of the GNU Lesser General Public License as published by  *
- ,* the Free Software Foundation, either version 3 of the License, or            *
- ,* (at your option) any later version.                                          *
- ,*                                                                              *
- ,* This program is distributed in the hope that it will be useful,              *
- ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- ,* GNU Lesser General Public License for more details.                          *
- ,*                                                                              *
- ,* You should have received a copy of the GNU Lesser General Public License     *
- ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ,********************************************************************************/
-"))
-
-(defun boilerplate-agpl3 ()
-  "Insert boilerplate for c/c++ file with AGPLv3 license."
-        (interactive)
-        (insert "
-/********************************************************************************
- ,* Copyright (C) " (format-time-string "%Y") " Paul Jewell (paul@teulu.org)                              *
- ,*                                                                              *
- ,* This program is free software: you can redistribute it and/or modify         *
- ,* it under the terms of the GNU Affero General Public License as published by  *
- ,* the Free Software Foundation, either version 3 of the License, or            *
- ,* (at your option) any later version.                                          *
- ,*                                                                              *
- ,* This program is distributed in the hope that it will be useful,              *
- ,* but WITHOUT ANY WARRANTY; without even the implied warranty of               *
- ,* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
- ,* GNU Affero General Public License for more details.                          *
- ,*                                                                              *
- ,* You should have received a copy of the GNU Affero General Public License     *
- ,* along with this program.  If not, see <http://www.gnu.org/licenses/>.        *
- ,********************************************************************************/
-"))
-
-#+end_src
-
 * Auctex
+TODO: Check the function of this. I want to write my book, and this
+will be usefull for managing references.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....auctex
@@ -1079,10 +1317,9 @@ I set this up a long time ago, before I knew emacs-lisp.
 
 
 #+end_src
-
 * Reftex
 I haven't used this yet, so there may be some issues.
-
+TODO: Sort this out!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....reftex
@@ -1122,8 +1359,8 @@ I haven't used this yet, so there may be some issues.
 
 
 #+end_src
-
 * Hydra
+Useful key programming. 
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....hydra
@@ -1143,11 +1380,12 @@ I haven't used this yet, so there may be some issues.
 	  ("t" toggle-truncate-lines "truncate")
 	  ("w" whitespace-mode "whitespace")
 	  ("q" nil "cancel"))))
+
 (global-set-key
  (kbd "C-x j")
  (defhydra gotoline 
-   (:pre (linum-mode 1)
-	      :post (linum-mode -1))
+   (:pre (display-line-numbers-mode t)
+	      :post (display-line-numbers-mode nil))
    "goto"
    ("t" (move-to-window-line-top-bottom 0) "top")
    ("b" (move-to-window-line-top-bottom -2) "bottom")
@@ -1156,48 +1394,7 @@ I haven't used this yet, so there may be some issues.
    ("c" recenter-top-bottom "recenter")
    ("n" next-line "down")
    ("p" (lambda () (interactive) (forward-line -1))  "up")
-   ("g" goto-line "goto-line")
-   ))
-    ;;    (global-set-key
-;;     (kbd "C-c t")
-;;     (defhydra hydra-global-org (:color blue)
-;;       "Org"
-;;       ("t" org-timer-start "Start Timer")
-;;       ("s" org-timer-stop "Stop Timer")
-;;       ("r" org-timer-set-timer "Set Timer") ; This one requires you be in an orgmode doc, as it sets the timer for the header
-;;       ("p" org-timer "Print Timer") ; output timer value to buffer
-;;       ("w" (org-clock-in '(4)) "Clock-In") ; used with (org-clock-persistence-insinuate) (setq org-clock-persist t)
-;;       ("o" org-clock-out "Clock-Out") ; you might also want (setq org-log-note-clock-out t)
-;;       ("j" org-clock-goto "Clock Goto") ; global visit the clocked task
-;;       ("c" org-capture "Capture") ; Don't forget to define the captures you want http://orgmode.org/manual/Capture.html
-;;     ("l" (or )rg-capture-goto-last-stored "Last Capture"))
-    
-    
-
-;; (defhydra multiple-cursors-hydra (:hint nil)
-;;   "
-;;      ^Up^            ^Down^        ^Other^
-;; ----------------------------------------------
-;; [_p_]   Next    [_n_]   Next    [_l_] Edit lines
-;; [_P_]   Skip    [_N_]   Skip    [_a_] Mark all
-;; [_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp
-;; ^ ^             ^ ^             [_q_] Quit
-;; "
-;;   ("l" mc/edit-lines :exit t)
-;;   ("a" mc/mark-all-like-this :exit t)
-;;   ("n" mc/mark-next-like-this)
-;;   ("N" mc/skip-to-next-like-this)
-;;   ("M-n" mc/unmark-next-like-this)
-;;   ("p" mc/mark-previous-like-this)
-;;   ("P" mc/skip-to-previous-like-this)
-;;   ("M-p" mc/unmark-previous-like-this)
-;;   ("r" mc/mark-all-in-region-regexp :exit t)
-;;   ("q" nil)
-
-;;   ("<mouse-1>" mc/add-cursor-on-click)
-;;   ("<down-mouse-1>" ignore)
-;;   ("<drag-mouse-1>" ignore))
-
+   ("g" goto-line "goto-line")))
 
 ;; font zoom mode example taken from hydra wiki
 (defhydra hydra-zoom (global-map "<f2>")
@@ -1208,8 +1405,8 @@ I haven't used this yet, so there may be some issues.
   ("q" nil "quit" :color blue))
 
 #+end_src
-
 * Javascript and HTML
+TODO: Setup javascript mode
 Disabling js2 mode. I don't program in javascript at the moment, and I
 want to get other stuff working first.
 #+begin_src emacs-lisp :tangle no
@@ -1238,83 +1435,8 @@ want to get other stuff working first.
 ;; (use-package xref-js2)
 
 #+end_src
-
-* Company mode
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....company mode
-;;     ------------
-
-(use-package company
-  :config
-;;  (setq company-idle-delay 0)
-;;  (setq company-minimum-prefix-length 3)
-  (global-company-mode 1)
-  :bind
-  (:map company-active-map
-        ("C-n" . company-select-next)
-        ("C-p" . company-select-previous)
-        ("C-<" . company-select-first)
-        ("C->" . company-select-last))
-
-  (:map company-mode-map
-        ("M-<tab>" . tab-indent-or-complete)
-        ("M-TAB" . tab-indent-or-complete)))
-
-(defun company-yasnippet-or-completion ()
-  (interactive)
-  (or (do-yas-expand)
-      (company-complete-common)))
-
-(defun check-expansion ()
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-        (backward-char 1)
-        (if (looking-at "::") t nil)))))
-
-(defun do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
-
-(defun tab-indent-or-complete ()
-  (interactive)
-  (if (minibufferp)
-      (minibuffer-complete)
-    (if (or (not yas-minor-mode)
-            (null (do-yas-expand)))
-        (if (check-expansion)
-            (company-complete-common)
-          (indent-for-tab-command)))))
-
-;; (use-package company-irony
-;;   :config
-;;   (add-to-list 'company-backends 'company-irony))
-
-;; (use-package irony
-;;   :config
-;;   (add-hook 'c++-mode-hook 'irony-mode)
-;;   (add-hook 'c-mode-hook 'irony-mode)
-;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
-
-;; (use-package irony-eldoc
-;;   :config
-;;   (add-hook 'irony-mode-hook #'irony-eldoc))
-
-(use-package company-jedi
-  :config
-  (add-hook 'python-mode-hook 'jedi:setup))
-
-(defun my/python-mode-hook ()
-  "Python mode hook."
-  (add-to-list 'company-backends 'company-jedi))
-
-(add-hook 'python-mode-hook 'my/python-mode-hook)
-
-#+end_src
-
 * Magit
+git processing - the best.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....magit
@@ -1366,18 +1488,6 @@ Git gutter:
 
 #+end_src
 
-* Flycheck
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....flycheck
-;;     --------
-
-(use-package flycheck
-  :init
-  (global-flycheck-mode 1))
-
-#+end_src
-
 * All the icons
 #+begin_src emacs-lisp
 ;;==============================================================================
@@ -1397,43 +1507,8 @@ Git gutter:
 
 #+end_src
 
-* Themes
-#+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....themes
-  ;;     ------
-
-  (use-package gruvbox-theme
-    :config
-    (load-theme 'gruvbox t))
-  ;; Font size is localised in site-local.el
-  (defvar my:font (concat "Iosevka-" *pj/font-size* ":spacing=110"))
-
-  ;; Font size setting for Emacs 27:
-  (set-face-attribute 'default nil :font my:font )
-  ;; (set-frame-font my:font nil t)
-
-  ;; Set font for frames running under emacs daemon
-  (add-to-list 'default-frame-alist `(font . ,(concat "Iosevka-" *pj/font-size*)))
-#+end_src
-
-* eyebrowse
-
-#+begin_src emacs-lisp :tangle no
-;;==============================================================================
-;;.....eyebrowse
-;;     ---------
-
-;; TODO: currently disabled - clash with org-refile needs to be resolved.
-;;(use-package eyebrowse
-;;  :ensure r
-;;  :config
-;;;;  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-;;  (eyebrowse-mode t))
-
-#+end_src
-
 * Projectile
+Management at a project level, rather than just at file level.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Projectile
@@ -1442,20 +1517,17 @@ Git gutter:
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
+  :custom (setq projectile-completion-system 'ivy)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Projects")
-    (setq projectile-project-search-path '("~/Projects")))
+  (when (file-directory-p "~projects")
+    (setq projectile-project-search-path '("~/projects")))
   (setq projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
-
 #+end_src
 
 * Diminish
+Hide minor mode information from the mode line.
 #+begin_src emacs-lisp
 
 (use-package diminish
@@ -1464,6 +1536,9 @@ Git gutter:
 #+end_src
 
 * Paredit
+Beautiful editing in lisp modes! Never have a problem with unbalanced
+parentheses. Would be good if it worked with other languages...
+TODO: Find out if it does!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Paredit
@@ -1484,21 +1559,14 @@ Git gutter:
 
 ;; Ensure paredit is used EVERYWHERE!
 (use-package paredit-everywhere
-  :ensure t
   :diminish paredit-everywhere-mode
   :config
   (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
-;;-------------
-;; (use-package highlight-parentheses
-;;   
-;;   :diminish highlight-parentheses-mode
-;;   :config
-;;   (add-hook 'emacs-lisp-mode-hook
-;;             (lambda()
-;;               (highlight-parentheses-mode))))
+
 #+end_src
 
 * Rainbow Delimiters
+Colour those delimiters, for easier comprehension.
 #+begin_src emacs-lisp
 
 (use-package rainbow-delimiters
@@ -1513,6 +1581,9 @@ Git gutter:
 #+end_src
 
 * Clojure
+My first experience of a functional language. Nice setup with cider,
+but I have since moved on to common lisp. I still like the functional
+rigour of clojure though!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....Clojure
@@ -1539,21 +1610,7 @@ Git gutter:
          ("C-c ." . cider-reset-test-run-tests)))
 
 
-;; (use-package clj-refactor
-;;   
-;;   :config
-;;   (add-hook 'clojure-mode-hook (lambda ()
-;;                                  (clj-refactor-mode 1)
-;;                                  ;; insert keybinding setup here
-;;                                  ))
-;;   (cljr-add-keybindings-with-prefix "C-c C-m")
-;;   (setq cljr-warn-on-eval nil)
-;;   :bind ("C-c '" . hydra-cljr-help-menu/body)
-;;   )
-
-(use-package cider-hydra
-  :ensure t)
-
+(use-package cider-hydra)
 
 #+end_src
 
@@ -1623,6 +1680,10 @@ quicklisp leads to the following:
 #+end_src
 
 * Haskell
+Like this language as well, but it is still a big learning curve for
+me. Since I use xmonad/xmobar, I have more opportunity to learn
+haskell going forward. Also, learning rust means playing with monads
+without using the name!!
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....haskell
@@ -1633,7 +1694,58 @@ quicklisp leads to the following:
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
 #+end_src
 
+
+
+* lua
+#+begin_src emacs-lisp
+(use-package lua-mode)
+
+#+end_src
+* Markdown
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  ;; These extra modes help clean up the Markdown editing experience.
+  ;; `visual-line-mode' turns on word wrap and helps editing commands
+  ;; work with paragraphs of text. `flyspell-mode' turns on an
+  ;; automatic spell checker.
+  :hook ((markdown-mode . visual-line-mode)
+         (markdown-mode . flyspell-mode))
+  :init
+  (setq markdown-command "multimarkdown"))
+
+#+end_src
+* Typescript, JA and JSX/TSX support
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....TypeScript, JS, and JSX/TSX support.
+;;     ------------------------------------
+
+(use-package web-mode
+  :mode (("\\.ts\\'"    . web-mode)
+         ("\\.js\\'"    . web-mode)
+         ("\\.mjs\\'"   . web-mode)
+         ("\\.tsx\\'"   . web-mode)
+         ("\\.html?\\'" . web-mode)
+         ("\\.jsx\\'"   . web-mode))
+  :custom
+  (web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+  (web-mode-code-indent-offset 2)
+  (web-mode-css-indent-offset 2)
+  (web-mode-markup-indent-offset 2)
+  (web-mode-enable-auto-quoting nil))
+#+end_src
+* yaml mode
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....yaml mode
+;;     =========
+
+(use-package yaml-mode)
+
+#+end_src
 * nix
+Nix, beautiful Nix. I tried guix, but found it challenging, but NixOS
+is wonderful.
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....nix
@@ -1641,22 +1753,27 @@ quicklisp leads to the following:
 
 (use-package nix-mode)
 
-
-
 #+end_src
 * email - notmuch
-#+begin_src scheme :noweb-ref packages: :noweb-sep "\n"
-(require 'notmuch)
+TODO: Persevere with notmuch - get good at sending emails, and sort out the tagging to improve
+the experience.
+#+begin_src emacs-lisp
+(when *pj/enable-email*
+    (require 'notmuch))
 
 #+end_src
 
 * GNUS
+Watch John Wiegley using gnus - very impressive, so I want to explore further.
 #+begin_src emacs-lisp
 ;; Not yet configured
 
 #+end_src
 * org-caldav
-Still under development
+TODO: Still under development. First time I tried this, I wiped my
+calendars. Need to experiment with an empty calendar to prove it
+works, then take it from there. Website here:
+https://github.com/dengste/org-caldav
 
 #+begin_src emacs-lisp
 
@@ -1670,31 +1787,23 @@ Still under development
                          :inbox "~/Calendars/caldav-org-inbox.org")))
   (setq org-caldav-backup-file "~/org-caldav-backup.org")
   (setq org-caldav-save-directory "~/org-caldav/")
-  (setq org-icalendar-timezone "Europe/London")) 
-
-
-
-
+  (setq org-icalendar-timezone "Europe/London"))
 
 #+end_src
 
 * Helpful
 #+begin_src emacs-lisp
 ;;==============================================================================
-;;.....helpful
+;;.....helpful - improve the help documentation
 ;;     -------
 
 (use-package helpful
-  
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
-
+  :bind (("C-h f" . #'helpful-callable)
+         ("C-h v" . #'helpful-variable)
+         ("C-h k" . #'helpful-key)
+         ("C-c C-d" . #'helpful-at-point)
+         ("C-h F" . #'helpful-function)
+         ("C-h C" . #'helpful-command)))
 #+end_src
 
 * gnupg - Key management
@@ -1702,8 +1811,12 @@ Still under development
 ;; Following the ELPA instructions didn't work as expected - came across
 ;; this approach, which does work. See also changes in gpg-agent.conf
 (setq epa-pinentry-mode 'loopback)
+(setq epg-pinentry-mode 'loopback)
 #+end_src
- 
+* Password-store
+#+begin_src emacs-lisp
+(use-package password-store)
+#+end_src
 * ERC
 Developed from bbatsov's code on his github.
 #+begin_src emacs-lisp
@@ -1728,12 +1841,13 @@ Developed from bbatsov's code on his github.
                                      "#emacs"
                                      "#gentoo"
                                      "#gentoo-haskell"
-                                     "#guile"
+                           ;;          "#guile"
                                      "#lisp"
-                                     "#clojure"
+                           ;;          "#clojure"
                                      "#haskell"
-                                     "#debian"
-                                     "#scheme")))
+                           ;;          "#debian"
+                           ;;          "#scheme"
+                                     )))
 
 ;; Interpret mIRC-style colour commands in IRC chats
 (setq erc-interpret-mirc-color t)
@@ -1786,8 +1900,8 @@ Developed from bbatsov's code on his github.
 (defun call-libnotify (matched-type nick msg)
   "Notify when NICK is mentioned in MSG (MATCHED-TYPE)."
   (let* ((cmsg  (split-string (clean-message msg)))
-         (nick   (first (split-string nick "!")))
-         (msg    (mapconcat 'identity (rest cmsg) " ")))
+         (nick   (car (split-string nick "!")))
+         (msg    (mapconcat 'identity (cdr cmsg) " ")))
     (shell-command-to-string
      (format "notify-send -t 5000 -u normal '%s says:' '%s'" nick msg))))
 
@@ -1851,10 +1965,12 @@ that can occur between two notifications.  The default is
 (setq erc-server-coding-system '(utf-8 . utf-8))
 
 (defun start-irc ()
-  "Connect to IRC."
+  "Connect to IRC, or switch to last active buffer."
   (interactive)
-  (when (y-or-n-p "Do you want to start IRC? ")
-    (erc :server "irc.libera.chat" :port 6667 :nick "paul_j")))
+  (if (get-buffer "irc.libera.chat:6667")
+      (erc-track-switch-buffer 1)
+    (when (y-or-n-p "Do you want to start IRC? ")
+      (erc :server "irc.libera.chat" :port 6667 :nick "paul_j"))))
 
 (defun filter-server-buffers ()
   (delq nil
@@ -1888,11 +2004,10 @@ Make table of contents when saving org-files.
   ;; enable in markdown as well
   (add-hook 'markdown-mode-hook 'toc-org-mode))
 
-
 #+end_src
 
 * ox-hugo
-Not yet set up. Website development with org and hugo.
+TODO: Not yet set up. Website development with org and hugo.
 
 #+begin_src emacs-lisp
 ;;==============================================================================
@@ -1909,21 +2024,55 @@ Not yet set up. Website development with org and hugo.
 
 #+end_src
 
-* Auto-tangle Configuration files
+
+
+* Hammy
 #+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....Auto tangle configuration files
-  ;;     -------------------------------
+(use-package hammy
+:quelpa (hammy :fetcher github :repo "alphapapa/hammy.el")
+:commands (happy-start hammy-start-org-clock-in)
+:config
+(hammy-define (propertize "🍅" 'face '(:foreground "tomato"))
+  :documentation "The classic pomodoro timer."
+  :intervals
+  (list
+   (interval :name "Work"
+             :duration "25 minutes"
+             :before (do (announce "Starting work time.")
+                         (notify "Starting work time."))
+             :advance (do (announce "Break time!")
+                          (notify "Break time!")))
+   (interval :name "Break"
+             :duration (do (if (and (not (zerop cycles))
+                                    (zerop (mod cycles 3)))
+                               ;; If a multiple of three cycles have
+                               ;; elapsed, the fourth work period was
+                               ;; just completed, so take a longer break.
+                               "30 minutes"
+                             "5 minutes"))
+             :before (do (announce "Starting break time.")
+                         (notify "Starting break time."))
+             :advance (do (announce "Break time is over!")
+                          (notify "Break time is over!"))))))
+#+end_src
+* Auto tangle configuration files
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....Auto tangle configuration files
+;;     -------------------------------
 
-  (defun pj/org-babel-tangle-config ()
-    (when (string-equal (file-name-directory (buffer-file-name))
-                        (expand-file-name "~/dotfiles/"))
-      (let ((org-confirm-babel-evaluate nil))
-        (org-babel-tangle))))
+
+(defun pj/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name "~/dotfiles/"))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
 
 
-  (add-hook 'org-mode-hook 
-            (lambda () 
-              (add-hook 'after-save-hook
-                        #'pj/org-babel-tangle-config)))
+(add-hook 'org-mode-hook 
+          (lambda () 
+            (add-hook 'after-save-hook
+                      #'pj/org-babel-tangle-config)))
+
+
 #+end_src

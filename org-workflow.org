@@ -18,6 +18,7 @@ TODO: Complete the breakdown and documentation in this file.
 - [[#keybindings][Keybindings]]
 - [[#functions][Functions]]
 - [[#capture-templates][Capture templates]]
+- [[#org-agenda-setup][Org Agenda Setup]]
 - [[#clocking-functions][Clocking functions]]
 - [[#helper-functions][Helper functions]]
 - [[#publishing][Publishing]]
@@ -41,22 +42,41 @@ TODO: Complete the breakdown and documentation in this file.
 
 * Load org modules
 #+begin_src emacs-lisp
+(require 'org)
+;;  (require 'org-contribdir)
+(require 'org-agenda)
+(require 'org-clock)
+(require 'org-archive)
+;;  (require 'org-checklist)
+(require 'org-crypt)
+(require 'org-protocol)
+(require 'ido)
+(require 'org-id)
+;;  (require 'bbdb-com)
+(require 'ox-html)
+(require 'ox-latex)
+(require 'ox-ascii)
+(require 'org-tempo)
+
+
+
 ;; Enable habit tracking (and a bunch of other modules)
+
 (defvar my-org-modules '(org-crypt
-                          ol-gnus
-                          org-id
-                          ol-info
-                          ;; org-jsinfo
-                          org-habit
-                          org-inlinetask
-                          ol-irc
-                          ;; org-mew
-                          ol-mhe
-                          org-protocol
-                          ol-rmail
-                          ;; org-vm
-                          ;; org-wl
-                          ol-w3m))
+                         ol-gnus
+                         org-id
+                         ol-info
+                         ;; org-jsinfo
+                         org-habit
+                         org-inlinetask
+                         ol-irc
+                         ;; org-mew
+                         ol-mhe
+                         org-protocol
+                         ol-rmail
+                         ;; org-vm
+                         ;; org-wl
+                         ol-w3m))
 
 (mapcar (lambda (x) (add-to-list 'org-modules x)) my-org-modules)
 
@@ -65,16 +85,17 @@ TODO: Complete the breakdown and documentation in this file.
 * Keybindings
 #+begin_src emacs-lisp
 ;; Standard key bindings
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c b") 'org-iswitchb)
 
+(global-set-key (kbd "C-c w") 'org-refile)
 
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
 
 
-(global-set-key (kbd "<F7>") 'pj/set-truncate-lines)
+(global-set-key (kbd "<f7>") 'pj/set-truncate-lines)
 
 ;; Cycles through the different org-mode agenda files (buffers)
 (global-set-key (kbd "<f8>") 'org-cycle-agenda-files)
@@ -152,12 +173,8 @@ TODO: Complete the breakdown and documentation in this file.
               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
 (defvar *pj/org-directory* (car org-agenda-files))
-(defvar *pj/org-default-notes-file* (concat (file-name-as-directory *pj/org-directory*) "refile.org"))
+(defvar *pj/org-default-notes-file* (concat (file-name-as-directory *pj/org-directory*) "diary.org.gpg"))
 (defvar *pj/org-default-refile-file* (concat (file-name-as-directory *pj/org-directory*) "refile.org"))
-
-;; I use C-c c to start capture mode
-
-(global-set-key (kbd "C-c c") 'org-capture)
 
 (defun pj/uuidgen ()
   "Generate a UUID for the ID Property of each task."
@@ -182,7 +199,7 @@ TODO: Complete the breakdown and documentation in this file.
 :ID: %(shell-command-to-string \"uuidgen\"):CREATED: %U\n%
 :END:" :clock-in t :clock-resume t)
 
-          ("j" "Journal" entry (file+olp+datetree "~/Nextcloud/git/org/diary.org.gpg")
+          ("j" "Journal" entry (file+olp+datetree *pj/org-default-notes-file*)
            "* %?" :clock-in t :clock-resume t)
           
           ("w" "org-protocol" entry (file *pj/org-default-refile-file*)
@@ -266,6 +283,9 @@ TODO: Complete the breakdown and documentation in this file.
 
 (setq org-refile-target-verify-function 'pj/verify-refile-target)
 
+#+end_src
+* Org Agenda Setup
+#+begin_src emacs-lisp
 ;; Do not dim blocked tasks
 
 (setq org-agenda-dim-blocked-tasks nil)
@@ -284,7 +304,7 @@ TODO: Complete the breakdown and documentation in this file.
                ((org-agenda-overriding-header "Habits")
                 (org-agenda-sorting-strategy
                  '(todo-state-down effort-up category-keep))))
-              (" " "Agenda"
+              ("Z" "Agenda"
                ((agenda "" nil)
                 (tags "REFILE"
                       ((org-agenda-overriding-header "Tasks to Refile")
@@ -439,19 +459,13 @@ Switch projects and subprojects from NEXT back to TODO"
 If no task is selected set the Organization task as the default task."
   (interactive "p")
   (setq *pj/keep-clock-running* t)
-  (if (equal major-mode 'org-agenda-mode)
-      ;;
-      ;; We're in the agenda
-      ;;
+  (if (equal major-mode 'org-agenda-mode) ;;.....We're in the agenda
       (let* ((marker (org-get-at-bol 'd-marker))
              (tags (org-with-point-at marker (org-get-tags))))
         (if (and (eq arg 4) tags)
             (org-agenda-clock-in '(16))
           (pj/clock-in-organisation-task-as-default)))
-    ;;
-    ;; We are not in the agenda
-    ;;
-    (save-restriction
+    (save-restriction                   ; we are not in the agenda
       (widen)
                                         ; Find the tags on the current task
       (if (and (equal major-mode 'org-mode) (not (org-before-first-heading-p))
@@ -567,6 +581,9 @@ A prefix arg forces clock in of the default task."
                             ("@errand" . ?e)
                             ("@office" . ?o)
                             ("@home" . ?H)
+                            ("@workshop" . ?s)
+                            ("@caravan" . ?v)
+                            ("@garden" . ?g)
                             (:endgroup)
                             ("WAITING" . ?w)
                             ("HOLD" . ?h)
@@ -634,6 +651,9 @@ A prefix arg forces clock in of the default task."
 (setq org-stuck-projects (quote ("" nil nil "")))
 
 #+end_src
+
+#+results:
+|   | nil | nil |   |
 
 * Helper functions
 #+begin_src emacs-lisp
