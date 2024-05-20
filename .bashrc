@@ -22,7 +22,7 @@ HISTIGNORE="ls:ll:cd:pwd:bg:fg:history"
 HISTSIZE=100000
 HISTFILESIZE=10000000
 
-EDITOR=/usr/bin/vi
+EDITOR=/usr/bin/nvim
 alias bbb="ssh paul@navigator"
 alias vim=nvim
 alias sbcl="rlwrap sbcl"
