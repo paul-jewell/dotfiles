@@ -21,3 +21,4 @@ export PASSWORD_STORE_GPG_OPTS="--default-key 32089A9C90EAF4BB"
 
 # Load .bashrc to get login environment
 [ -f ~/.bashrc ] && . ~/.bashrc
+. "$HOME/.cargo/env"
