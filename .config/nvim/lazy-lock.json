@@ -55,4 +55,3 @@
   "tokyonight.nvim": { "branch": "main", "commit": "9d88650502bc331f43eb0bef6286e58144ac5a96" },
   "trouble.nvim": { "branch": "main", "commit": "c11dc2777d52da2c8da25836817e43608ec951a5" },
   "which-key.nvim": { "branch": "main", "commit": "ccf027625df6c4e22febfdd786c5e1f7521c2ccb" }
-}
