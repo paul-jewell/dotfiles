@@ -33,7 +33,8 @@
 .config/shepherd/*
 .config/bspwm/*
 
-
+# Nvim json files
+.config/nvim/*.json
 
 .xsession
 
