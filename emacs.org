@@ -998,7 +998,7 @@ eglot configuration for lsp mode functionality.
   ;; language server when working in `web-mode'.
   (add-to-list 'eglot-server-programs
                '(web-mode . ("typescript-language-server" "--stdio"))
-               '(rust-mode . ("rust-analyzer" :initializationOptions
+               '((rust-ts-mode rust-mode) . ("rust-analyzer" :initializationOptions
                               ( :procMacro (:enable t)
                                 :cargo ( :buildScripts (:enable t)
                                          :features "all")))))
