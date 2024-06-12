@@ -997,7 +997,12 @@ eglot configuration for lsp mode functionality.
   ;; `eglot-server-programs'. The following tells eglot to use TypeScript
   ;; language server when working in `web-mode'.
   (add-to-list 'eglot-server-programs
-               '(web-mode . ("typescript-language-server" "--stdio")))
+               '(web-mode . ("typescript-language-server" "--stdio"))
+               '(rust-mode . ("rust-analyzer" :initializationOptions
+                              ( :procMacro (:enable t)
+                                :cargo ( :buildScripts (:enable t)
+                                         :features "all")))))
+  
   ;; use orderless for completion filtering
   (setq completion-category-overrides '((eglot (styles orderless))
                                         (eglot-capf (styles orderless)))))
