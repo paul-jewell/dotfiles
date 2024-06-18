@@ -16,7 +16,7 @@ fi
 export PATH=/home/paul/bin:/home/paul/.local/bin:/home/paul/.cargo/bin:$PATH
 HISTCONTROL=ignoreboth
 shopt -s histappend
-PROMPT_COMMAND="history -a; history -n"
+PROMPT_COMMAND+=('history -a; history -n')
 HISTIGNORE="ls:ll:cd:pwd:bg:fg:history"
 
 HISTSIZE=100000
