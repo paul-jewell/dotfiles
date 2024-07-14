@@ -1082,6 +1082,8 @@ Started learning rust. This config snippet is copied from elsewhere,
 but seems to work at the moment.
 
 #+begin_src emacs-lisp
+(use-package ron-mode)
+
 (use-package rust-mode
   :bind (:map rust-mode-map
 	      ("C-c C-r" . 'rust-run)
