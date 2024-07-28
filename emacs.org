@@ -80,6 +80,7 @@ Emacs configuration.
 - [[#toc-org][toc-org]]
 - [[#ox-hugo][ox-hugo]]
 - [[#hammy][Hammy]]
+- [[#ron-mode][Ron mode]]
 - [[#auto-tangle-configuration-files][Auto tangle configuration files]]
 
 * Early Init
@@ -337,6 +338,7 @@ which operating system is running:
      :fetcher git
      :url "https://github.com/quelpa/quelpa-use-package.git")))
 (require 'quelpa-use-package)
+
 
 #+end_src
 
@@ -936,7 +938,8 @@ Still learning about this, so this is quite fluid.
         (typescript .("https://github.com/tree-sitter/tree-sitter-typescript"
                       "master"
                       "typescript/src"))
-        (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+        (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
+        (ron . ("https://github.com/zee-editor/tree-sitter-ron")))))
 
   (setq treesit-load-name-override-list '((c++ "libtree-sitter-cpp")))
 
@@ -1082,8 +1085,6 @@ Started learning rust. This config snippet is copied from elsewhere,
 but seems to work at the moment.
 
 #+begin_src emacs-lisp
-(use-package ron-mode)
-
 (use-package rust-mode
   :bind (:map rust-mode-map
 	      ("C-c C-r" . 'rust-run)
@@ -1982,6 +1983,16 @@ TODO: Not yet set up. Website development with org and hugo.
                          (notify "Starting break time."))
              :advance (do (announce "Break time is over!")
                           (notify "Break time is over!"))))))
+#+end_src
+
+* Ron mode
+#+begin_src emacs-lisp :tangle no
+
+(quelpa-use-package-activate-advice)
+(use-package tree-sitter-ron-mode
+  :quelpa (tree-sitter-ron-mode :fetcher sourcehut :repo "paulj/tree-sitter-ron-mode"))
+
+(quelpa-use-package-deactivate-advice)
 #+end_src
 * Auto tangle configuration files
 #+begin_src emacs-lisp
