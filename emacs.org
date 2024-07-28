@@ -78,7 +78,6 @@ Emacs configuration.
 - [[#password-store][Password-store]]
 - [[#erc][ERC]]
 - [[#toc-org][toc-org]]
-- [[#ox-hugo][ox-hugo]]
 - [[#hammy][Hammy]]
 - [[#ron-mode][Ron mode]]
 - [[#auto-tangle-configuration-files][Auto tangle configuration files]]
@@ -1916,26 +1915,6 @@ Make table of contents when saving org-files.
   (add-hook 'markdown-mode-hook 'toc-org-mode))
 
 #+end_src
-
-* ox-hugo
-TODO: Not yet set up. Website development with org and hugo.
-
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....Ox-Hugo
-;;     -------
-
-(use-package ox-hugo
-  :after ox)
-
-(put 'narrow-to-region 'disabled nil)
-
-(provide 'init)
-;;; init.el ends here
-
-#+end_src
-
-
 
 * Hammy
 #+begin_src emacs-lisp
