@@ -14,12 +14,12 @@ Emacs configuration.
 :TOC: :include all :ignore this
 :END:
 - [[#early-init][Early Init]]
-  - [[#initel-preamble][init.el Preamble]]
+  - [[#early-initel-preamble][early-init.el Preamble]]
   - [[#early-initel---native-compile-packages][early-init.el - Native compile packages]]
   - [[#early-initel---macro-to-run-code-only-in-a-non-tiling-wm-environment][early-init.el - macro to run code only in a non tiling wm environment]]
   - [[#early-initel---code-to-set-frame-parameters][early-init.el - code to set frame parameters]]
   - [[#early-initel---basic-frame-settings][early-init.el - basic frame settings]]
-- [[#initel-preamble-1][init.el Preamble]]
+- [[#initel-preamble][init.el Preamble]]
 - [[#startup-performance][Startup Performance]]
 - [[#machine-specific-code-and-package-initialisation][Machine specific code, and package initialisation]]
 - [[#scrolling-precision][Scrolling precision]]
@@ -29,8 +29,10 @@ Emacs configuration.
   - [[#other-settings-for-appearance-and-layout][Other settings for appearance and layout]]
 - [[#package-management][Package Management]]
 - [[#keep-emacsd-clean][Keep .emacs.d Clean]]
+- [[#load-modules][Load modules]]
 - [[#themes][Themes]]
 - [[#fonts][Fonts]]
+- [[#all-the-icons][All the icons]]
 - [[#dashboard][Dashboard]]
 - [[#doom-modeline][Doom modeline]]
 - [[#treemacs][Treemacs]]
@@ -41,11 +43,20 @@ Emacs configuration.
 - [[#ledger][Ledger]]
 - [[#treesitter][Treesitter]]
 - [[#lsp-mode][LSP mode]]
-- [[#go][Go]]
-- [[#python][Python]]
-- [[#sql][SQL]]
-- [[#c][C++]]
-- [[#rust][Rust]]
+- [[#programming-configuration][Programming Configuration]]
+  - [[#c][C++]]
+  - [[#rust][Rust]]
+  - [[#javascript-and-html][Javascript and HTML]]
+  - [[#clojure][Clojure]]
+  - [[#emacs-lisp][emacs-lisp]]
+  - [[#lisp][Lisp]]
+  - [[#lua][lua]]
+  - [[#markdown][Markdown]]
+  - [[#typescript-ja-and-jsxtsx-support][Typescript, JA and JSX/TSX support]]
+  - [[#haskell][Haskell]]
+  - [[#nix][nix]]
+  - [[#yaml-mode][yaml mode]]
+- [[#erc][ERC]]
 - [[#yasnippet][yasnippet]]
 - [[#multiple-cursors][Multiple Cursors]]
 - [[#org-mode][Org-mode]]
@@ -54,37 +65,23 @@ Emacs configuration.
 - [[#auctex][Auctex]]
 - [[#reftex][Reftex]]
 - [[#hydra][Hydra]]
-- [[#javascript-and-html][Javascript and HTML]]
 - [[#magit][Magit]]
-- [[#all-the-icons][All the icons]]
 - [[#projectile][Projectile]]
 - [[#diminish][Diminish]]
 - [[#paredit][Paredit]]
 - [[#rainbow-delimiters][Rainbow Delimiters]]
-- [[#clojure][Clojure]]
-- [[#lisp][Lisp]]
-- [[#emacs-lisp][emacs-lisp]]
-- [[#haskell][Haskell]]
-- [[#lua][lua]]
-- [[#markdown][Markdown]]
-- [[#typescript-ja-and-jsxtsx-support][Typescript, JA and JSX/TSX support]]
-- [[#yaml-mode][yaml mode]]
-- [[#nix][nix]]
 - [[#email---notmuch][email - notmuch]]
 - [[#gnus][GNUS]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
 - [[#gnupg---key-management][gnupg - Key management]]
 - [[#password-store][Password-store]]
-- [[#erc][ERC]]
 - [[#toc-org][toc-org]]
-- [[#ox-hugo][ox-hugo]]
 - [[#hammy][Hammy]]
 - [[#ron-mode][Ron mode]]
-- [[#auto-tangle-configuration-files][Auto tangle configuration files]]
 
 * Early Init
-** init.el Preamble
+** early-init.el Preamble
 - Make the tangled file read only if loaded into emacs. Hopefully it
   will be enough to ensure this file remains the primary truth!
 #+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
@@ -500,9 +497,51 @@ Packages are currently installed using use-package.
 (load custom-file t)
 
 #+end_src
+
+* Load modules
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....Load configuration modules
+;;     --------------------------
+
+(mapc
+ (lambda (string)
+   (add-to-list 'load-path (locate-user-emacs-file string)))
+ '("pj-modules" "pj-lisp"))
+
+(require my-themes.el)
+(require my-dashboard.el)
+(require my-modeline.el)
+(require my-treemacs.el)
+(require my-tramp.el)
+(require my-completion.el)
+(require my-which-key.el)
+(require my-ispell.el)
+(require my-ledger.el)
+(require my-lsp.el)
+(require my-programming.el)
+(require my-erc.el)
+(require my-yasnippet.el)
+(require my-multiple-cursors.el)
+(require my-orgmode.el)
+(require my-text-tools.el)
+(require my-hydra.el)
+(require my-magit.el)
+(require my-projectile.el)
+(require my-deminish.el)
+(require my-paredit.el)
+(require my-rainbow-delimiters.el)
+(require my-email.el)
+(require my-gnus.el)
+(require my-helpful.el)
+(require my-security.el)
+(require my-hammy.el)
+
+
+#+end_src
 * Themes
 Currently trialing Prot's themes from his ef-themes package
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-themes.el :mkdirp t
 ;;==============================================================================
 ;;.....themes
 ;;     ------
@@ -529,7 +568,7 @@ Currently trialing Prot's themes from his ef-themes package
 * Fonts
 Using the fontaine package from Prot. Font sizes are calculated from
 the variable =*pj/regular-font-size*= 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-themes.el :mkdirp t
 (use-package fontaine
   :config
   (setq fontaine-latest-state-file
@@ -585,8 +624,27 @@ the variable =*pj/regular-font-size*=
 
 (fontaine-restore-latest-preset)
 #+end_src
+* All the icons
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-themes.el :mkdirp t
+;;==============================================================================
+;;.....all the icons
+;;     -------------
+
+
+;; If this configuration is being used on a new installation,
+;; remember to run M-x all-the-icons-install-fonts
+;; otherwise nothing will work
+(use-package all-the-icons
+  :config
+  (use-package all-the-icons-dired
+    :config
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
+
+
+#+end_src
+
 * Dashboard
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-dashboard.el :mkdirp t
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook)
@@ -601,7 +659,8 @@ Need to install fonts first by doing this:
 M-x all-the-icons-install-fonts
 #+end_example
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-modeline.el :mkdirp t
+;; Use modeline from doom
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :config (column-number-mode 1)
@@ -620,7 +679,7 @@ M-x all-the-icons-install-fonts
 
 #+end_src
 * Treemacs
-#+begin_src
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-treemacs.el :mkdirp t
 (use-package treemacs
   :bind ("C-c t" . treemacs)
   :custom
@@ -632,14 +691,14 @@ M-x all-the-icons-install-fonts
 
 * Tramp
 ssh connection to other machines.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-tramp.el :mkdirp t
 (setq tramp-default-method "ssh")
 ;; Ensure paths are correct for editing files on guix systems (thanks @janneke)
 (with-eval-after-load 'tramp-sh (push 'tramp-own-remote-path tramp-remote-path))
 #+end_src
 
 * Completion Frameworks
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-completion.el :mkdirp t
 
 ;;; COMPLETION
 (use-package vertico
@@ -854,7 +913,7 @@ This way our searches are kept up to date"
 * Which-key
 Show the key sequences available from the current command key after a
 small delay.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-which-key.el :mkdirp t
 ;;==============================================================================
 ;;.....which-key
 ;;     ---------
@@ -866,7 +925,7 @@ small delay.
 #+end_src
 
 * ispell
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-ispell.el :mkdirp t
 ;;==============================================================================
 ;;.....ispell
 ;;     ------
@@ -888,7 +947,7 @@ small delay.
 
 * Ledger
 CLI accounting, as it should be.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-ledger.el :mkdirp t
 ;;==============================================================================
 ;;.....ledger
 ;;     ------
@@ -909,7 +968,7 @@ CLI accounting, as it should be.
 
 * Treesitter
 Still learning about this, so this is quite fluid.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-treesitter.el :mkdirp t
 ;;==============================================================================
 ;;.....treesitter
 ;;     ----------
@@ -983,7 +1042,7 @@ Still learning about this, so this is quite fluid.
 #+end_src
 * LSP mode
 eglot configuration for lsp mode functionality.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-lsp.el :mkdirp t
 
 ;; Adds LSP support. Note that you must have the respective LSP
 ;; server installed on your machine to use it with Eglot. e.g.
@@ -1011,63 +1070,13 @@ eglot configuration for lsp mode functionality.
   (setq completion-category-overrides '((eglot (styles orderless))
                                         (eglot-capf (styles orderless)))))
 #+end_src
-* Go
-Not currently using go, so not sure if this is complete or not.
-#+begin_src emacs-lisp
-  ;;==============================================================================
-  ;;.....go
-  ;;     --
-  ;; Package for go programming.
 
-  (use-package go-mode
-     :config
-     (add-hook 'go-mode-hook (lambda () (setq auto-complete-mode 1))))
-
-#+end_src
-
-* Python
-
-TODO: Not working, and not used currently...
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....Python
-;;     ------
-
-
-;;; Currently commented out - jedi mode should not be installed when using
-;;; company mode. company-jedi should be used instead
-
-;;(use-package jedi
-;;  
-;;  :init
-;;  (add-hook 'python-mode-hook 'jedi:setup)
-;;  (add-hook 'python-mode-hook 'jedi:ac-setup))
-;;; Alternative - use elpy - not yet fully configured
-;;(use-package elpy
-;;  
-;;  :init
-;;  (advice-add 'python-mode :before 'elpy-enable))
-
-#+end_src
-
-* SQL
-Set up when I was doing stuff with mysql. Currently dormant...
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....SQL
-;;     ---
-
-(require 'sql)
-
-(eval-after-load "sql"
-  '(progn (sql-set-product 'mysql)))
-
-#+end_src
-
-* C++
+* Programming Configuration
+Language by language configuration for different programming languages
+** C++
 I haven't used this in anger recently, so I am not sure if it
 works. TODO: Needs to be revisited.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....c++
 ;;     ---
@@ -1080,11 +1089,11 @@ works. TODO: Needs to be revisited.
 #+end_src
 
 
-* Rust
+** Rust
 Started learning rust. This config snippet is copied from elsewhere,
 but seems to work at the moment.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp
 (use-package rust-mode
   :bind (:map rust-mode-map
 	      ("C-c C-r" . 'rust-run)
@@ -1095,246 +1104,7 @@ but seems to work at the moment.
 (setq rust-format-on-save t)
 #+end_src
 
-* yasnippet
-Snippet management. TODO: Proper setup
-#+begin_src emacs-lisp
-(use-package yasnippet
-  :bind
-  (:map yas-minor-mode-map
-        ("C-c y" . yas-expand)
-        ([(tab)] . nil)
-        ("TAB" . nil))
-  :config
-  (yas-reload-all)
-  (add-hook 'prog-mode-hook #'yas-minor-mode)
-  (add-hook 'text-mode-hook #'yas-minor-mode))
-#+end_src
-
-#+results:
-
-* Multiple Cursors
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....multiple cursors
-;;     ----------------
-
-(use-package multiple-cursors
-  :config (global-set-key (kbd "C-c m c") 'mc/edit-lines))
-
-#+end_src
-
-* Org-mode
-TODO: Move this all into the my-org-mode.el file, and load it here.
-TODO: Refactor my-org-mode.el file completely.
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....org mode
-;;     --------
-
-(setq org-agenda-files *pj/org-agenda-files*)
-(load "~/.emacs.d/lisp/my-org-mode.el")  
-(org-toggle-pretty-entities)
-;;  (eval-after-load "org" (add-to-list 'org-modules 'org-habit))
-;;  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
-(global-set-key (kbd "C-c w") 'org-refile)
-
-;; Resolving conflict between org-mode and yasnippet
-;; (defun yas/org-very-safe-expand ()
-;;   (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
-
-;; (add-hook 'org-mode-hook
-;;           (lambda ()
-;;             (make-variable-buffer-local 'yas/trigger-key)
-;;             (setq yas/trigger-key [tab])
-;;             (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
-;;             (define-key yas/keymap [tab] 'yas/next-field)))
-
-#+end_src
-
-* Org Bullet mode
-Pretty bullets
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....org bullet mode
-;;     ---------------
-
-(use-package org-bullets
-  :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-
-#+end_src
-* Org-roam
-Note taking on steroids. Need to learn how to use it properly.
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....org roam mode
-;;     -------------
-
-;; Installation advice from the org-roam documentation website:
-;; https://org-roam.readthedocs.io/en/master/installation/
-;; and also the System Crafters videos on org-roam (from v2 onwards).
-
-(use-package org-roam
-  :init
-  (setq org-roam-v2-ack t) ;; Silence version 2 update message  
-  :custom
-  (org-roam-db-location *pj/org-roam-db-location*)
-  (org-roam-directory *pj/org-roam-directory*)
-  (org-roam-completion-everywhere t)
-  (org-roam-capture-templates
-   '(("d" "default" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n")
-      :unnarrowed t)
-     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project\n#+date: %U")
-      :unnarrowed t)))
-;;  (org-roam-dailies-capture-templates
-;;   '(("d" "default" entry "* %<%I:%M %p>: %?"
-;;      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>an"))))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n j" . org-roam-dailies-capture-today)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n c" . org-roam-capture)
-         :map org-mode-map
-         ("C-M-i"   . completion-at-point)
-         :map org-roam-dailies-map
-         ("Y" . org-roam-dailies-capture-yesterday)
-         ("T" . org-roam-dailies-capture-tomorrow))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-  :config
-  (require 'org-roam-dailies) ;; ensure the keymap is available
-  (org-roam-db-autosync-mode))
-
-
-#+end_src
-
-* Auctex
-TODO: Check the function of this. I want to write my book, and this
-will be usefull for managing references.
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....auctex
-;;     ------
-
-(when *pj/enable-auctex*
-  (use-package auctex
-    :mode ("\\.tex\\'" . latex-mode)
-    :config
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq-default TeX-master nil)
-    
-    (add-hook 'LaTeX-mode-hook 
-              (lambda ()
-                (company-mode)
-                (visual-line-mode) ; May prefer auto-fill-mode
-                (flyspell-mode)
-                (turn-on-reftex)
-                (setq TeX-PDF-mode t)
-                (setq reftex-plug-into-AUCtex t)
-                (LaTeX-math-mode)))
-    
-    ;; Update PDF buffers after successful LaTaX runs
-    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
-              #'TeX-revert-document-buffer)
-    
-    ;; to use pdfview with auctex
-    (add-hook 'Latex-mode-hook 'pdf-tools-install)))
-
-
-#+end_src
-* Reftex
-I haven't used this yet, so there may be some issues.
-TODO: Sort this out!
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....reftex
-;;     ------
-
-;;(use-package reftex
-;;  :defer t
-;;  :config
-;;  (setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
-
-
-;;==============================================================================
-;;.....ivy-bibtex
-;;     ----------
-
-;; TODO: Modify the paths etc in this section:
-
-;;(use-package ivy-bibtex
-;;  
-;;  :bind ("C-c b b" . ivy-bibtex)
-;;  :config
-;;  (setq bibtex-completion-bibliography 
-;;        '("C:/Users/Nasser/OneDrive/Bibliography/references-zot.bib"))
-;;  (setq bibtex-completion-library-path 
-;;        '("C:/Users/Nasser/OneDrive/Bibliography/references-pdf"
-;;          "C:/Users/Nasser/OneDrive/Bibliography/references-etc"))
-;;
-;;  ;; using bibtex path reference to pdf file
-;;  (setq bibtex-completion-pdf-field "File")
-;;
-;;  ;;open pdf with external viwer foxit
-;;  (setq bibtex-completion-pdf-open-function
-;;        (lambda (fpath)
-;;          (call-process "C:\\Program Files (x86)\\Foxit Software\\Foxit Reader\\FoxitReader.exe" nil 0 nil fpath)))
-;;
-;;  (setq ivy-bibtex-default-action 'bibtex-completion-insert-citation))
-
-
-#+end_src
-* Hydra
-Useful key programming. 
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....hydra
-;;     -----
-
-(use-package hydra 
-  :init 
-  (global-set-key
-   (kbd "C-x t")
-	(defhydra toggle (:color blue)
-	  "toggle"
-	  ("a" abbrev-mode "abbrev")
-	  ("s" flyspell-mode "flyspell")
-	  ("d" toggle-debug-on-error "debug")
-     ;;	      ("c" fci-mode "fCi")
-	  ("f" auto-fill-mode "fill")
-	  ("t" toggle-truncate-lines "truncate")
-	  ("w" whitespace-mode "whitespace")
-	  ("q" nil "cancel"))))
-
-(global-set-key
- (kbd "C-x j")
- (defhydra gotoline 
-   (:pre (display-line-numbers-mode t)
-	      :post (display-line-numbers-mode nil))
-   "goto"
-   ("t" (move-to-window-line-top-bottom 0) "top")
-   ("b" (move-to-window-line-top-bottom -2) "bottom")
-   ("m" (move-to-window-line-top-bottom) "middle")
-   ("e" (goto-char (point-max)) "end")
-   ("c" recenter-top-bottom "recenter")
-   ("n" next-line "down")
-   ("p" (lambda () (interactive) (forward-line -1))  "up")
-   ("g" goto-line "goto-line")))
-
-;; font zoom mode example taken from hydra wiki
-(defhydra hydra-zoom (global-map "<f2>")
-  "zoom"
-  ("+" text-scale-increase "in")
-  ("-" text-scale-decrease "out")
-  ("0" (text-scale-adjust 0) "reset")
-  ("q" nil "quit" :color blue))
-
-#+end_src
-* Javascript and HTML
+** Javascript and HTML
 TODO: Setup javascript mode
 Disabling js2 mode. I don't program in javascript at the moment, and I
 want to get other stuff working first.
@@ -1364,156 +1134,11 @@ want to get other stuff working first.
 ;; (use-package xref-js2)
 
 #+end_src
-* Magit
-git processing - the best.
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....magit
-;;     -----
-
-(use-package magit
-  :init
-  (progn
-    (bind-key "C-c g" 'magit-status)
-    ))
-
-(use-package git-gutter
-  
-  :init
-  (global-git-gutter-mode +1))
-
-(global-set-key (kbd "M-g M-g") 'hydra-git-gutter/body)
-
-
-(use-package git-timemachine)
-
-(defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
-                                      :hint nil)
-  "
-Git gutter:
-  _j_: next hunk        _s_tage hunk     _q_uit
-  _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
-  ^ ^                   _p_opup hunk
-  _h_: first hunk
-  _l_: last hunk        set start _R_evision
-"
-  ("j" git-gutter:next-hunk)
-  ("k" git-gutter:previous-hunk)
-  ("h" (progn (goto-char (point-min))
-              (git-gutter:next-hunk 1)))
-  ("l" (progn (goto-char (point-min))
-              (git-gutter:previous-hunk 1)))
-  ("s" git-gutter:stage-hunk)
-  ("r" git-gutter:revert-hunk)
-  ("p" git-gutter:popup-hunk)
-  ("R" git-gutter:set-start-revision)
-  ("q" nil :color blue)
-  ("Q" (progn (git-gutter-mode -1)
-              ;; git-gutter-fringe doesn't seem to
-              ;; clear the markup right away
-              (sit-for 0.1)
-              (git-gutter:clear))
-   :color blue))
-
-#+end_src
-
-* All the icons
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....all the icons
-;;     -------------
-
-
-;; If this configuration is being used on a new installation,
-;; remember to run M-x all-the-icons-install-fonts
-;; otherwise nothing will work
-(use-package all-the-icons
-  :config
-  (use-package all-the-icons-dired
-    :config
-    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
-
-
-#+end_src
-
-* Projectile
-Management at a project level, rather than just at file level.
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....Projectile
-;;     ----------
-
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom (setq projectile-completion-system 'ivy)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  (when (file-directory-p "~projects")
-    (setq projectile-project-search-path '("~/projects")))
-  (setq projectile-switch-project-action #'projectile-dired))
-#+end_src
-
-* Diminish
-Hide minor mode information from the mode line.
-#+begin_src emacs-lisp
-
-(use-package diminish
-  :demand t)
-
-#+end_src
-
-* Paredit
-Beautiful editing in lisp modes! Never have a problem with unbalanced
-parentheses. Would be good if it worked with other languages...
-TODO: Find out if it does!
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....Paredit
-;;     -------
-
-(use-package paredit
-  :diminish paredit-mode
-  :config
-  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
-  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-  (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-  :bind (("C-c d" . paredit-forward-down))) 
-
-;; Ensure paredit is used EVERYWHERE!
-(use-package paredit-everywhere
-  :diminish paredit-everywhere-mode
-  :config
-  (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
-
-#+end_src
-
-* Rainbow Delimiters
-Colour those delimiters, for easier comprehension.
-#+begin_src emacs-lisp
-
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode)
-  :config
-  (add-hook 'lisp-mode-hook
-            (lambda()
-              (rainbow-delimiters-mode))))
-
-;;(global-highlight-parentheses-mode)
-
-#+end_src
-
-* Clojure
+** Clojure
 My first experience of a functional language. Nice setup with cider,
 but I have since moved on to common lisp. I still like the functional
 rigour of clojure though!
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....Clojure
 ;;     -------
@@ -1543,7 +1168,20 @@ rigour of clojure though!
 
 #+end_src
 
-* Lisp
+** emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+;;==============================================================================
+;;.....elisp - slime
+;;     -------------
+
+(use-package elisp-slime-nav
+  :config
+  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+    (add-hook hook #'elisp-slime-nav-mode)))
+
+#+end_src
+
+** Lisp
 
 Investigating the correct way to setup slime, swank, lisp and
 quicklisp leads to the following:
@@ -1556,7 +1194,7 @@ quicklisp leads to the following:
     This will make quicklisp search for swank in the installed
     directory in the emacs.d tree.
     
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....lisp - slime
 ;;     ------------
@@ -1595,43 +1233,13 @@ quicklisp leads to the following:
 
 #+end_src
 
-* emacs-lisp
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....elisp - slime
-;;     -------------
-
-(use-package elisp-slime-nav
-  :config
-  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
-    (add-hook hook #'elisp-slime-nav-mode)))
-
-#+end_src
-
-* Haskell
-Like this language as well, but it is still a big learning curve for
-me. Since I use xmonad/xmobar, I have more opportunity to learn
-haskell going forward. Also, learning rust means playing with monads
-without using the name!!
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....haskell
-;;     -------
-
-(use-package haskell-mode
-  :config
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
-#+end_src
-
-
-
-* lua
-#+begin_src emacs-lisp
+** lua
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package lua-mode)
 
 #+end_src
-* Markdown
-#+begin_src emacs-lisp
+** Markdown
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package markdown-mode
   ;; These extra modes help clean up the Markdown editing experience.
   ;; `visual-line-mode' turns on word wrap and helps editing commands
@@ -1643,8 +1251,8 @@ without using the name!!
   (setq markdown-command "multimarkdown"))
 
 #+end_src
-* Typescript, JA and JSX/TSX support
-#+begin_src emacs-lisp
+** Typescript, JA and JSX/TSX support
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....TypeScript, JS, and JSX/TSX support.
 ;;     ------------------------------------
@@ -1663,7 +1271,35 @@ without using the name!!
   (web-mode-markup-indent-offset 2)
   (web-mode-enable-auto-quoting nil))
 #+end_src
-* yaml mode
+** Haskell
+Like this language as well, but it is still a big learning curve for
+me. Since I use xmonad/xmobar, I have more opportunity to learn
+haskell going forward. Also, learning rust means playing with monads
+without using the name!!
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+;;==============================================================================
+;;.....haskell
+;;     -------
+
+(use-package haskell-mode
+  :config
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
+#+end_src
+
+
+
+** nix
+Nix, beautiful Nix. I tried guix, but found it challenging, but NixOS
+is wonderful.
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+;;==============================================================================
+;;.....nix
+;;     ===
+
+(use-package nix-mode)
+
+#+end_src
+** yaml mode
 #+begin_src emacs-lisp
 ;;==============================================================================
 ;;.....yaml mode
@@ -1672,83 +1308,9 @@ without using the name!!
 (use-package yaml-mode)
 
 #+end_src
-* nix
-Nix, beautiful Nix. I tried guix, but found it challenging, but NixOS
-is wonderful.
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....nix
-;;     ===
-
-(use-package nix-mode)
-
-#+end_src
-* email - notmuch
-TODO: Persevere with notmuch - get good at sending emails, and sort out the tagging to improve
-the experience.
-#+begin_src emacs-lisp
-(when *pj/enable-email*
-    (require 'notmuch))
-
-#+end_src
-
-* GNUS
-Watch John Wiegley using gnus - very impressive, so I want to explore further.
-#+begin_src emacs-lisp
-;; Not yet configured
-
-#+end_src
-* org-caldav
-TODO: Still under development. First time I tried this, I wiped my
-calendars. Need to experiment with an empty calendar to prove it
-works, then take it from there. Website here:
-https://github.com/dengste/org-caldav
-
-#+begin_src emacs-lisp
-
-(use-package org-caldav
-  
-  :config
-  (setq org-caldav-url "https://nextcloud.applied-jidoka.com/remote.php/dav/calendars/paul")
-  (setq org-caldav-calendars
-        '(,(:calendar-id "caldav-org-test"
-                         :files (concat (file-name-as-directory *pj/org-directory*) "caldav-org-test.org")
-                         :inbox "~/Calendars/caldav-org-inbox.org")))
-  (setq org-caldav-backup-file "~/org-caldav-backup.org")
-  (setq org-caldav-save-directory "~/org-caldav/")
-  (setq org-icalendar-timezone "Europe/London"))
-
-#+end_src
-
-* Helpful
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....helpful - improve the help documentation
-;;     -------
-
-(use-package helpful
-  :bind (("C-h f" . #'helpful-callable)
-         ("C-h v" . #'helpful-variable)
-         ("C-h k" . #'helpful-key)
-         ("C-c C-d" . #'helpful-at-point)
-         ("C-h F" . #'helpful-function)
-         ("C-h C" . #'helpful-command)))
-#+end_src
-
-* gnupg - Key management
-#+begin_src emacs-lisp
-;; Following the ELPA instructions didn't work as expected - came across
-;; this approach, which does work. See also changes in gpg-agent.conf
-(setq epa-pinentry-mode 'loopback)
-(setq epg-pinentry-mode 'loopback)
-#+end_src
-* Password-store
-#+begin_src emacs-lisp
-(use-package password-store)
-#+end_src
 * ERC
 Developed from bbatsov's code on his github.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-erc.el :mkdirp t
 ;;==============================================================================
 ;;.....ERC
 ;;     ---
@@ -1918,6 +1480,434 @@ that can occur between two notifications.  The default is
 
 #+end_src
 
+* yasnippet
+Snippet management. TODO: Proper setup
+#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-modules/my-yasnippet.el :mkdirp t
+(use-package yasnippet
+  :bind
+  (:map yas-minor-mode-map
+        ("C-c y" . yas-expand)
+        ([(tab)] . nil)
+        ("TAB" . nil))
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  (add-hook 'text-mode-hook #'yas-minor-mode))
+#+end_src
+
+#+results:
+
+* Multiple Cursors
+#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-modules/my-multiple-cursors.el :mkdirp t
+;;==============================================================================
+;;.....multiple cursors
+;;     ----------------
+
+(use-package multiple-cursors
+  :config (global-set-key (kbd "C-c m c") 'mc/edit-lines))
+
+#+end_src
+
+* Org-mode
+TODO: Move this all into the my-org-mode.el file, and load it here.
+TODO: Refactor my-org-mode.el file completely.
+#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-modules/my-orgmode.el :mkdirp t
+;;==============================================================================
+;;.....org mode
+;;     --------
+
+(setq org-agenda-files *pj/org-agenda-files*)
+(load "~/.emacs.d/lisp/my-org-mode.el")  
+(org-toggle-pretty-entities)
+;;  (eval-after-load "org" (add-to-list 'org-modules 'org-habit))
+;;  (require 'org-habit) ;; org-habit is part of org-mode (not a package)
+(global-set-key (kbd "C-c w") 'org-refile)
+
+;; Resolving conflict between org-mode and yasnippet
+;; (defun yas/org-very-safe-expand ()
+;;   (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
+
+;; (add-hook 'org-mode-hook
+;;           (lambda ()
+;;             (make-variable-buffer-local 'yas/trigger-key)
+;;             (setq yas/trigger-key [tab])
+;;             (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+;;             (define-key yas/keymap [tab] 'yas/next-field)))
+
+#+end_src
+
+* Org Bullet mode
+Pretty bullets
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-orgmode.el :mkdirp t
+;;==============================================================================
+;;.....org bullet mode
+;;     ---------------
+
+(use-package org-bullets
+  :config (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+#+end_src
+* Org-roam
+Note taking on steroids. Need to learn how to use it properly.
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-orgmode.el :mkdirp t
+;;==============================================================================
+;;.....org roam mode
+;;     -------------
+
+;; Installation advice from the org-roam documentation website:
+;; https://org-roam.readthedocs.io/en/master/installation/
+;; and also the System Crafters videos on org-roam (from v2 onwards).
+
+(use-package org-roam
+  :init
+  (setq org-roam-v2-ack t) ;; Silence version 2 update message  
+  :custom
+  (org-roam-db-location *pj/org-roam-db-location*)
+  (org-roam-directory *pj/org-roam-directory*)
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n")
+      :unnarrowed t)
+     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project\n#+date: %U")
+      :unnarrowed t)))
+;;  (org-roam-dailies-capture-templates
+;;   '(("d" "default" entry "* %<%I:%M %p>: %?"
+;;      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>an"))))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n j" . org-roam-dailies-capture-today)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n c" . org-roam-capture)
+         :map org-mode-map
+         ("C-M-i"   . completion-at-point)
+         :map org-roam-dailies-map
+         ("Y" . org-roam-dailies-capture-yesterday)
+         ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies) ;; ensure the keymap is available
+  (org-roam-db-autosync-mode))
+
+
+#+end_src
+
+* Auctex
+TODO: Check the function of this. I want to write my book, and this
+will be usefull for managing references.
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-text-tools.el :mkdirp t
+;;==============================================================================
+;;.....auctex
+;;     ------
+
+(when *pj/enable-auctex*
+  (use-package auctex
+    :mode ("\\.tex\\'" . latex-mode)
+    :config
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    
+    (add-hook 'LaTeX-mode-hook 
+              (lambda ()
+                (company-mode)
+                (visual-line-mode) ; May prefer auto-fill-mode
+                (flyspell-mode)
+                (turn-on-reftex)
+                (setq TeX-PDF-mode t)
+                (setq reftex-plug-into-AUCtex t)
+                (LaTeX-math-mode)))
+    
+    ;; Update PDF buffers after successful LaTaX runs
+    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+              #'TeX-revert-document-buffer)
+    
+    ;; to use pdfview with auctex
+    (add-hook 'Latex-mode-hook 'pdf-tools-install)))
+
+
+#+end_src
+* Reftex
+I haven't used this yet, so there may be some issues.
+TODO: Sort this out!
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-text-tools.el :mkdirp t
+;;==============================================================================
+;;.....reftex
+;;     ------
+
+;;(use-package reftex
+;;  :defer t
+;;  :config
+;;  (setq reftex-cite-prompt-optional-args t)) ; prompt for empty optional args in cite
+
+
+;;==============================================================================
+;;.....ivy-bibtex
+;;     ----------
+
+;; TODO: Modify the paths etc in this section:
+
+;;(use-package ivy-bibtex
+;;  
+;;  :bind ("C-c b b" . ivy-bibtex)
+;;  :config
+;;  (setq bibtex-completion-bibliography 
+;;        '("C:/Users/Nasser/OneDrive/Bibliography/references-zot.bib"))
+;;  (setq bibtex-completion-library-path 
+;;        '("C:/Users/Nasser/OneDrive/Bibliography/references-pdf"
+;;          "C:/Users/Nasser/OneDrive/Bibliography/references-etc"))
+;;
+;;  ;; using bibtex path reference to pdf file
+;;  (setq bibtex-completion-pdf-field "File")
+;;
+;;  ;;open pdf with external viwer foxit
+;;  (setq bibtex-completion-pdf-open-function
+;;        (lambda (fpath)
+;;          (call-process "C:\\Program Files (x86)\\Foxit Software\\Foxit Reader\\FoxitReader.exe" nil 0 nil fpath)))
+;;
+;;  (setq ivy-bibtex-default-action 'bibtex-completion-insert-citation))
+
+
+#+end_src
+* Hydra
+Useful key programming. 
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-hydra.el :mkdirp t
+;;==============================================================================
+;;.....hydra
+;;     -----
+
+(use-package hydra 
+  :init 
+  (global-set-key
+   (kbd "C-x t")
+	(defhydra toggle (:color blue)
+	  "toggle"
+	  ("a" abbrev-mode "abbrev")
+	  ("s" flyspell-mode "flyspell")
+	  ("d" toggle-debug-on-error "debug")
+     ;;	      ("c" fci-mode "fCi")
+	  ("f" auto-fill-mode "fill")
+	  ("t" toggle-truncate-lines "truncate")
+	  ("w" whitespace-mode "whitespace")
+	  ("q" nil "cancel"))))
+
+(global-set-key
+ (kbd "C-x j")
+ (defhydra gotoline 
+   (:pre (display-line-numbers-mode t)
+	      :post (display-line-numbers-mode nil))
+   "goto"
+   ("t" (move-to-window-line-top-bottom 0) "top")
+   ("b" (move-to-window-line-top-bottom -2) "bottom")
+   ("m" (move-to-window-line-top-bottom) "middle")
+   ("e" (goto-char (point-max)) "end")
+   ("c" recenter-top-bottom "recenter")
+   ("n" next-line "down")
+   ("p" (lambda () (interactive) (forward-line -1))  "up")
+   ("g" goto-line "goto-line")))
+
+;; font zoom mode example taken from hydra wiki
+(defhydra hydra-zoom (global-map "<f2>")
+  "zoom"
+  ("+" text-scale-increase "in")
+  ("-" text-scale-decrease "out")
+  ("0" (text-scale-adjust 0) "reset")
+  ("q" nil "quit" :color blue))
+
+#+end_src
+* Magit
+git processing - the best.
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-magit.el :mkdirp t
+;;==============================================================================
+;;.....magit
+;;     -----
+
+(use-package magit
+  :init
+  (progn
+    (bind-key "C-c g" 'magit-status)
+    ))
+
+(use-package git-gutter
+  
+  :init
+  (global-git-gutter-mode +1))
+
+(global-set-key (kbd "M-g M-g") 'hydra-git-gutter/body)
+
+
+(use-package git-timemachine)
+
+(defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                                      :hint nil)
+  "
+Git gutter:
+  _j_: next hunk        _s_tage hunk     _q_uit
+  _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
+  ^ ^                   _p_opup hunk
+  _h_: first hunk
+  _l_: last hunk        set start _R_evision
+"
+  ("j" git-gutter:next-hunk)
+  ("k" git-gutter:previous-hunk)
+  ("h" (progn (goto-char (point-min))
+              (git-gutter:next-hunk 1)))
+  ("l" (progn (goto-char (point-min))
+              (git-gutter:previous-hunk 1)))
+  ("s" git-gutter:stage-hunk)
+  ("r" git-gutter:revert-hunk)
+  ("p" git-gutter:popup-hunk)
+  ("R" git-gutter:set-start-revision)
+  ("q" nil :color blue)
+  ("Q" (progn (git-gutter-mode -1)
+              ;; git-gutter-fringe doesn't seem to
+              ;; clear the markup right away
+              (sit-for 0.1)
+              (git-gutter:clear))
+   :color blue))
+
+#+end_src
+
+* Projectile
+Management at a project level, rather than just at file level.
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-projectile.el :mkdirp t
+;;==============================================================================
+;;.....Projectile
+;;     ----------
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom (setq projectile-completion-system 'ivy)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~projects")
+    (setq projectile-project-search-path '("~/projects")))
+  (setq projectile-switch-project-action #'projectile-dired))
+#+end_src
+
+* Diminish
+Hide minor mode information from the mode line.
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-diminish.el :mkdirp t
+
+(use-package diminish
+  :demand t)
+
+#+end_src
+
+* Paredit
+Beautiful editing in lisp modes! Never have a problem with unbalanced
+parentheses. Would be good if it worked with other languages...
+TODO: Find out if it does!
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-paredit.el :mkdirp t
+;;==============================================================================
+;;.....Paredit
+;;     -------
+
+(use-package paredit
+  :diminish paredit-mode
+  :config
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  :bind (("C-c d" . paredit-forward-down))) 
+
+;; Ensure paredit is used EVERYWHERE!
+(use-package paredit-everywhere
+  :diminish paredit-everywhere-mode
+  :config
+  (add-hook 'lisp-mode-hook #'paredit-everywhere-mode))
+
+#+end_src
+
+* Rainbow Delimiters
+Colour those delimiters, for easier comprehension.
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-rainbow-delimiters.el :mkdirp t
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode)
+  :config
+  (add-hook 'lisp-mode-hook
+            (lambda()
+              (rainbow-delimiters-mode))))
+
+;;(global-highlight-parentheses-mode)
+
+#+end_src
+
+* email - notmuch
+TODO: Persevere with notmuch - get good at sending emails, and sort out the tagging to improve
+the experience.
+#+begin_src emacs-lis :tangle ./.emacs.d/pj-modules/my-email.el :mkdirp t
+(when *pj/enable-email*
+    (require 'notmuch))
+
+#+end_src
+
+* GNUS
+Watch John Wiegley using gnus - very impressive, so I want to explore further.
+#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-projects/my-email.el :mkdirp t
+;; Not yet configured
+
+#+end_src
+* org-caldav
+TODO: Still under development. First time I tried this, I wiped my
+calendars. Need to experiment with an empty calendar to prove it
+works, then take it from there. Website here:
+https://github.com/dengste/org-caldav
+
+#+begin_src emacs-lisp :no-tangle
+
+(use-package org-caldav
+  
+  :config
+  (setq org-caldav-url "https://nextcloud.applied-jidoka.com/remote.php/dav/calendars/paul")
+  (setq org-caldav-calendars
+        '(,(:calendar-id "caldav-org-test"
+                         :files (concat (file-name-as-directory *pj/org-directory*) "caldav-org-test.org")
+                         :inbox "~/Calendars/caldav-org-inbox.org")))
+  (setq org-caldav-backup-file "~/org-caldav-backup.org")
+  (setq org-caldav-save-directory "~/org-caldav/")
+  (setq org-icalendar-timezone "Europe/London"))
+
+#+end_src
+
+* Helpful
+#+begin_src emacs-lisp
+;;==============================================================================
+;;.....helpful - improve the help documentation
+;;     -------
+
+(use-package helpful
+  :bind (("C-h f" . #'helpful-callable)
+         ("C-h v" . #'helpful-variable)
+         ("C-h k" . #'helpful-key)
+         ("C-c C-d" . #'helpful-at-point)
+         ("C-h F" . #'helpful-function)
+         ("C-h C" . #'helpful-command)))
+#+end_src
+
+* gnupg - Key management
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-security.el :mkdirp t
+;; Following the ELPA instructions didn't work as expected - came across
+;; this approach, which does work. See also changes in gpg-agent.conf
+(setq epa-pinentry-mode 'loopback)
+(setq epg-pinentry-mode 'loopback)
+#+end_src
+* Password-store
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-security.el :mkdirp t
+(use-package password-store)
+#+end_src
 * toc-org
 Make table of contents when saving org-files.
 
@@ -1935,28 +1925,8 @@ Make table of contents when saving org-files.
 
 #+end_src
 
-* ox-hugo
-TODO: Not yet set up. Website development with org and hugo.
-
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....Ox-Hugo
-;;     -------
-
-(use-package ox-hugo
-  :after ox)
-
-(put 'narrow-to-region 'disabled nil)
-
-(provide 'init)
-;;; init.el ends here
-
-#+end_src
-
-
-
 * Hammy
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-hammy.el :mkdirp t
 (use-package hammy
 :quelpa (hammy :fetcher github :repo "alphapapa/hammy.el")
 :commands (happy-start hammy-start-org-clock-in)
@@ -1993,25 +1963,4 @@ TODO: Not yet set up. Website development with org and hugo.
   :quelpa (tree-sitter-ron-mode :fetcher sourcehut :repo "paulj/tree-sitter-ron-mode"))
 
 (quelpa-use-package-deactivate-advice)
-#+end_src
-* Auto tangle configuration files
-#+begin_src emacs-lisp
-;;==============================================================================
-;;.....Auto tangle configuration files
-;;     -------------------------------
-
-
-(defun pj/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name "~/dotfiles/"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-
-(add-hook 'org-mode-hook 
-          (lambda () 
-            (add-hook 'after-save-hook
-                      #'pj/org-babel-tangle-config)))
-
-
 #+end_src
