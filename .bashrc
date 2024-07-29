@@ -7,8 +7,8 @@
 # past this point for scp and rcp, and it's important to refrain from
 # outputting anything in those cases.
 if [[ $- != *i* ]]; then
-	# Shell is non-interactive.  Be done now!
-	return
+  # Shell is non-interactive.  Be done now!
+  return
 fi
 
 # Put your fun stuff here.
@@ -32,6 +32,7 @@ alias ll="eza -l -g --icons"
 alias lla="ll -a"
 alias cat=bat
 export SCIPY_PIL_IMAGE_VIEWER=display
+B
 
 PATH="/home/paul/perl5/bin${PATH:+:${PATH}}"
 export PATH
@@ -50,4 +51,4 @@ export PERL_MM_OPT
 eval "$(starship init bash)"
 # Use fish in place of bash
 # keep this line at the bottom of ~/.bashrc
-[ -x /bin/fish ] && SHELL=/bin/fish exec fish
+#[ -x /bin/fish ] && SHELL=/bin/fish exec fish
