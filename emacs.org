@@ -78,7 +78,6 @@ Emacs configuration.
 - [[#gnupg---key-management][gnupg - Key management]]
 - [[#password-store][Password-store]]
 - [[#toc-org][toc-org]]
-- [[#hammy][Hammy]]
 - [[#ron-mode][Ron mode]]
 
 * Early Init
@@ -242,7 +241,9 @@ which operating system is running:
  (defvar *pj/enable-email*      t                          "Enable email management.")
  (defvar *pj/regular-font-size* 140                        "Fontsize for this system.")
  (defvar *pj/tiny-font-name*    "Iosevka Comfy Wide Fixed" "Font name for tiny fontaine config")
- (defvar *pj/default-font-name* "Iosevka Comfy Fixed"      "Font name for this system.")
+
+; (defvar *pj/default-font-name* "Iosevka Comfy Fixed"      "Font name for this system.")
+ (defvar *pj/default-font-name* "Iosevka Fixed"       "Font name for this system.")
  (defvar *pj/prop-font-name*    "Iosevka Comfy Duo"        "Variable pitch font for this system")
  (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
@@ -539,7 +540,7 @@ Packages are currently installed using use-package.
 (require 'my-gnus)
 (require 'my-helpful)
 (require 'my-security)
-;(require 'my-hammy)
+
 
 
 #+end_src
@@ -1104,8 +1105,8 @@ but seems to work at the moment.
 	      ("C-c C-r" . 'rust-run)
 	      ("C-c C-c" . 'rust-compile)
 	      ("C-c C-f" . 'rust-format-buffer)
-	      ("C-c C-t" . 'rust-test))
-  :hook (rust-mode . prettify-symbols-mode))
+	      ("C-c C-t" . 'rust-test)))
+;  :hook (rust-mode . prettify-symbols-mode))
 (setq rust-format-on-save t)
 #+end_src
 
@@ -1944,37 +1945,6 @@ Make table of contents when saving org-files.
   ;; enable in markdown as well
   (add-hook 'markdown-mode-hook 'toc-org-mode))
 
-#+end_src
-
-* Hammy
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-hammy.el :mkdirp t
-  (use-package hammy
-  :quelpa (hammy :fetcher github :repo "alphapapa/hammy.el")
-  :commands (happy-start hammy-start-org-clock-in)
-  :config
-  (hammy-define (propertize "🍅" 'face '(:foreground "tomato"))
-    :documentation "The classic pomodoro timer."
-    :intervals
-    (list
-     (interval :name "Work"
-               :duration "25 minutes"
-               :before (do (announce "Starting work time.")
-                           (notify "Starting work time."))
-               :advance (do (announce "Break time!")
-                            (notify "Break time!")))
-     (interval :name "Break"
-               :duration (do (if (and (not (zerop cycles))
-                                      (zerop (mod cycles 3)))
-                                 ;; If a multiple of three cycles have
-                                 ;; elapsed, the fourth work period was
-                                 ;; just completed, so take a longer break.
-                                 "30 minutes"
-                               "5 minutes"))
-               :before (do (announce "Starting break time.")
-                           (notify "Starting break time."))
-               :advance (do (announce "Break time is over!")
-                            (notify "Break time is over!"))))))
-(provide 'my-hammy)
 #+end_src
 
 * Ron mode
