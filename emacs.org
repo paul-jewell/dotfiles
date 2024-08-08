@@ -1018,7 +1018,7 @@ Still learning about this, so this is quite fluid.
 
 (let ((languages (mapcar 'car treesit-language-source-alist)))
   (dolist (lang languages)
-    (unless (treesit-lauage-available-p lang)
+    (unless (treesit-language-available-p lang)
       (treesit-install-language-grammar lang)
       (message "`%s' parser was installed." lang)
       (sit-for 0.75))))
