@@ -1016,6 +1016,13 @@ Still learning about this, so this is quite fluid.
 
 (setq treesit-load-name-override-list '((c++ "libtree-sitter-cpp")))
 
+(let ((languages (mapcar 'car treesit-language-source-alist)))
+  (dolist (lang languages)
+    (unless (treesit-lauage-available-p lang)
+      (treesit-install-language-grammar lang)
+      (message "`%s' parser was installed." lang)
+      (sit-for 0.75))))
+
 (dolist (mapping
   '((sh-mode . bash-ts-mode)
     (shell-script-mode . bash-ts-mode)
