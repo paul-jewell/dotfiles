@@ -32,7 +32,6 @@ alias ll="eza -l -g --icons"
 alias lla="ll -a"
 alias cat=bat
 export SCIPY_PIL_IMAGE_VIEWER=display
-B
 
 PATH="/home/paul/perl5/bin${PATH:+:${PATH}}"
 export PATH
