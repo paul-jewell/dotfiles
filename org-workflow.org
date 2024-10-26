@@ -586,6 +586,8 @@ A prefix arg forces clock in of the default task."
                             ("@garden" . ?g)
                             ("@sewing" . ?s)
                             (:endgroup)
+                            ("@isolde" . ?i)
+                            ("@tristan" . ?t)
                             ("WAITING" . ?W)
                             ("HOLD" . ?H)
                             ("PERSONAL" . ?P)
