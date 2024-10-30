@@ -79,6 +79,7 @@ Emacs configuration.
 - [[#password-store][Password-store]]
 - [[#toc-org][toc-org]]
 - [[#ron-mode][Ron mode]]
+- [[#blog-writing][Blog writing]]
 
 * Early Init
 ** early-init.el Preamble
@@ -1962,4 +1963,28 @@ Make table of contents when saving org-files.
   :quelpa (tree-sitter-ron-mode :fetcher sourcehut :repo "paulj/tree-sitter-ron-mode"))
 
 (quelpa-use-package-deactivate-advice)
+#+end_src
+* Blog writing
+#+begin_src emacs-lisp
+
+(defun create-blog-post (path)
+  "Create a new buffer and load the blog post template into it"
+  (let* ((title (read-string "Title: "))
+         (filename (expand-file-name (format "%s-%s.org"
+                                             (format-time-string "%Y-%m-%d")
+                                             title) path)))
+    (find-file filename) ;; Create file in buffer - we want to edit it afterwards
+    (insert (concat "#+title: " title "\n"))
+    (insert "#+AUTHOR: Paul Jewell\n")
+    (insert "#+EMAIL: paul@teulu.org\n")
+    (insert "#+DATE:\n")
+    (insert "#+STARTUP: showall\n")
+    (insert "#+STARTUP: inlineimages\n")
+    (insert "#+BEGIN_PREVIEW\n\n")
+    (insert "#+END_PREVIEW\n\n")))
+#+end_src
+
+Use this command like this:
+#+begin_src emacs-lisp :noweb
+(create-blog-post "~/projects/teulu.org/homepage/content/blog/")
 #+end_src
