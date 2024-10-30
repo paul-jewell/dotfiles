@@ -1982,6 +1982,13 @@ Make table of contents when saving org-files.
     (insert "#+STARTUP: inlineimages\n")
     (insert "#+BEGIN_PREVIEW\n\n")
     (insert "#+END_PREVIEW\n\n")))
+<<<<<<< HEAD
+=======
+
+(defun create-teulu-org-post ()
+  (interactive)
+  (create-blog-post "~/projects/teulu.org/homepage/blog/"))
+>>>>>>> b06525d (Added template for blog posts.)
 #+end_src
 
 Use this command like this:
