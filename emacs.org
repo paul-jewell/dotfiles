@@ -1,4 +1,4 @@
-+TITLE: Emacs Configuration
+#+TITLE: Emacs Configuration
 #+author: Paul Jewell
 #+email: paul@teulu.org
 #+language: en
@@ -1989,6 +1989,6 @@ Make table of contents when saving org-files.
 #+end_src
 
 Use this command like this:
-#+begin_src emacs-lisp :noweb
+#+begin_src emacs-lisp :tangle no
 (create-blog-post "~/projects/teulu.org/homepage/content/blog/")
 #+end_src
