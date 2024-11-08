@@ -263,7 +263,7 @@ which operating system is running:
    (string= "gnu/linux" system-type))
 
  (defun pj/is-host-p (name)
-   "True if running on system NAME."
+   "True if running on system NAME." 
    (string= (system-name) name))
 
  ;; Three possibilities for specifying values:
@@ -282,7 +282,8 @@ which operating system is running:
       ;; with the Debian installation in place when WSL was first installed. Also, if
       ;; the latest version of Emacs is loaded, this should not be a problem.
       (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-      (setq *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"))
+      (setq *pj/org-agenda-files* '("/mnt/c/Users/paul/Nextcloud/org"
+                                    "/mnt/c/Users/paul/Nextcloud/org/org-roam"))
       (setq *pj/org-roam-directory*   "/mnt/c/Users/paul/Nextcloud/org/roam/")
       (setq *pj/org-roam-db-location* "/mnt/c/Users/paul/Nextcloud/org/org-roam.db")
       (setq *pj/regular-font-size* 120)))
@@ -297,7 +298,7 @@ which operating system is running:
    ((string-prefix-p "isolde" (system-name))
     (progn
       (setq *pj/regular-font-size* 130)
-      (setq *pj/enable-email* nil)))
+      (setq *pj/enable-email* t)))
    (t
     (progn
       (setq *pj/load-site-gentoo* t)))))
@@ -1877,7 +1878,83 @@ TODO: Persevere with notmuch - get good at sending emails, and sort out the tagg
 the experience.
 #+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-email.el :mkdirp t
 (when *pj/enable-email*
-    (require 'notmuch))
+    (use-package notmuch
+      :defer t
+      :config
+      (setq notmuch-show-logo nil
+            notmuch-column-control 1.0
+            notmuch-hello-auto-refresh t
+            notmuch-recent-searches-max 20
+            notmuch-hello-thousands-separator ""
+            notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
+            notmuch-show-all-tags-list t)
+      (setq notmuch-search-oldest-first nil)
+      (setq notmuch-search-result-format
+            '(("date" . "%12s  ")
+              ("count" . "%-7s  ")
+              ("authors" . "%-20s  ")
+              ("subject" . "%-80s  ")
+              ("tags" . "(%s)")))
+      (setq notmuch-tree-result-format
+            '(("date" . "%12s  ")
+              ("authors" . "%-20s  ")
+              ((("tree" . "%s")
+                ("subject" . "%s"))
+               . " %-80s  ")
+              ("tags" . "(%s)")))
+      (setq notmuch-search-line-faces
+            '(("unread" . notmuch-search-unread-face)
+              ("flag" . italic)))
+      (setq notmuch-show-empty-saved-searches t)
+      (setq notmuch-saved-searches
+            `(( :name "📥 inbox"
+            :query "tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "i"))
+          ( :name "💬 unread (inbox)"
+            :query "tag:unread and tag:inbox"
+            :sort-order newest-first
+            :key ,(kbd "u"))
+          ;; My packages
+          ( :name "🗂️ unread packages"
+            :query "tag:unread and tag:package"
+            :sort-order newest-first
+            :key ,(kbd "p"))
+          ;; Emacs
+          ( :name "🔨 emacs-devel"
+            :query "(from:emacs-devel@gnu.org or to:emacs-devel@gnu.org) not tag:archived"
+            :sort-order newest-first
+            :key ,(kbd "e d"))
+          ( :name "🦄 emacs-orgmode"
+            :query "(from:emacs-orgmode@gnu.org or to:emacs-orgmode@gnu.org) not tag:archived"
+            :sort-order newest-first
+            :key ,(kbd "e o"))))
+      (setq notmuch-message-replied-tags '("+replied")
+            notmuch-message-forwarded-tags '("+forwarded")
+            notmuch-show-mark-read-tags '("-unread")
+            notmuch-draft-tags '("+draft")
+            notmuch-draft-folder "drafts"
+            notmuch-draft-save-plaintext 'ask)
+      
+      ;; Also see `notmuch-tagging-keys' in the `prot-notmuch' section
+      ;; further below.
+      ;;
+      ;; All emoji are cosmetic.  The tags are just the text.
+      (setq notmuch-tag-formats
+            '(("unread" (propertize tag 'face 'notmuch-tag-unread))
+              ("flag" (propertize tag 'face 'notmuch-tag-flagged)
+               (concat tag "🚩")))
+            notmuch-tag-deleted-formats
+            '(("unread" (notmuch-apply-face bare-tag 'notmuch-tag-deleted)
+               (concat "👁️‍🗨️" tag))
+              (".*" (notmuch-apply-face tag 'notmuch-tag-deleted)
+               (concat "🚫" tag)))
+            notmuch-tag-added-formats
+            '(("del" (notmuch-apply-face tag 'notmuch-tag-added)
+               (concat "💥" tag))
+              (".*" (notmuch-apply-face tag 'notmuch-tag-added)
+               (concat "🏷️" tag))))))
+
 (provide 'my-email)
 #+end_src
 
