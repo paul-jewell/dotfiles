@@ -248,7 +248,8 @@ which operating system is running:
  (defvar *pj/prop-font-name*    "Iosevka Comfy Duo"        "Variable pitch font for this system")
  (defvar *pj/info-default-directory-list* "~/Nextcloud/git/org-mode/doc")
 
- (defvar *pj/org-agenda-files* '("~/Nextcloud/org")              "Location of org agenda files.")
+ (defvar *pj/org-agenda-files*
+   '("~/Nextcloud/org" "~/Nextcloud/org/roam")  "Location of org agenda files.")
  (defvar *pj/org-roam-directory*   "~/Nextcloud/org/roam/"       "Location of org-roam files.")
  (defvar *pj/org-roam-db-location* "~/Nextcloud/org/org-roam.db" "Location of org-roam database.")
 
