@@ -1,5 +1,5 @@
 (define-module (paulj systems pluto)
-  (use-module (gnu)))
+  #:use-module (gnu))
 
 (use-service-modules cups desktop networking ssh xorg)
 
