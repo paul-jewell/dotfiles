@@ -1,18 +1,11 @@
-;; This is an operating system configuration generated
-;; by the graphical installer.
-;;
-;; Once installation is complete, you can learn and modify
-;; this file to tweak the system configuration, and pass it
-;; to the 'guix system reconfigure' command to effect your
-;; changes.
+(define-module (paulj systems pluto)
+  (use-module (gnu)))
 
-
-;; Indicate which modules to import to access the variables
-;; used in this configuration.
-(use-modules (gnu))
 (use-service-modules cups desktop networking ssh xorg)
 
-(operating-system
+(system-config
+ #:system
+ (operating-system
   (locale "en_GB.utf8")
   (timezone "Europe/London")
   (keyboard-layout (keyboard-layout "gb" "extd"))
@@ -20,11 +13,11 @@
 
   ;; The list of user accounts ('root' is implicit).
   (users (cons* (user-account
-                  (name "paul")
-                  (comment "Paul Jewell")
-                  (group "users")
-                  (home-directory "/home/paul")
-                  (supplementary-groups '("wheel" "netdev" "audio" "video")))
+                 (name "paul")
+                 (comment "Paul Jewell")
+                 (group "users")
+                 (home-directory "/home/paul")
+                 (supplementary-groups '("wheel" "netdev" "audio" "video")))
                 %base-user-accounts))
 
   ;; Packages installed system-wide.  Users can also install packages
@@ -49,24 +42,21 @@
            ;; are appending to.
            %desktop-services))
   (bootloader (bootloader-configuration
-                (bootloader grub-efi-bootloader)
-                (targets (list "/boot/efi"))
-                (keyboard-layout keyboard-layout)))
+               (bootloader grub-efi-bootloader)
+               (targets (list "/boot/efi"))
+               (keyboard-layout keyboard-layout)))
   (swap-devices (list (swap-space
-                        (target (uuid
-                                 "755a3ec1-9552-41ea-b1ab-9a9298aab04a")))))
+                       (target (uuid
+                                "755a3ec1-9552-41ea-b1ab-9a9298aab04a")))))
 
-  ;; The list of file systems that get "mounted".  The unique
-  ;; file system identifiers there ("UUIDs") can be obtained
-  ;; by running 'blkid' in a terminal.
   (file-systems (cons* (file-system
-                         (mount-point "/")
-                         (device (uuid
-                                  "a5e463ab-8489-42e2-bf20-c3fad9423ea7"
-                                  'xfs))
-                         (type "xfs"))
+                        (mount-point "/")
+                        (device (uuid
+                                 "a5e463ab-8489-42e2-bf20-c3fad9423ea7"
+                                 'xfs))
+                        (type "xfs"))
                        (file-system
-                         (mount-point "/boot/efi")
-                         (device (uuid "7557-8745"
-                                       'fat32))
-                         (type "vfat")) %base-file-systems)))
+                        (mount-point "/boot/efi")
+                        (device (uuid "7557-8745"
+                                      'fat32))
+                        (type "vfat")) %base-file-systems))))
