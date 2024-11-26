@@ -1,4 +1,5 @@
 (define-module (paulj systems base)
+  #:use-module (srfi srfi-1)
   #:use-module (gnu)
   #:use-module (gnu system)
   #:use-module (gnu system nss)
