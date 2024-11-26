@@ -2,7 +2,6 @@
   #:use-module (gnu)
   #:use-module (gnu system)
   #:use-module (gnu system nss)
-  #:use=module (gnu system setuid)
   #:export (system-config))
 
 (use-service-modules guix admin sysctl pm avahi dbus cups desktop linux
