@@ -91,8 +91,7 @@
                   (supplementary-groups '("wheel" "netdev" "lp" "audio" "video")))
                  %base-user-accounts))
 
-   (packages (cons* nss-certs
-                    emacs-no-x-toolkit
+   (packages (cons* emacs-no-x-toolkit
                     exfat-utils
                     fuse-exfat
                     git
