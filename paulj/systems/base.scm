@@ -62,7 +62,7 @@
               (modify-services %base-services
                                (delete login-service-type)
                                (delete mingetty-service-type)
-                               (delete console-service-type))
+                               (delete console-font-service-type))
               (list
                ;; seat management (can't use seatd because wireplumber depends on elogind)
                (service elogind-service-type)
@@ -214,7 +214,7 @@
      (modify-services %base-services
                       (delete login-service-type)
                       (delete mingetty-service-type)
-                      (delete console-service-type))
+                      (delete console-font-service-type))
      (operating-system-user-services system)
      (list
       ;; Set up my home configuration
