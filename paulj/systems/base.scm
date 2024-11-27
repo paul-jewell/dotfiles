@@ -71,12 +71,12 @@
                (service console-font-service-type
                         (map (lambda (tty)
                                ;; use a larger font for HIDPI screens
-                               cons tty (file-append
-                                         font-terminus
-                                         "/share/consolefonts/ter-132n")))
-                        '("tty1" "tty2" "tty3"))
+                               (cons tty (file-append
+                                          font-terminus
+                                          "/share/consolefonts/ter-132n")))
+                             '("tty1" "tty2" "tty3")))
                
-               (service greedd-service-type
+               (service greet-service-type
                         (greetd-configuration
                          (greeter-supplementary-groups (list "video" "input"))
                          (terminals
