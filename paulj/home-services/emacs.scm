@@ -63,7 +63,7 @@
    emacs-hydra
    ;; emacs-ly
    emacs-macrostep
-   emacs-magit-section
+   emacs-magit
    emacs-nerd-icons
    emacs-parseclj
    emacs-parseedn
