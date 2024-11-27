@@ -231,7 +231,7 @@
      (list
       ;; Set up my home configuration
       (service guix-home-service-type
-               '(("paul" ,home)))
+               `(("paul" ,home)))
       
       ;; seat management (can't use seatd because wireplumber depends on elogind)
       (service elogind-service-type)
