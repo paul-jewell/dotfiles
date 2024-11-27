@@ -7,6 +7,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages finance)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu home services)
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
