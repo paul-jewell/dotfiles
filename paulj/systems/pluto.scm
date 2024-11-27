@@ -1,7 +1,6 @@
 (define-module (paulj systems pluto)
   #:use-module (paulj systems base)
   #:use-module (paulj systems common)
-  #:use-module (paulj home-services pipewire)
   #:use-module (paulj home-services video)
   #:use-module (paulj home-services finance)
   #:use-module (gnu)
@@ -21,7 +20,7 @@
  (home-environment
   (services (cons* (service home-pipewire-service-type)
                    (service home-finance-service-type)
-                   (service-home-video-service-type)
+                   (service home-video-service-type)
                    common-home-services)))
  
  #:system

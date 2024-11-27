@@ -1,4 +1,4 @@
-(define-module (daviwil home-services emacs)
+(define-module (paulj home-services emacs)
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
@@ -12,7 +12,7 @@
   #:use-module (guix gexp)
   #:use-module (guix transformations)
 
-  #:export (home-emacs-config-services-type))
+  #:export (home-emacs-config-service-type))
 
 (define (home-emacs-config-profile-service config)
   (list
