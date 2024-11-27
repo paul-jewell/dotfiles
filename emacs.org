@@ -51,6 +51,7 @@ Emacs configuration.
   - [[#clojure][Clojure]]
   - [[#emacs-lisp][emacs-lisp]]
   - [[#lisp][Lisp]]
+  - [[#guile][Guile]]
   - [[#lua][lua]]
   - [[#markdown][Markdown]]
   - [[#typescript-ja-and-jsxtsx-support][Typescript, JA and JSX/TSX support]]
@@ -379,6 +380,12 @@ which operating system is running:
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-variable 'confirm-kill-emacs 'yes-or-no-p)
 
+;; Highlight current line
+(global-hl-line-mode +1)
+
+;; Highlight delimiters
+(show-paren-mode 1)
+(setq show-paren-delay 0)
 #+end_src
 
 ** Eliminate C-z sleep in graphical mode
@@ -1248,7 +1255,17 @@ quicklisp leads to the following:
           '(add-to-list 'ac-modes 'slime-repl-mode))))))
 
 #+end_src
+** Guile
+Guile configuration from the Guile Hackers Manual, [[https://jeko.frama.io/en/emacs.html][here]], plus
+additions and changes.
+#+begin_src emacs-lisp
+(use-package geiser
+  :config
+  (setq geiser-guile-binary "/usr/bin/guile-3.0"))
 
+(use-package geiser-guile)
+  
+#+end_src
 ** lua
 #+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package lua-mode)
@@ -1349,12 +1366,14 @@ Developed from bbatsov's code on his github.
                                      "#emacs"
                                      "#gentoo"
                                      "#gentoo-haskell"
-                           ;;          "#guile"
+                                     "#guile"
                                      "#lisp"
+                                     "#rust"
                            ;;          "#clojure"
                                      "#haskell"
                            ;;          "#debian"
-                           ;;          "#scheme"
+                                     "#scheme"
+                                     "#guix"
                                      )))
 
 ;; Interpret mIRC-style colour commands in IRC chats
