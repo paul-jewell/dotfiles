@@ -1,0 +1,4 @@
+#!/bin/sh
+cd ~/.dotfiles
+
+emacs -Q --script ./.emacs.d/tangle-dotfiles.el

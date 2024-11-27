@@ -300,6 +300,10 @@ which operating system is running:
     (progn
       (setq *pj/regular-font-size* 130)
       (setq *pj/enable-email* t)))
+   ((string-prefix-p "pluto" (system-name))
+    (progn
+      (setq *pj/regular-font-size* 130)
+      (setq *pj/enable-email* t)))
    (t
     (progn
       (setq *pj/load-site-gentoo* t)))))
