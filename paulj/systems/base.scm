@@ -105,7 +105,19 @@
                ;;                         (program program)))
                ;;                      (list (file-append nfs-utils "/sbin/mount.nfs")
                ;;                            (file-append ntfs-3g "/sbin/mount.ntfs-3g"))))
-               
+
+               ;; Networking services
+               (service network-manager-service-type
+                        (network-manager-configuration
+                         (vpn-plugins
+                          (list network-manager-openvpn))))
+               (service wpa-supplicant-service-type) ;; Needed by NetworkManager
+               (service modem-manager-service-type)  ;; For cellular modems
+               (service bluetooth-service-type
+                        (bluetooth-configuration
+                         (auto-enable? #t)))
+               (service usb-modeswitch-service-type)
+            
                ;; Basic desktop system services
                (service avahi-service-type)
                (service udisks-service-type)
@@ -261,6 +273,19 @@
       ;;                         (program program)))
       ;;                      (list (file-append nfs-utils "/sbin/mount.nfs")
       ;;                            (file-append ntfs-3g "/sbin/mount.ntfs-3g"))))
+
+
+      ;; Networking services
+      (service network-manager-service-type
+               (network-manager-configuration
+                (vpn-plugins
+                 (list network-manager-openvpn))))
+      (service wpa-supplicant-service-type) ;; Needed by NetworkManager
+      (service modem-manager-service-type)  ;; For cellular modems
+      (service bluetooth-service-type
+               (bluetooth-configuration
+                (auto-enable? #t)))
+      (service usb-modeswitch-service-type)
       
       ;; Basic desktop system services
       (service avahi-service-type)
