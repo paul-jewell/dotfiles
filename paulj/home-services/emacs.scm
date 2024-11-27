@@ -9,8 +9,8 @@
   #:use-module (gnu home services)
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
-  #:use-module (gnu gexp)
-  #:use-module (gnu transformation)
+  #:use-module (guix gexp)
+  #:use-module (guix transformation)
 
   #:export (home-emacs-config-services-type))
 
