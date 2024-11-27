@@ -13,8 +13,6 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system))
 
-(use-service-modules cups desktop networking ssh xorg)
-
 (system-config
  #:home
  (home-environment
