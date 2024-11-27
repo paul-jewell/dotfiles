@@ -10,7 +10,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
   #:use-module (guix gexp)
-  #:use-module (guix transformation)
+  #:use-module (guix transformations)
 
   #:export (home-emacs-config-services-type))
 

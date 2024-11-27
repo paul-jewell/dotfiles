@@ -42,14 +42,14 @@
                   (supplementary-groups '("wheel" "netdev" "lp" "audio" "video")))
                  %base-user-accounts))
 
-   (packages (cons* nss-certs
-                    emacs-no-x-toolkit
+   (packages (cons* emacs-no-x-toolkit
                     exfat-utils
                     fuse-exfat
                     git
                     gvfs
                     stow
                     vim
+                    nextcloud-client
                     %base-packages))
    
    ;; Below is the list of system services.  To search for available
