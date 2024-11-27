@@ -1,4 +1,4 @@
-#!/bin/shell
+#!/bin/sh
 # Navigate to the directory of this script
 cd $(dirname $(readlink -f $0))
 cd ..
