@@ -10,7 +10,7 @@
 
 (use-package-modules audio video nfs certs shells ssh linux bash emacs gnome
                      networking wm fonts libusb cups freedesktop file-systems
-                     version-control package-management vim)
+                     version-control package-management sync vim)
 
 (define-public base-operating-system
   (operating-system
