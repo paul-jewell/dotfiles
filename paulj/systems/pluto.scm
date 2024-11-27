@@ -1,10 +1,29 @@
 (define-module (paulj systems pluto)
   #:use-module (paulj systems base)
-  #:use-module (gnu))
+  #:use-module (paulj systems common)
+  #:use-module (paulj home-services pipewire)
+  #:use-module (paulj home-services video)
+  #:use-module (paulj home-services finance)
+  #:use-module (gnu)
+  #:use-module (gnu home)
+  #:use-module (gnu home services sound)
+  #:use-module (gnu packages file-systems)
+  #:use-module (gnu services)
+  #:use-module (gnu system)
+  #:use-module (gnu system uuid)
+  #:use-module (gnu system file-systems)
+  #:use-module (gnu system))
 
 (use-service-modules cups desktop networking ssh xorg)
 
 (system-config
+ #:home
+ (home-environment
+  (services (cons* (service home-pipewire-service-type)
+                   (service home-finance-service-type)
+                   (service-home-video-service-type)
+                   common-home-services)))
+ 
  #:system
  (operating-system
   (host-name "pluto")
