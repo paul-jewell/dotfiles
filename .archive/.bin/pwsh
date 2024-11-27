@@ -1,2 +1,0 @@
-#!/bin/sh
-docker run -it -v /home:/home -w $(pwd) -u $(id -u):$(id -g) mcr.microsoft.com/powershell pwsh "$@"
