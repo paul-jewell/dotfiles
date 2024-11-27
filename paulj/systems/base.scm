@@ -232,7 +232,7 @@
                                  font-terminus
                                  "/share/consolefonts/ter-132n")))
                     '("tty1" "tty2" "tty3")))
-      (service greet-service-type
+      (service greetd-service-type
                (greetd-configuration
                 (greeter-supplementary-groups (list "video" "input"))
                 (terminals
