@@ -8,7 +8,7 @@
 (use-service-modules guix admin sysctl pm avahi dbus cups desktop linux
                      mcron networking xorg ssh audio virtualization)
 
-(use-package-modules audio video nfs certs shells ssh linux bash emacs
+(use-package-modules audio video nfs certs shells ssh linux bash emacs gnome
                      networking wm fonts libusb cups freedesktop file-systems
                      version-control package-management vim)
 
