@@ -59,6 +59,11 @@ input type:keyboard {
 # key commands
 #-------------
 
+set $left h
+set $down j
+set $up k
+set $right l
+
 #.....Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
@@ -75,16 +80,16 @@ bindsym $mod+h focus left
 bindsym $mod+l focus right
 
 #.....Move workspace to display
-bindsym $mod+Mod1+h move workspace to output left
-bindsym $mod+Mod1+l move workspace to output right
+bindsym $mod+Mod1+$left move workspace to output left
+bindsym $mod+Mod1+$right move workspace to output right
 bindsym $mod+Mod1+Left move workspace to output left
 bindsym $mod+Mod1+Right move workspace to output right
 
 #.....alternatively, you can use the cursor keys:
-bindsym $mod+Shift+h move left 30 px
-bindsym $mod+Shift+j move down 30 px
-bindsym $mod+Shift+k move up 30 px
-bindsym $mod+Shift+l move right 30 px
+bindsym $mod+Shift+$left move left 30 px
+bindsym $mod+Shift+$down move down 30 px
+bindsym $mod+Shift+$up move up 30 px
+bindsym $mod+Shift+$right move right 30 px
 
 bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+f floating toggle
