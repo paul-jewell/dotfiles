@@ -20,6 +20,7 @@
         wl-clipboard
         mako
         foot
+        alacritty
         gammastep
         grimshot ;; grimshot --notify copy area
         network-manager-applet
@@ -57,8 +58,9 @@
 
         ;; Browsers
         (specification->package "qtwayland@5")
-        qutebrowser
-        ;vimb
+        ;;qutebrowser
+        ;;vimb
+        nyxt
 
         ;; Authentication
         password-store
