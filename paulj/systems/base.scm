@@ -225,8 +225,8 @@
     (append
      (modify-services %base-services
                       (delete login-service-type)
-                      (delete mingetty-service-type)
-                      (delete console-font-service-type))
+                      (delete mingetty-service-type))
+     ;;(delete console-font-service-type)
      (operating-system-user-services system)
      (list
       ;; Set up my home configuration
@@ -237,13 +237,13 @@
       (service elogind-service-type)
       
       ;; Configure TTYs and graphical greeter
-      (service console-font-service-type
-               (map (lambda (tty)
-                      ;; use a larger font for HIDPI screens
-                      (cons tty (file-append
-                                 font-terminus
-                                 "/share/consolefonts/ter-132n")))
-                    '("tty1" "tty2" "tty3")))
+      ;; (service console-font-service-type
+      ;;          (map (lambda (tty)
+      ;;                 ;; use a larger font for HIDPI screens
+      ;;                 (cons tty (file-append
+      ;;                            font-terminus
+      ;;                            "/share/consolefonts/ter-132n")))
+      ;;               '("tty1" "tty2" "tty3")))
       (service greetd-service-type
                (greetd-configuration
                 (greeter-supplementary-groups (list "video" "input"))
@@ -298,9 +298,9 @@
       ;; Power and thermal management services
       (service thermald-service-type)
       (service tlp-service-type
-                        (tlp-configuration
-                         (cpu-boost-on-ac? #t)
-                         (wifi-pwr-on-bat? #t)))
+               (tlp-configuration
+                (cpu-boost-on-ac? #t)
+                (wifi-pwr-on-bat? #t)))
 
       ;; Enable JACK to enter realtime mode
       (service pam-limits-service-type
