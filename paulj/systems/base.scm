@@ -242,7 +242,7 @@
                       ;; use a larger font for HIDPI screens
                       (cons tty (file-append
                                  font-terminus
-                                 "/share/consolefonts/ter-132n")))
+                                 "/share/consolefonts/ter-120n")))
                     '("tty1" "tty2" "tty3")))
       (service greetd-service-type
                (greetd-configuration
