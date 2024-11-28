@@ -1,6 +1,31 @@
+#=========================================================================================
+# sway config: modified and adapted from other configurations around the web:
+# - daviwil: https://codeberg.org/daviwil/dotfiles/src/branch/master
+# - Jay at leanlinux.tv:
+#     https://www.learnlinux.tv/how-i-set-up-the-sway-window-manager-on-debian-12/
+#========================================================================================= 
+
 set $mod Mod4
 
+#=======================
+# Appearance and theming
+#-----------------------
+
+font pango:JetBrains Mono 7
+
+#.....Configure gaps and borders
+default_border pixel 1
+gaps outer 0
+gaps inner 6
+smart_borders off
+hide_edge_borders --i3 none
+
+#.....background
+output * bg ~/.dotfiles/backgrounds/samuel-ferrara-uOi3lg8fGl4-unsplash.jpg fill
+
+#===================
 # Configure displays
+#-------------------
 
 ## The annoying thing is that sometimes the display ID changes when hotplugging
 ## my Thunderbolt dock...
@@ -15,7 +40,6 @@ set $mod Mod4
 #output DP-8 pos 0 0 scale 2
 #output HDMI-A-1 scale 2
 
-output * bg ~/.dotfiles/backgrounds/samuel-ferrara-uOi3lg8fGl4-unsplash.jpg fill
 
 bindsym $mod+Shift+s exec ~/.bin/toggle-display $primary
 
@@ -24,15 +48,18 @@ input type:keyboard {
     xkb_options ctrl:nocaps
 }
 
+# TODO: Move to system specific configuration (not all systems have touchpads)
 #input type:touchpad {
 #    dwt enabled
 #    tap enabled
 #    middle_emulation enabled
 #}
 
-font pango:JetBrains Mono 7
+#=============
+# key commands
+#-------------
 
-# Use Mouse+$mod to drag floating windows to their wanted position
+#.....Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 set $foot_cmd foot -f "JetBrains Mono:size=14"
@@ -47,13 +74,13 @@ bindsym $mod+Shift+Return exec $foot_cmd
 bindsym $mod+h focus left
 bindsym $mod+l focus right
 
-# Move workspace to display
+#.....Move workspace to display
 bindsym $mod+Mod1+h move workspace to output left
 bindsym $mod+Mod1+l move workspace to output right
 bindsym $mod+Mod1+Left move workspace to output left
 bindsym $mod+Mod1+Right move workspace to output right
 
-# alternatively, you can use the cursor keys:
+#.....alternatively, you can use the cursor keys:
 bindsym $mod+Shift+h move left 30 px
 bindsym $mod+Shift+j move down 30 px
 bindsym $mod+Shift+k move up 30 px
@@ -63,23 +90,16 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+f floating toggle
 bindsym $mod+Shift+p sticky toggle
 
-# change focus between tiling / floating windows
+#.....change focus between tiling / floating windows
 bindsym $mod+Control+space focus mode_toggle
 
-# App launcher
+#.....App launcher
 bindsym $mod+space exec fuzzel -w 50 -x 8 -y 8 -r 3 -b 232635ff -t A6Accdff -s A6Accdff -S 232635ff -C c792eacc -m c792eacc -f "JetBrains Mono:weight=light:size=10" --icon-theme="Papirus-Dark"
 
-# Set defaults
+#.....Set defaults
 default_orientation horizontal
-workspace_layout stacking
+#workspace_layout stacking
 # tabbed
-
-# Configure gaps and borders
-default_border pixel 1
-gaps outer 0
-gaps inner 6
-smart_borders off
-hide_edge_borders --i3 none
 
 # Define variables for workspace numbers
 set $ws0 0
@@ -89,13 +109,13 @@ set $ws3 3
 set $ws4 4
 set $ws5 5
 
-# Move specific workspaces to outputs
-workspace $ws0 output $laptop
-workspace $ws2 output $primary $laptop
-workspace $ws3 output $laptop
-workspace $ws4 output $laptop
-workspace $ws5 output $laptop
-workspace $ws1 output $primary $laptop # Set ws 1 last to land there on startup
+# # Move specific workspaces to outputs
+# workspace $ws0 output $laptop
+# workspace $ws2 output $primary $laptop
+# workspace $ws3 output $laptop
+# workspace $ws4 output $laptop
+# workspace $ws5 output $laptop
+# workspace $ws1 output $primary $laptop # Set ws 1 last to land there on startup
 
 # Switch to workspace
 bindsym $mod+grave workspace $ws0
