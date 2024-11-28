@@ -96,10 +96,24 @@ bindsym $mod+Control+space focus mode_toggle
 #.....App launcher
 bindsym $mod+space exec fuzzel -w 50 -x 8 -y 8 -r 3 -b 232635ff -t A6Accdff -s A6Accdff -S 232635ff -C c792eacc -m c792eacc -f "JetBrains Mono:weight=light:size=10" --icon-theme="Papirus-Dark"
 
+#========
+# Layouts
+#--------
+
 #.....Set defaults
 default_orientation horizontal
-#workspace_layout stacking
-# tabbed
+workspace_layout tabbed
+
+# You can "split" the current object of your focus with
+# $mod+bor $mod+v, for horizontal and vertical splits
+# respectively.
+bindsym $mod+b splith
+bindsym $mod+v splitv
+
+# Switch the current container between different layout styles
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
 
 # Define variables for workspace numbers
 set $ws0 0
@@ -137,6 +151,12 @@ bindsym $mod+Shift+5 move container to workspace $ws5
 bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
 bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 bindsym --locked $mod+p exec playerctl play-pause
+
+#=============
+# Applications
+#-------------
+set $term alacritty
+bindsym $mod+return exec $term
 
 # Screenshots
 bindsym Print exec grimshot --notify save output
