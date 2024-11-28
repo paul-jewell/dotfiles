@@ -57,7 +57,7 @@
 
         ;; Browsers
         (specification->package "qtwayland@5")
-        ;qutebrowser
+        qutebrowser
         ;vimb
 
         ;; Authentication
