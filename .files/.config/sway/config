@@ -71,7 +71,8 @@ bindsym $mod+space exec fuzzel -w 50 -x 8 -y 8 -r 3 -b 232635ff -t A6Accdff -s A
 
 # Set defaults
 default_orientation horizontal
-workspace_layout tabbed
+workspace_layout stacking
+# tabbed
 
 # Configure gaps and borders
 default_border pixel 1
