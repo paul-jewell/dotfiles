@@ -11,7 +11,7 @@
   #:use-module (gnu system)
   #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
-  #:use-module (gnu system))
+  #:use-module (nongnu packages linux))
 
 (system-config
  #:home

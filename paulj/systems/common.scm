@@ -4,6 +4,7 @@
   #:use-module (paulj home-services udiskie)
   #:use-module (gnu services)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services pm)
   #:use-module (gnu home services gnupg)
