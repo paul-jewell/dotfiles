@@ -3,6 +3,10 @@
   #:use-module (gnu)
   #:use-module (gnu system)
   #:use-module (gnu system nss)
+  #:use-module (gnu system setuid)
+  #:use-module (nongnu packages linux)
+  #:use-module (nongnu packages video)
+  #:use-module (nongnu system linux-initrd)
   #:export (system-config))
 
 (use-service-modules guix admin sysctl pm avahi dbus cups desktop linux
@@ -18,7 +22,15 @@
    (timezone "Europe/London")
    (locale "en_GB.utf8")
    (keyboard-layout (keyboard-layout "gb" "extd"))
- 
+
+   ;; Use non-free Linux and firmware
+   (kernel linux)
+   (firmware (list kinux-firmware))
+   (initrd microcode-initrd)
+
+   ;; Additional kernel modules
+   (kernel-loadable-modules (list v4l2loopback-linux-module))
+   
    ;; Use UEFI version of GRUB with EFI System
    ;; Partition mounted on /boot/efi 
    (bootloader (bootloader-configuration
@@ -45,11 +57,16 @@
    (groups (cons (user-group (system? #t) (name "realtime"))
            %base-groups))
                                                                                 
-   (packages (cons* emacs-no-x-toolkit
+   (packages (cons* bluez
+                    bluez-alsa
+                    brightnessctl
+                    emacs-no-x-toolkit
                     exfat-utils
                     fuse-exfat
                     git
                     gvfs
+                    intel-media-driver/nonfree
+                    libva-utils
                     stow
                     vim
                     nextcloud-client
@@ -192,6 +209,15 @@
 
    (keyboard-layout (keyboard-layout "gb" "extd"))
 
+   (kernel linux)
+   (firmware (or (operating-system-firmware system)
+                 (list linux-firmware)))
+
+   (initrd microcode-initrd)
+
+   ;; Additional kernel modules
+   (kernel-loadable-modules (list v4l2loopback-linux-module))
+   
    (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets '("/boot/efi"))
@@ -209,7 +235,7 @@
                  %base-groups))
 
    
-   (packages (cons* emacs-no-x-toolkit
+   (packages (cons* emacs
                     exfat-utils
                     fuse-exfat
                     git
