@@ -86,6 +86,9 @@
 
    ;; File synchronization
    (service home-syncthing-service-type)
+
+   ;; Monitor battery levels
+   (service home-batsignal-service-type)
    
    ;; Udiskie for auto-mounting devices
    (service home-udiskie-service-type)))
