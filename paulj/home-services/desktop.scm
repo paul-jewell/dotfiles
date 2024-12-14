@@ -29,8 +29,6 @@
         xorg-server-xwayland
 
         ;; Flatpak and XDG utilities
-        flatpak
-        xdg-desktop-portal
         xdg-desktop-portal-gtk
         xdg-desktop-portal-wlr
         xdg-utils ;; For xdg-open, etc
