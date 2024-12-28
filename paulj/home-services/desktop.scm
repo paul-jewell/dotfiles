@@ -93,7 +93,9 @@
         openssh
         zip
         unzip
-        trash-cli))
+        ;; 2024-12-14 - trash-cli not building
+        ;; trash-cli
+        ))
 
 (define (home-desktop-environment-variables config)
   '(("_JAVA_AWT_WM_NONREPARENTING" . "1")))
