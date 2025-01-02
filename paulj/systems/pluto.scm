@@ -25,6 +25,8 @@
  (operating-system
   (host-name "pluto")
 
+  (keyboard-layout (keyboard-layout "gb" "extd"))
+  
   (bootloader (bootloader-configuration
                (bootloader grub-efi-bootloader)
                (targets (list "/boot/efi"))

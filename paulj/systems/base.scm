@@ -20,13 +20,6 @@
    (timezone "Europe/London")
    (locale "en_GB.utf8")
 
-   (keyboard-layout (keyboard-layout "gb" "extd"))
-
-   (bootloader (bootloader-configuration
-                (bootloader grub-efi-bootloader)
-                (targets '("/boot/efi"))
-                (keyboard-layout keyboard-layout)))
-
    (users (cons user:paul
                 %base-user-accounts))
 
