@@ -5,6 +5,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (saayix packages text-editors)
   #:export (home-desktop-service-type))
 
 (use-package-modules compression curl fonts freedesktop gimp glib gnome gnome-xyz
@@ -21,6 +22,7 @@
         mako
         foot
         alacritty
+        helix
         gammastep
         grimshot ;; grimshot --notify copy area
         network-manager-applet
