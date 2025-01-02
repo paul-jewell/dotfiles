@@ -44,7 +44,7 @@
                     nextcloud-client
                     %base-packages))
 
-     ;; Below is the list of system services.  To search for available
+   ;; Below is the list of system services.  To search for available
    ;; services, run 'guix system search KEYWORD' in a terminal.
    (services
     (append
