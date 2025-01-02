@@ -32,7 +32,7 @@
 
   ;; Use non-free Linux and firmware
   (kernel linux)
-  (firmware linux-firmware)
+  (firmware (list linux-firmware))
   (initrd microcode-initrd)
   
   (keyboard-layout (keyboard-layout "gb" "extd" #:model "thinkpad"))
@@ -42,8 +42,9 @@
                (targets '("/boot/efi"))
                (keyboard-layout keyboard-layout)))
   
-  (swap-devices (list (swap-space
-                       (target /swap))))
+  (swap-devices
+   (list
+    (swap-space (target (file-system-label "swap")))))
 
   (file-systems %ext4-file-systems)
   (services (list))))
