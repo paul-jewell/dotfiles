@@ -14,13 +14,13 @@
 (define root
   (file-system
    (device guix-root-part)
-   (moount-point "/")
+   (mount-point "/")
    (type "ext4")))
 
 (define home
   (file-system
    (device guix-home-part)
-   (moount-point "/home")
+   (mount-point "/home")
    (type "ext4")))
 
 (define boot
