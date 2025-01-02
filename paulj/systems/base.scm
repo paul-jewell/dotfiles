@@ -3,6 +3,8 @@
   #:use-module (gnu)
   #:use-module (gnu system)
   #:use-module (gnu system nss)
+
+  #:use-module ((paulj systems base users) #:prefix user:)
   #:export (system-config))
 
 (use-service-modules guix admin sysctl pm avahi dbus cups desktop linux
@@ -25,12 +27,7 @@
                 (targets '("/boot/efi"))
                 (keyboard-layout keyboard-layout)))
 
-   (users (cons (user-account
-                 (name "paul")
-                 (comment "Paul Jewell")
-                 (group "users")
-                 (home-directory "/home/paul")
-                 (supplementary-groups '("wheel" "netdev" "lp" "audio" "video" "realtime")))
+   (users (cons user:paul
                 %base-user-accounts))
 
    (groups (cons (user-group (system? #t) (name "realtime"))
