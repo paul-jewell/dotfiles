@@ -1,8 +1,9 @@
 (define-module (paulj systems claudio)
+  ;; System configuration
   #:use-module (paulj systems base)
-  #:use-module (paulj systems common)
   #:use-module (paulj systems claudio file-systems)
-  
+  ;; Home services
+  #:use-module (paulj systems common)
   #:use-module (paulj home-services video)
   #:use-module (paulj home-services finance)
   #:use-module (gnu)
@@ -21,10 +22,12 @@
 (system-config
  #:home
  (home-environment
-  (services (cons* (service home-pipewire-service-type)
-                   (service home-finance-service-type)
-                   (service home-video-service-type)
-                   common-home-services)))
+  (services (cons*
+             (service home-desktop-service-type) ;; Graphical desktop service
+             (service home-pipewire-service-type)
+             (service home-finance-service-type)
+             (service home-video-service-type)
+             common-home-services)))
  
  #:system
  (operating-system

@@ -72,8 +72,6 @@
    ;; Run user dbus session
    (service home-dbus-service-type)
 
-   ;; Set up desktop environment
-   (service home-desktop-service-type)
 
    ;; Start background jobs
    (service home-mcron-service-type

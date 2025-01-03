@@ -1,7 +1,7 @@
 (define-module (paulj systems pluto)
   #:use-module (paulj systems base)
-  #:use-module (paulj systems common)
   #:use-module (paulj systems pluto file-systems)
+  #:use-module (paulj home-services common)
   #:use-module (paulj home-services video)
   #:use-module (paulj home-services finance)
   #:use-module (gnu)
