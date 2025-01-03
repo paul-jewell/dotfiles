@@ -304,9 +304,10 @@ which operating system is running:
     (progn
       (setq *pj/regular-font-size* 130)
       (setq *pj/enable-email* t)))
-   (t
+   ((string-prefix-p "shingo" (system-name))
     (progn
-      (setq *pj/load-site-gentoo* t)))))
+      (setq *pj/load-site-gentoo* t)
+      (setq *pj/regular-font-size* 130)))))
  ((pj/is-windows-p) ;; Not WSL2 installation - that is declared as linux
   (progn
     (setq *pj/enable-auctex* nil)
