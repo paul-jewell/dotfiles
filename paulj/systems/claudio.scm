@@ -47,7 +47,7 @@
   
   (swap-devices
    (list
-    (swap-space (target (file-system-label "swap")))))
+    (swap-space (target (file-system-label "guix-swap")))))
 
   (file-systems %ext4-file-systems)
   (services (list))))
