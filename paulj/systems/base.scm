@@ -108,7 +108,9 @@
       ;; Basic desktop system services
       (service avahi-service-type)
       (service udisks-service-type)
+      (service upower-service-type)
       (service cups-pk-helper-service-type)
+      (service geoclue-service-type)
       (service polkit-service-type)
       (service dbus-root-service-type)
       fontconfig-file-system-service ;; Manage the font config cache
