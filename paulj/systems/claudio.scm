@@ -4,8 +4,10 @@
   #:use-module (paulj systems claudio file-systems)
   ;; Home services
   #:use-module (paulj home-services common)
+  #:use-module (paulj home-services desktop)
   #:use-module (paulj home-services video)
   #:use-module (paulj home-services finance)
+  
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services sound)
