@@ -1,4 +1,4 @@
-(define-module (paulj systems common)
+(define-module (paulj home-services common)
   #:use-module (paulj home-services emacs)
   #:use-module (paulj home-services desktop)
   #:use-module (paulj home-services udiskie)
