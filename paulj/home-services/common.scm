@@ -2,6 +2,8 @@
   #:use-module (paulj home-services emacs)
   #:use-module (paulj home-services desktop)
   #:use-module (paulj home-services udiskie)
+  #:use-module (paulj home-services cli)
+  
   #:use-module (gnu services)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu home services)
@@ -82,6 +84,9 @@
                   '(next-hour (range 0 24 4))
                   "~/.dotfiles/.bin/sync-passwords")))))
 
+   ;; cli applications
+   (service home-cli-service-type)
+   
    ;; File synchronization
    (service home-syncthing-service-type)
    
