@@ -14,8 +14,7 @@
                      networking wm fonts libusb cups freedesktop file-systems
                      version-control package-management sync vim)
 
-(define %greetd-conf (string-append "/home/paul/.config/sway/"
-                                    "files/sway/sway-greetd.conf"))
+(define %greetd-conf (string-append "/home/paul/.config/sway/sway-greetd.conf"))
 
 (define* (system-config #:key system home)
   (operating-system
