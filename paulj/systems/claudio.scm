@@ -3,6 +3,7 @@
   #:use-module (paulj systems base)
   #:use-module (paulj systems claudio file-systems)
   ;; Home services
+  #:use-module (paulj home-services x270)
   #:use-module (paulj home-services common)
   #:use-module (paulj home-services desktop)
   #:use-module (paulj home-services video)
