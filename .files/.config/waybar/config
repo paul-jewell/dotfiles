@@ -1,11 +1,11 @@
 {
     "layer": "bottom",
     "position": "top",
-    "height": 15,
+    "height": 10,
 
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": [],
-    "modules-right": ["wireplumber", "tray", "cpu", "battery", "clock"],
+    "modules-right": ["wireplumber", "cpu", "battery", "tray", "clock"],
     "sway/mode": {
         "format": " {}"
     },
