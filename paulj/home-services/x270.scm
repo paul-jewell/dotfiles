@@ -3,7 +3,10 @@
   #:use-module (gnu)
   #:use-module (gnu home services)
   #:use-module (gnu packages)
+  #:use-module (gnu packages linux)
   #:export (home-x270-service-type))
+
+(use-package-modules linux)
 
 (define (home-x270-profile-service config)
   (list brightnessctl))
@@ -13,6 +16,6 @@
                 (description "Configuration for Lenovo X270.")
                 (extensions
                  (list (service-extension
-                        home-profile-service type home-x270-profile-service)))
+                        home-profile-service-type home-x270-profile-service)))
                 (default-value #f)))
 
