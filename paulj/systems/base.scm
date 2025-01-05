@@ -14,6 +14,9 @@
                      networking wm fonts libusb cups freedesktop file-systems
                      version-control package-management sync vim)
 
+(define %greetd-conf (string-append "/home/paul/.config/sway/"
+                                    "files/sway/sway-greetd.conf"))
+
 (define* (system-config #:key system home)
   (operating-system
    (inherit system)
@@ -69,7 +72,13 @@
                  (list
                   (greetd-terminal-configuration
                    (terminal-vt "1")
-                   (terminal-switch #t))
+                   (terminal-switch #t)
+                   (default-session-command
+                     (greetd-wlgreet-sway-session
+                      (sway-configuration
+                       (local-file %greetd-conf
+                                   #:recursive? #t)))))
+                  
                   (greetd-terminal-configuration (terminal-vt "2"))
                   (greetd-terminal-configuration (terminal-vt "3"))))))
       
@@ -118,9 +127,9 @@
       ;; Power and thermal management services
       (service thermald-service-type)
       (service tlp-service-type
-                        (tlp-configuration
-                         (cpu-boost-on-ac? #t)
-                         (wifi-pwr-on-bat? #t)))
+               (tlp-configuration
+                (cpu-boost-on-ac? #t)
+                (wifi-pwr-on-bat? #t)))
 
       ;; Enable JACK to enter realtime mode
       (service pam-limits-service-type
