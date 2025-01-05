@@ -3,6 +3,7 @@
   #:use-module (gnu)
   #:use-module (gnu home services)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (saayix packages text-editors)
@@ -45,6 +46,7 @@
         breeze-icons ;; For KDE apps
         gnome-themes-extra
         adwaita-icon-theme
+        hicolor-icon-theme
 
         ;; Fonts
         font-jost
@@ -95,10 +97,7 @@
         wget
         openssh
         zip
-        unzip
-        ;; 2024-12-14 - trash-cli not building
-        ;; trash-cli
-        ))
+        unzip))
 
 (define (home-desktop-environment-variables config)
   '(("_JAVA_AWT_WM_NONREPARENTING" . "1")))

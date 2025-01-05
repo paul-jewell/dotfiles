@@ -30,7 +30,7 @@
              (service home-desktop-service-type) ;; Graphical desktop service
              (service home-pipewire-service-type)
              (service home-finance-service-type)
-             (service home-video-service-type)
+;;             (service home-video-service-type)
              common-home-services)))
  
  #:system

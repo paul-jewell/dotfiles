@@ -1,7 +1,8 @@
 ;; cli.scm - Packages and services for all systems
 
 (define-module (paulj home-services cli)
-  #:use-module (gnu packages rust-packages)
+  #:use-module (gnu home services)
+  #:use-module (gnu packages rust-apps)
   #:export (home-cli-service-type))
 
 (define (home-cli-profile-service config)
