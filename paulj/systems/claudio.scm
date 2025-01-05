@@ -25,6 +25,7 @@
  #:home
  (home-environment
   (services (cons*
+             (service home-x270-service-type)
              (service home-desktop-service-type) ;; Graphical desktop service
              (service home-pipewire-service-type)
              (service home-finance-service-type)
