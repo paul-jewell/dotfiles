@@ -4,7 +4,7 @@
     "height": 15,
 
     "modules-left": ["sway/workspaces", "sway/mode"],
-    "modules-center": ["timer"],
+    "modules-center": [],
     "modules-right": ["wireplumber", "tray", "cpu", "battery", "clock"],
     "sway/mode": {
         "format": " {}"
@@ -40,19 +40,6 @@
         "format-xrun": "{xruns} xruns",
         "format-disconnected": "DSP off",
         "realtime": true
-    },
-    "custom/spotify": {
-        "interval": 1,
-        "return-type": "json",
-        "exec": "~/.config/waybar/modules/spotify.sh",
-        "exec-if": "pgrep spotify",
-        "escape": true
-    },
-    "timer": {
-        "interval": 1,
-        "exec": "~/.config/waybar/timer.sh",
-        "exec-if": "pgrep emacs",
-        "escape": true
     },
     "idle_inhibitor": {
         "format": "{icon}",

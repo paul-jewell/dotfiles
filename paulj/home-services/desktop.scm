@@ -15,6 +15,7 @@
 
 (define (home-desktop-profile-service config)
   (list sway
+        waybar
         swayidle
         swaylock
         fuzzel

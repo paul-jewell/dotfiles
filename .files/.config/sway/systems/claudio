@@ -1,1 +1,7 @@
 output * bg ~/.dotfiles/backgrounds/mountains-1412683.jpg fill
+
+input type:touchpad {
+    dwt enabled
+    tap enabled
+    middle_emulation enabled
+}
