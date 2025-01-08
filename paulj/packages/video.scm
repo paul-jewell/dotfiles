@@ -1,4 +1,4 @@
-(define-module (daviwil packages video)
+(define-module (paulj packages video)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages video)
   #:use-module (gnu packages gstreamer)
