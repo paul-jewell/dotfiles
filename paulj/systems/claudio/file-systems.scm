@@ -1,27 +1,42 @@
 (define-module (paulj systems claudio file-systems)
   #:use-module (gnu system file-systems)
-  #:export (%ext4-file-systems))
+  #:export (%btrfs-file-systems))
 
-(define guix-root-part
-  (file-system-label "guix-root"))
-
-(define guix-home-part
-  (file-system-label "guix-home"))
-
+(define guix-pool-part
+  (file-system-label "guix-pool"))
+  
 (define guix-boot-part
   (file-system-label "guix-boot"))
 
 (define root
   (file-system
-   (device guix-root-part)
+   (device guix-pool-part)
    (mount-point "/")
-   (type "ext4")))
+   (type "btrfs")
+   (options "subvol=root,ssd")))
+
+(define gnu-store
+  (file-system
+   (device guix-pool-part)
+   (mount-point "/gnu/store")
+   (type "btrfs")
+   (flags '(no-atime))
+   (options "subvol=gnu-store,compress=zstd,ssd")))
+
+(define var-log
+  (file-system
+   (device guix-pool-part)
+   (mount-point "/var/log")
+   (type "btrfs")
+   (flags '(no-atime))
+   (options "subvol=var-log,compress=zstd,ssd")))
 
 (define home
   (file-system
-   (device guix-home-part)
+   (device guix-pool-part)
    (mount-point "/home")
-   (type "ext4")))
+   (type "btrfs")
+   (options "subvol=home")))
 
 (define boot
   (file-system
@@ -54,8 +69,10 @@
    (needed-for-boot? #t)
    (check? #f)))
 
-(define %ext4-file-systems
+(define %btrfs-file-systems
   (cons* root
+	 gnu-store
+	 var-log
          home
          boot
          tmp
