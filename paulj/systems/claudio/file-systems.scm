@@ -13,7 +13,7 @@
    (device guix-pool-part)
    (mount-point "/")
    (type "btrfs")
-   (options "subvol=root,ssd")))
+   (options "subvol=@root,ssd")))
 
 (define gnu-store
   (file-system
@@ -21,6 +21,7 @@
    (mount-point "/gnu/store")
    (type "btrfs")
    (flags '(no-atime))
+   (needed-for-boot? #t)
    (options "subvol=gnu-store,compress=zstd,ssd")))
 
 (define var-log
@@ -29,14 +30,15 @@
    (mount-point "/var/log")
    (type "btrfs")
    (flags '(no-atime))
-   (options "subvol=var-log,compress=zstd,ssd")))
+   (needed-for-boot? #t)
+   (options "subvol=@var/log,compress=zstd,ssd")))
 
 (define home
   (file-system
    (device guix-pool-part)
    (mount-point "/home")
    (type "btrfs")
-   (options "subvol=home")))
+   (options "subvol=@home")))
 
 (define boot
   (file-system
