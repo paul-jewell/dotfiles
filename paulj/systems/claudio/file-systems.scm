@@ -48,8 +48,8 @@
 
 (define %btrfs-file-systems
   (cons* root
-	      gnu
-	      var-log
+         gnu
+         var-log
          home
          boot
          (delete %debug-file-system
