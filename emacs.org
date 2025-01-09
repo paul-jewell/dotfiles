@@ -2,7 +2,7 @@
 #+author: Paul Jewell
 #+email: paul@teulu.org
 #+language: en
-#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.emacs.d/init.el
+#+PROPERTY: header-args:emacs-lisp :mkdirp t :tangle ./.files/.emacs.d/init.el
 #+macro: latest-export-date (eval (format-time-string "%F %T %z"))
 
 Emacs configuration.
@@ -86,7 +86,7 @@ Emacs configuration.
 ** early-init.el Preamble
 - Make the tangled file read only if loaded into emacs. Hopefully it
   will be enough to ensure this file remains the primary truth!
-#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/early-init.el
 ;;-*- buffer-read-only: t; lexical-binding: t; -*-
 
 ;;; early-init.el --- Startup file for emacs
@@ -109,12 +109,12 @@ Emacs configuration.
 #+end_src
 ** early-init.el - Native compile packages
 Recommended to have this at the top of the configuration files.
-#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/early-init.el
 (setq-default package-native-compile t)
 #+end_src
 ** early-init.el - macro to run code only in a non tiling wm environment
 Slightly adapted from code in Prot's configuration renamed for consistency.
-#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/early-init.el
 (defvar pj/emacs-tiling-wm-regexp
   (regexp-opt '("xmonad" "i3"))
   "Regular expression for tiling window managers.")
@@ -129,7 +129,7 @@ Slightly adapted from code in Prot's configuration renamed for consistency.
 ** early-init.el - code to set frame parameters
 If the window manager is not a tiling wm, then set the default size of
 the initial and subsequent frames.
-#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/early-init.el
 (defun pj/add-to-list (list element)
   "Add ELEMENT to symbol of LIST
 Simplified version of `add-to-list'."
@@ -148,7 +148,7 @@ General settings for frames to keep things
 minimal. Note =frame-resize-pixelwise= and =frame-inhibit-implied-resize=: by
 default Emacs will resize the frame if you adjust the font size, which
 is undesirable.
-#+begin_src emacs-lisp :tangle ./.emacs.d/early-init.el
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/early-init.el
 (setq frame-resize-pixelwise t
       frame-inhibit-implied-resize t
       frame-title-format '("%b")
@@ -561,7 +561,7 @@ Packages are currently installed using use-package.
 #+end_src
 * Themes
 Currently trialing Prot's themes from his ef-themes package
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-themes.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-themes.el :mkdirp t
 ;;==============================================================================
 ;;.....themes
 ;;     ------
@@ -588,7 +588,7 @@ Currently trialing Prot's themes from his ef-themes package
 * Fonts
 Using the fontaine package from Prot. Font sizes are calculated from
 the variable =*pj/regular-font-size*= 
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-themes.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-themes.el :mkdirp t
 (use-package fontaine
   :config
   (setq fontaine-latest-state-file
@@ -646,7 +646,7 @@ the variable =*pj/regular-font-size*=
 (fontaine-restore-latest-preset)
 #+end_src
 * All the icons
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-themes.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-themes.el :mkdirp t
 ;;==============================================================================
 ;;.....all the icons
 ;;     -------------
@@ -665,7 +665,7 @@ the variable =*pj/regular-font-size*=
 #+end_src
 
 * Dashboard
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-dashboard.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-dashboard.el :mkdirp t
   (use-package dashboard
     :config
     (dashboard-setup-startup-hook)
@@ -681,7 +681,7 @@ Need to install fonts first by doing this:
 M-x all-the-icons-install-fonts
 #+end_example
 
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-modeline.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-modeline.el :mkdirp t
   ;; Use modeline from doom
   (use-package doom-modeline
     :init (doom-modeline-mode 1)
@@ -702,7 +702,7 @@ M-x all-the-icons-install-fonts
 (provide 'my-modeline)
 #+end_src
 * Treemacs
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-treemacs.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-treemacs.el :mkdirp t
   (use-package treemacs
     :bind ("C-c t" . treemacs)
     :custom
@@ -715,7 +715,7 @@ M-x all-the-icons-install-fonts
 
 * Tramp
 ssh connection to other machines.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-tramp.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-tramp.el :mkdirp t
   (setq tramp-default-method "ssh")
   ;; Ensure paths are correct for editing files on guix systems (thanks @janneke)
   (with-eval-after-load 'tramp-sh (push 'tramp-own-remote-path tramp-remote-path))
@@ -724,7 +724,7 @@ ssh connection to other machines.
 #+end_src
 
 * Completion Frameworks
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-completion.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-completion.el :mkdirp t
 
   ;;; COMPLETION
   (use-package vertico
@@ -940,7 +940,7 @@ ssh connection to other machines.
 * Which-key
 Show the key sequences available from the current command key after a
 small delay.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-which-key.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-which-key.el :mkdirp t
   ;;==============================================================================
   ;;.....which-key
   ;;     ---------
@@ -953,7 +953,7 @@ small delay.
 #+end_src
 
 * ispell
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-ispell.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-ispell.el :mkdirp t
   ;;==============================================================================
   ;;.....ispell
   ;;     ------
@@ -976,7 +976,7 @@ small delay.
 
 * Ledger
 CLI accounting, as it should be.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-ledger.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-ledger.el :mkdirp t
 ;;==============================================================================
 ;;.....ledger
 ;;     ------
@@ -997,7 +997,7 @@ CLI accounting, as it should be.
 
 * Treesitter
 Still learning about this, so this is quite fluid.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-treesitter.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-treesitter.el :mkdirp t
 ;;==============================================================================
 ;;.....treesitter
 ;;     ----------
@@ -1068,7 +1068,7 @@ Still learning about this, so this is quite fluid.
 #+end_src
 * LSP mode
 eglot configuration for lsp mode functionality.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-lsp.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-lsp.el :mkdirp t
 
   ;; Adds LSP support. Note that you must have the respective LSP
   ;; server installed on your machine to use it with Eglot. e.g.
@@ -1104,7 +1104,7 @@ Language by language configuration for different programming languages
 ** C++
 I haven't used this in anger recently, so I am not sure if it
 works. TODO: Needs to be revisited.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....c++
 ;;     ---
@@ -1121,7 +1121,7 @@ works. TODO: Needs to be revisited.
 Started learning rust. This config snippet is copied from elsewhere,
 but seems to work at the moment.
 
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp
 (use-package rust-mode
   :bind (:map rust-mode-map
 	      ("C-c C-r" . 'rust-run)
@@ -1166,7 +1166,7 @@ want to get other stuff working first.
 My first experience of a functional language. Nice setup with cider,
 but I have since moved on to common lisp. I still like the functional
 rigour of clojure though!
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....Clojure
 ;;     -------
@@ -1197,7 +1197,7 @@ rigour of clojure though!
 #+end_src
 
 ** emacs-lisp
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....elisp - slime
 ;;     -------------
@@ -1222,7 +1222,7 @@ quicklisp leads to the following:
     This will make quicklisp search for swank in the installed
     directory in the emacs.d tree.
     
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....lisp - slime
 ;;     ------------
@@ -1272,12 +1272,12 @@ additions and changes.
   
 #+end_src
 ** lua
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package lua-mode)
 
 #+end_src
 ** Markdown
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package markdown-mode
   ;; These extra modes help clean up the Markdown editing experience.
   ;; `visual-line-mode' turns on word wrap and helps editing commands
@@ -1290,7 +1290,7 @@ additions and changes.
 
 #+end_src
 ** Typescript, JA and JSX/TSX support
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....TypeScript, JS, and JSX/TSX support.
 ;;     ------------------------------------
@@ -1314,7 +1314,7 @@ Like this language as well, but it is still a big learning curve for
 me. Since I use xmonad/xmobar, I have more opportunity to learn
 haskell going forward. Also, learning rust means playing with monads
 without using the name!!
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....haskell
 ;;     -------
@@ -1329,7 +1329,7 @@ without using the name!!
 ** nix
 Nix, beautiful Nix. I tried guix, but found it challenging, but NixOS
 is wonderful.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 ;;==============================================================================
 ;;.....nix
 ;;     ===
@@ -1338,7 +1338,7 @@ is wonderful.
 
 #+end_src
 ** yaml mode
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-programming.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
   ;;==============================================================================
   ;;.....yaml mode
   ;;     =========
@@ -1349,7 +1349,7 @@ is wonderful.
 #+end_src
 * ERC
 Developed from bbatsov's code on his github.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-erc.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-erc.el :mkdirp t
 ;;==============================================================================
 ;;.....ERC
 ;;     ---
@@ -1523,7 +1523,7 @@ that can occur between two notifications.  The default is
 
 * yasnippet
 Snippet management. TODO: Proper setup
-#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-modules/my-yasnippet.el :mkdirp t
+#+begin_src emacs-lisp  :tangle ./.files/.emacs.d/pj-modules/my-yasnippet.el :mkdirp t
   (use-package yasnippet
     :bind
     (:map yas-minor-mode-map
@@ -1541,7 +1541,7 @@ Snippet management. TODO: Proper setup
 #+results:
 
 * Multiple Cursors
-#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-modules/my-multiple-cursors.el :mkdirp t
+#+begin_src emacs-lisp  :tangle ./.files/.emacs.d/pj-modules/my-multiple-cursors.el :mkdirp t
   ;;==============================================================================
   ;;.....multiple cursors
   ;;     ----------------
@@ -1555,7 +1555,7 @@ Snippet management. TODO: Proper setup
 * Org-mode
 TODO: Move this all into the my-org-mode.el file, and load it here.
 TODO: Refactor my-org-mode.el file completely.
-#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-modules/my-orgmode.el :mkdirp t
+#+begin_src emacs-lisp  :tangle ./.files/.emacs.d/pj-modules/my-orgmode.el :mkdirp t
 ;;==============================================================================
 ;;.....org mode
 ;;     --------
@@ -1582,7 +1582,7 @@ TODO: Refactor my-org-mode.el file completely.
 
 * Org Bullet mode
 Pretty bullets
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-orgmode.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-orgmode.el :mkdirp t
 ;;==============================================================================
 ;;.....org bullet mode
 ;;     ---------------
@@ -1593,7 +1593,7 @@ Pretty bullets
 #+end_src
 * Org-roam
 Note taking on steroids. Need to learn how to use it properly.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-orgmode.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-orgmode.el :mkdirp t
 ;;==============================================================================
 ;;.....org roam mode
 ;;     -------------
@@ -1643,7 +1643,7 @@ Note taking on steroids. Need to learn how to use it properly.
 * Auctex
 TODO: Check the function of this. I want to write my book, and this
 will be usefull for managing references.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-text-tools.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-text-tools.el :mkdirp t
 ;;==============================================================================
 ;;.....auctex
 ;;     ------
@@ -1678,7 +1678,7 @@ will be usefull for managing references.
 * Reftex
 I haven't used this yet, so there may be some issues.
 TODO: Sort this out!
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-text-tools.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-text-tools.el :mkdirp t
   ;;==============================================================================
   ;;.....reftex
   ;;     ------
@@ -1720,7 +1720,7 @@ TODO: Sort this out!
 #+end_src
 * Hydra
 Useful key programming. 
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-hydra.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-hydra.el :mkdirp t
   ;;==============================================================================
   ;;.....hydra
   ;;     -----
@@ -1767,7 +1767,7 @@ Useful key programming.
 #+end_src
 * Magit
 git processing - the best.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-magit.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-magit.el :mkdirp t
   ;;==============================================================================
   ;;.....magit
   ;;     -----
@@ -1821,7 +1821,7 @@ git processing - the best.
 
 * Projectile
 Management at a project level, rather than just at file level.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-projectile.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-projectile.el :mkdirp t
   ;;==============================================================================
   ;;.....Projectile
   ;;     ----------
@@ -1842,7 +1842,7 @@ Management at a project level, rather than just at file level.
 
 * Diminish
 Hide minor mode information from the mode line.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-diminish.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-diminish.el :mkdirp t
 
   (use-package diminish
      :demand t)
@@ -1854,7 +1854,7 @@ Hide minor mode information from the mode line.
 Beautiful editing in lisp modes! Never have a problem with unbalanced
 parentheses. Would be good if it worked with other languages...
 TODO: Find out if it does!
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-paredit.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-paredit.el :mkdirp t
     ;;==============================================================================
     ;;.....Paredit
     ;;     -------
@@ -1883,7 +1883,7 @@ TODO: Find out if it does!
 
 * Rainbow Delimiters
 Colour those delimiters, for easier comprehension.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-rainbow-delimiters.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-rainbow-delimiters.el :mkdirp t
 
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode)
@@ -1900,7 +1900,7 @@ Colour those delimiters, for easier comprehension.
 * email - notmuch
 TODO: Persevere with notmuch - get good at sending emails, and sort out the tagging to improve
 the experience.
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-email.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-email.el :mkdirp t
 (when *pj/enable-email*
     (use-package notmuch
       :defer t
@@ -1984,7 +1984,7 @@ the experience.
 
 * GNUS
 Watch John Wiegley using gnus - very impressive, so I want to explore further.
-#+begin_src emacs-lisp  :tangle ./.emacs.d/pj-modules/my-gnus.el :mkdirp t
+#+begin_src emacs-lisp  :tangle ./.files/.emacs.d/pj-modules/my-gnus.el :mkdirp t
 ;; Not yet configured
 (provide 'my-gnus)
 #+end_src
@@ -2011,7 +2011,7 @@ https://github.com/dengste/org-caldav
 #+end_src
 
 * Helpful
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-helpful.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-helpful.el :mkdirp t
   ;;==============================================================================
   ;;.....helpful - improve the help documentation
   ;;     -------
@@ -2028,14 +2028,14 @@ https://github.com/dengste/org-caldav
 #+end_src
 
 * gnupg - Key management
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-security.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-security.el :mkdirp t
 ;; Following the ELPA instructions didn't work as expected - came across
 ;; this approach, which does work. See also changes in gpg-agent.conf
 (setq epa-pinentry-mode 'loopback)
 (setq epg-pinentry-mode 'loopback)
 #+end_src
 * Password-store
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-security.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-security.el :mkdirp t
   (use-package password-store)
 
   (provide 'my-security)
