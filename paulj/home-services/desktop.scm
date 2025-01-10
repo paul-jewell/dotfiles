@@ -6,6 +6,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (nongnu packages mozilla)
   #:use-module (saayix packages text-editors)
   #:export (home-desktop-service-type))
 
@@ -23,6 +24,7 @@
         wl-clipboard
         mako
         foot
+        firefox
         alacritty
         helix
         gammastep
