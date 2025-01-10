@@ -3,7 +3,7 @@
   #:use-module (paulj systems base)
   #:use-module (paulj systems mars file-systems)
   ;; Home services
-  #:use-module (paulj home-services x270)
+  #:use-module (paulj home-services x390)
   #:use-module (paulj home-services common)
   #:use-module (paulj home-services desktop)
   #:use-module (paulj home-services video)
@@ -26,7 +26,7 @@
  #:home
  (home-environment
   (services (cons*
-             (service home-x270-service-type)
+             (service home-x390-service-type)
              (service home-desktop-service-type) ;; Graphical desktop service
              (service home-pipewire-service-type)
              (service home-finance-service-type)
