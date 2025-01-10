@@ -1,5 +1,5 @@
 #+TITLE: org-workflow.org - personalised gtd workflow for org-mode
-#+PROPERTY: header-args:emacs-lisp :tangle .emacs.d/lisp/my-org-mode.el :mkdirp t
+#+PROPERTY: header-args:emacs-lisp :tangle ./.files/.emacs.d/lisp/my-org-mode.el :mkdirp t
 
 Org-mode workflow developed over time from the excellent configuration
 shared by Bernt Hansen. Since then I have brought the code up to date

@@ -1,7 +1,9 @@
-(define-module (paulj systems common)
+(define-module (paulj home-services common)
   #:use-module (paulj home-services emacs)
   #:use-module (paulj home-services desktop)
   #:use-module (paulj home-services udiskie)
+  #:use-module (paulj home-services cli)
+  
   #:use-module (gnu services)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu home)
@@ -73,8 +75,6 @@
    ;; Run user dbus session
    (service home-dbus-service-type)
 
-   ;; Set up desktop environment
-   (service home-desktop-service-type)
 
    ;; Start background jobs
    (service home-mcron-service-type
@@ -85,6 +85,9 @@
                   '(next-hour (range 0 24 4))
                   "~/.dotfiles/.bin/sync-passwords")))))
 
+   ;; cli applications
+   (service home-cli-service-type)
+   
    ;; File synchronization
    (service home-syncthing-service-type)
 

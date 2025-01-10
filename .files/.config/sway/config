@@ -20,26 +20,8 @@ gaps inner 6
 smart_borders off
 hide_edge_borders --i3 none
 
-#.....background
+#.....default background
 output * bg ~/.dotfiles/backgrounds/samuel-ferrara-uOi3lg8fGl4-unsplash.jpg fill
-
-#===================
-# Configure displays
-#-------------------
-
-## The annoying thing is that sometimes the display ID changes when hotplugging
-## my Thunderbolt dock...
-#set $primary DP-2 DP-3 DP-7 DP-8 HDMI-A-1
-#set $laptop eDP-1
-
-#output $laptop pos 1920 135 scale 2
-##output DP-2 res 2560x1440@59.951hz pos 0 0 scale 2
-#output DP-2 pos 0 0 scale 2
-#output DP-3 pos 0 0 scale 2
-#output DP-7 pos 0 0 scale 2
-#output DP-8 pos 0 0 scale 2
-#output HDMI-A-1 scale 2
-
 
 bindsym $mod+Shift+s exec ~/.bin/toggle-display $primary
 
@@ -47,13 +29,6 @@ input type:keyboard {
     xkb_layout gb
     xkb_options ctrl:nocaps
 }
-
-# TODO: Move to system specific configuration (not all systems have touchpads)
-#input type:touchpad {
-#    dwt enabled
-#    tap enabled
-#    middle_emulation enabled
-#}
 
 #=============
 # key commands
@@ -226,25 +201,8 @@ exec swayidle -w \
 for_window [title="Firefox — Sharing Indicator"] kill
 for_window [title=".* - mpv$"] floating enable, sticky enable
 
-bar {
-    position top
-    mode hide
-    font pango:JetBrains Mono 8
-    icon_theme "Papirus-Dark"
-
-    status_command while date +'%Y-%m-%d %I:%M:%S %p W%U'; do sleep 1; done
-
-    tray_bindsym button1 Activate
-    tray_bindsym button2 ContextMenu
-
-    colors {
-        statusline #ffffff
-        background $bgcolor
-        inactive_workspace #1c1f2bef #323232CC #5c5c5c
-    }
-}
-
 # Autostart applications
+exec waybar
 exec mako --border-radius=2 --font="JetBrains Mono 8" --max-visible=5 --outer-margin=5 --margin=3 --background="#1c1f26" --border-color="#89AAEB" --border-size=1 --default-timeout=7000
 exec nm-applet --indicator
 exec udiskie -t
@@ -254,7 +212,7 @@ exec gammastep-indicator -l 37.983810:23.727539 -t 6500:3500 -b 1.0:0.7
 # Set GNOME settings (requires "glib:bin" in Guix)
 exec gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
 exec gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
-exec gsettings set org.gnome.desktop.interface font-name "Iosevka Aile 11"
+exec gsettings set org.gnome.desktop.interface font-name "Iosevka Aile 10"
 
 # Load system-specific configuration
 include "~/.config/sway/systems/$(hostname)"

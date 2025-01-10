@@ -1,0 +1,66 @@
+{
+    "layer": "bottom",
+    "position": "top",
+    "height": 24,
+
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": ["clock"],
+    "modules-right": ["wireplumber", "cpu", "battery", "backlight", "tray"],
+    "sway/mode": {
+        "format": " {}"
+    },
+    "sway/workspaces": {
+        "format": "{name}",
+        "disable-scroll": true
+    },
+    "clock": {
+        "format": "{:%b %d %H:%M %p W%U}",
+        "tooltip": false
+    },
+    "backlight": {
+        // "device": "acpi_video1",
+        "format": "{percent}% {icon}",
+        "format-icons": ["", "", "", "", "", "", "", "", ""]
+    },
+    "battery": {
+        "format": " {time} {icon}",
+        "format-alt": "{capacity}% {icon}",
+        "format-icons": ["", "", "", "", ""],
+        "format-charging": "{capacity}% ",
+        "interval": 30,
+        "states": {
+            "warning": 25,
+            "critical": 10
+        },
+        "tooltip": false
+    },
+    "wireplumber": {
+        "format": "{volume}% {icon}",
+        "format-muted": "",
+        "on-click": "pavucontrol",
+        "format-icons": ["", "", ""]
+    },
+    "jack": {
+        "format": "DSP {}%",
+        "format-xrun": "{xruns} xruns",
+        "format-disconnected": "DSP off",
+        "realtime": true
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        },
+        "tooltip": false
+    },
+    "tray": {
+        "icon-size": 20,
+        "show-passive-items": true
+    },
+    "cpu": {
+      "interval": 2,
+      "format": "{icon0}{icon1}{icon2}{icon3}",
+      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    },
+}

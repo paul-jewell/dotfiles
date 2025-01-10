@@ -3,8 +3,10 @@
   #:use-module (gnu)
   #:use-module (gnu home services)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (saayix packages text-editors)
   #:export (home-desktop-service-type))
 
 (use-package-modules compression curl fonts freedesktop gimp glib gnome gnome-xyz
@@ -14,6 +16,7 @@
 
 (define (home-desktop-profile-service config)
   (list sway
+        waybar
         swayidle
         swaylock
         fuzzel
@@ -21,6 +24,7 @@
         mako
         foot
         alacritty
+        helix
         gammastep
         grimshot ;; grimshot --notify copy area
         network-manager-applet
@@ -42,6 +46,7 @@
         breeze-icons ;; For KDE apps
         gnome-themes-extra
         adwaita-icon-theme
+        hicolor-icon-theme
 
         ;; Fonts
         font-jost
@@ -92,8 +97,7 @@
         wget
         openssh
         zip
-        unzip
-        trash-cli))
+        unzip))
 
 (define (home-desktop-environment-variables config)
   '(("_JAVA_AWT_WM_NONREPARENTING" . "1")))
