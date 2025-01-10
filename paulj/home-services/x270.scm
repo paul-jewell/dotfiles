@@ -1,4 +1,4 @@
-;; x280.scm - configuration for Lenovo x270 system
+;; x270.scm - configuration for Lenovo x270 system
 (define-module (paulj home-services x270)
   #:use-module (gnu)
   #:use-module (gnu home services)
