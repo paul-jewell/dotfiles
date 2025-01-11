@@ -78,7 +78,11 @@
    emacs-slime
    emacs-spinner
    emacs-transient
-   emacs-yasnippet))
+   emacs-yasnippet
+   
+   ;; Support programs
+   hunspell
+   ))
 
 (define home-emacs-config-service-type
   (service-type (name 'home-emacs-config)
