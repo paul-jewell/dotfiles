@@ -1,4 +1,4 @@
 #!/bin/sh
 cd ~/.dotfiles
 
-emacs -Q --script ./.emacs.d/tangle-dotfiles.el
+emacs -Q --script ./.files/.emacs.d/tangle-dotfiles.el

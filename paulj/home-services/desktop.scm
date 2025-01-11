@@ -70,6 +70,8 @@
         ;; Authentication
         password-store
 
+        gnome-keyring
+
         ;; Audio devices and media playback
         mpv
         mpv-mpris
