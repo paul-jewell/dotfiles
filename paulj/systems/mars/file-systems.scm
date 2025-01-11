@@ -44,6 +44,7 @@
   (file-system
    (device guix-boot-part)
    (mount-point "/boot/efi")
+   (check? #f)
    (type "vfat")))
 
 (define %btrfs-file-systems
