@@ -8,6 +8,7 @@
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages finance)
   #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages hunspell)
   #:use-module (gnu home services)
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
