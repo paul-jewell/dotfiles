@@ -1380,6 +1380,7 @@ Developed from bbatsov's code on his github.
                            ;;          "#debian"
                                      "#scheme"
                                      "#guix"
+                                     "#nonguix"
                                      )))
 
 ;; Interpret mIRC-style colour commands in IRC chats
@@ -1485,14 +1486,24 @@ that can occur between two notifications.  The default is
 (setq erc-autoaway-idle-seconds 600)
 (setq erc-autoaway-idle-method 'emacs)
 
+;; Identification and password control
+;; There appear to be three methods which can be used:
+;; - authinfo.gpg
+;; - ercpass
+;; - password store
+;; Of these three, the ercpass approach is the least secure, as the password
+;; is in plain text in the .ercpass file. Best option: password store - as this
+;; means the passwords can be managed through different machines easily. Alternatively
+;; the .authinfo.gpg file could be put in the repository with everything else.
+
 ;; auto identify
 ;; (when (file-exists-p (expand-file-name "~/.ercpass"))
 ;;   (load "~/.ercpass")
 ;;   (require 'erc-services)
 ;;   (erc-services-mode 1)
-;;   (setq erc-prompt-for-password nil))
-  ;; (setq erc-nickserv-passwords
-  ;;       `((freenode (("paulj" . ,paulj-pass))))))
+;;   (setq erc-prompt-for-password nil)
+;;   (setq erc-nickserv-passwords
+;;         `((libera.chat (("paulj" . ,paulj-pass))))))
 
 ;; utf-8 always and forever
 (setq erc-server-coding-system '(utf-8 . utf-8))
@@ -1503,7 +1514,11 @@ that can occur between two notifications.  The default is
   (if (get-buffer "irc.libera.chat:6667")
       (erc-track-switch-buffer 1)
     (when (y-or-n-p "Do you want to start IRC? ")
-      (erc :server "irc.libera.chat" :port 6667 :nick "paul_j"))))
+      (erc-tls
+       :server "irc.libera.chat"
+       :port   6697
+       :nick   "paul_j"
+       :password (password-store-get "irc.libera.chat/paul_j")))))
 
 (defun filter-server-buffers ()
   (delq nil
