@@ -1,6 +1,6 @@
-=My personal configuration files (dotfiles)=
+* =My personal configuration files (dotfiles)=
 
-* Background
+** Background
 This repository contains my dotfiles for my Linux systems. You will
 find a level of chaos in the organisation, as they have developed over
 several years, and during this time I have used (and continue to use)
@@ -8,7 +8,7 @@ Gentoo for most of my systems, as well as setting up a working NixOS
 setup (which I later abandoned), and Guix (first of all in 2021, then
 again currently).
 This has complicated simple configuration, where there are significant differences in the approach used for the different systems. For example, .profile, .bashrc etc are all different under the different distributions.
-* Emacs
+** Emacs
 The emacs configuration is generated (tangled) from emacs.org and
 org-workflow.org. The output files are not stored in the
 repository. They are generated and placed in the .files directory,
@@ -24,7 +24,7 @@ stow -v -t ~ .
 #+end_src
 You will need to manually resolve any errors where files exist which will be
 over-written by stow.
-* Guix
+** Guix
 The =Guix= configuration tree is saved under the =paulj= directory.
 Subdirectories:
 - packages - For storing packages not available upstream
@@ -40,7 +40,7 @@ Subdirectories:
     and 32Gb ram, equipped with the 1366x768 screen.
   - =venus= - Lenovo X270 (20HM model) - i7-7500U running at 2.7GHz,
     with 512Gb SSD and 32Gb ram, equipped with the 1920x1080 screen.
-* Gentoo
+** Gentoo
 =Gentoo= has been my staple Linux distribution since 2004. Systems
 currently installed with =Gentoo=:
 - =tristan= - Desktop AMD system, dual booting with Windows (for work -
