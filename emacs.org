@@ -2005,7 +2005,7 @@ Watch John Wiegley using gnus - very impressive, so I want to explore further.
 (provide 'my-gnus)
 #+end_src
 * RSS Feeds
-#+begin_src emacs-lisp :tangle ./.emacs.d/pj-modules/my-rss.el :mkdirp t
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-rss.el :mkdirp t
 
 ;; RSS Reader, with configuration stored in org-mode files
 (use-package elfeed-org
