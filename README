@@ -1,0 +1,51 @@
+=My personal configuration files (dotfiles)=
+
+* Background
+This repository contains my dotfiles for my Linux systems. You will
+find a level of chaos in the organisation, as they have developed over
+several years, and during this time I have used (and continue to use)
+Gentoo for most of my systems, as well as setting up a working NixOS
+setup (which I later abandoned), and Guix (first of all in 2021, then
+again currently).
+This has complicated simple configuration, where there are significant differences in the approach used for the different systems. For example, .profile, .bashrc etc are all different under the different distributions.
+* Emacs
+The emacs configuration is generated (tangled) from emacs.org and
+org-workflow.org. The output files are not stored in the
+repository. They are generated and placed in the .files directory,
+when you run:
+#+begin_src sh
+~/.dotfiles/.files/.bin/update-dotfiles
+#+end_src
+They can then be installed in the system along with the other
+configuration files stored in the repository with stow:
+#+begin_src sh
+cd ~/.dotfiles/.files
+stow -v -t ~ .
+#+end_src
+You will need to manually resolve any errors where files exist which will be
+over-written by stow.
+* Guix
+The =Guix= configuration tree is saved under the =paulj= directory.
+Subdirectories:
+- packages - For storing packages not available upstream
+- home-services - configuration files for home services
+- files - configuration files which are stored via guix home in
+  /gnu/store. Ideally, all configuration files should end up here for
+  guix systems, and the ~/.dotfiles/.files tree should only be
+  required for non-guix (and non-nix for that matter) systems.
+- systems - configuration tree for each system:
+  - =pluto= - Dell Wyse 5750, running headless with full libre-linux
+    kernel. The genuine =Guix= experience.
+  - =mars= - Lenovo X270: i5-5200U running at 2.50 GHz with 512Gb SSD,
+    and 32Gb ram, equipped with the 1366x768 screen.
+  - =venus= - Lenovo X270 (20HM model) - i7-7500U running at 2.7GHz,
+    with 512Gb SSD and 32Gb ram, equipped with the 1920x1080 screen.
+* Gentoo
+=Gentoo= has been my staple Linux distribution since 2004. Systems
+currently installed with =Gentoo=:
+- =tristan= - Desktop AMD system, dual booting with Windows (for work -
+  I retire in October 2025, and then Windows will be removed).
+- =isolde= - Lenovo T14 AMD - also currently dual booting with Windows.
+- =shingo= - Udoo Bolt V8, used in my workshop. More information
+  [[https://www.udoo.org/discover-the-udoo-bolt/][here]]. It has a built in arduino, but I haven't used it.
+
