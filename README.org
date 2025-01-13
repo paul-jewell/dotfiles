@@ -36,10 +36,12 @@ Subdirectories:
 - systems - configuration tree for each system:
   - =pluto= - Dell Wyse 5750, running headless with full libre-linux
     kernel. The genuine =Guix= experience.
-  - =mars= - Lenovo X270: i5-5200U running at 2.50 GHz with 512Gb SSD,
+  - =mars= - Lenovo X270: i5-5200U with 256Gb SSD,
     and 32Gb ram, equipped with the 1366x768 screen.
-  - =venus= - Lenovo X270 (20HM model) - i7-7500U running at 2.7GHz,
+  - =venus= - Lenovo X270 (20HM model) - i7-7500U,
     with 512Gb SSD and 32Gb ram, equipped with the 1920x1080 screen.
+  - =neptune= - Lenovo X390 (20Q0 model) - Core i7-8665U, with
+    512Gb SSD, and 32Gb ram.
 ** Gentoo
 =Gentoo= has been my staple Linux distribution since 2004. Systems
 currently installed with =Gentoo=:
