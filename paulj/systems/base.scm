@@ -37,6 +37,8 @@
                     stow
                     vim
                     nextcloud-client
+                    bluez
+                    bluez-alsa
                     %base-packages))
 
    ;; Below is the list of system services.  To search for available
@@ -108,6 +110,7 @@
                  (list network-manager-openvpn))))
       (service wpa-supplicant-service-type) ;; Needed by NetworkManager
       (service modem-manager-service-type)  ;; For cellular modems
+      (dbus-service #:services (list bluez-alsa))
       (service bluetooth-service-type
                (bluetooth-configuration
                 (auto-enable? #t)))
