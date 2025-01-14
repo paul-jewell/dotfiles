@@ -8,6 +8,7 @@
   #:use-module (guix gexp)
   #:use-module (nongnu packages mozilla)
   #:use-module (saayix packages text-editors)
+  #:use-module (saayix packages fonts)
   #:export (home-desktop-service-type))
 
 (use-package-modules compression curl fonts freedesktop gimp glib gnome gnome-xyz
@@ -60,7 +61,8 @@
         font-google-noto-emoji
         font-liberation
         font-awesome
-
+        font-nerd-fira-code
+        
         ;; Browsers
         (specification->package "qtwayland@5")
         ;;qutebrowser
