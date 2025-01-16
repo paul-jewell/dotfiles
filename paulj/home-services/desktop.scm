@@ -4,6 +4,8 @@
   #:use-module (gnu home services)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnome-xyz)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (nongnu packages mozilla)
@@ -50,6 +52,7 @@
         gnome-themes-extra
         adwaita-icon-theme
         hicolor-icon-theme
+        yaru-theme
 
         ;; Fonts
         font-jost
@@ -62,6 +65,7 @@
         font-liberation
         font-awesome
         font-nerd-fira-code
+        font-ibm-plex
         
         ;; Browsers
         (specification->package "qtwayland@5")
