@@ -42,17 +42,15 @@ set $right l
 #.....Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-set $foot_cmd foot -f "JetBrains Mono:size=14"
-set $emacs_frame_cmd $foot_cmd emacsclient -a '' -t
-
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+x exit
 bindsym $mod+Shift+r reload
-bindsym $mod+Shift+e exec $emacs_frame_cmd
-bindsym $mod+Shift+Return exec $foot_cmd
 
 bindsym $mod+h focus left
 bindsym $mod+l focus right
+
+bindsym $mod+$left focus left
+bindsym $mod+$right focus right
 
 #.....Move workspace to display
 bindsym $mod+Mod1+$left move workspace to output left
