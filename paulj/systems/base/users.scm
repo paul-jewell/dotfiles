@@ -11,4 +11,4 @@
    (comment "Paul Jewell")
    (group "users")
    (home-directory "/home/paul")
-   (supplementary-groups '("wheel" "netdev" "lp" "audio" "video"))))
+   (supplementary-groups '("wheel" "netdev" "lp" "audio" "video" "plugdev"))))

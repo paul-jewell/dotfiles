@@ -13,8 +13,14 @@
                      networking wm fonts libusb cups freedesktop file-systems
                      version-control package-management sync vim)
 
+;(define %greetd-conf (string-append "/home/paul/.config/sway/sway-greetd.conf"))
 
-(define %greetd-conf (string-append "/home/paul/.config/sway/sway-greetd.conf"))
+(define %greetd-conf (local-file "../files/sway-greetd.conf"
+                                 #:recursive? #t))
+
+; udev rules required to access the microcontroller programmers
+; attached to a USB port
+(define %probe-rs-udev-rules (local-file "../files/69-probe-rs.rules"))
 
 (define* (system-config #:key system home)
   (operating-system
@@ -77,8 +83,7 @@
                    (default-session-command
                      (greetd-wlgreet-sway-session
                       (sway-configuration
-                       (local-file %greetd-conf
-                                   #:recursive? #t)))))
+                       %greetd-conf))))
                   
                   (greetd-terminal-configuration (terminal-vt "2"))
                   (greetd-terminal-configuration (terminal-vt "3"))))))
@@ -165,6 +170,10 @@
       ;; Add udev rules for a few packages
       (udev-rules-service 'pipewire-add-udev-rules pipewire)
       (udev-rules-service 'brightnessctl-udev-rules brightnessctl)
+      (udev-rules-service 'probe-rs-udev-rules
+                          %probe-rs-udev-rules
+                          #:groups '("plugdev"))
+      
       ;; Schedule cron jobs for system tasks
       (simple-service 'system-cron-jobs
                       mcron-service-type
