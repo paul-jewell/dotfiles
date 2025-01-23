@@ -83,6 +83,7 @@
    
    ;; Support programs
    hunspell
+   hunspell-dict-en-gb
    ))
 
 (define home-emacs-config-service-type

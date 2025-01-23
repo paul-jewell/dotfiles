@@ -49,9 +49,6 @@ bindsym $mod+Shift+r reload
 bindsym $mod+h focus left
 bindsym $mod+l focus right
 
-bindsym $mod+$left focus left
-bindsym $mod+$right focus right
-
 #.....Move workspace to display
 bindsym $mod+Mod1+$left move workspace to output left
 bindsym $mod+Mod1+$right move workspace to output right
