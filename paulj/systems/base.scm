@@ -20,7 +20,7 @@
 
 ; udev rules required to access the microcontroller programmers
 ; attached to a USB port
-(define %probe-rs-udev-rules (udev-rule "69-probe-rs.rules" (local-file "../files/69-probe-rs.rules")))
+(define %probe-rs-udev-rules (file->udev-rule "69-probe-rs.rules" (local-file "../files/69-probe-rs.rules")))
 
 (define* (system-config #:key system home)
   (operating-system
