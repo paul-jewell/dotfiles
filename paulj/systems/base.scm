@@ -18,8 +18,7 @@
 (define %greetd-conf (local-file "../files/sway-greetd.conf"
                                  #:recursive? #t))
 
-; udev rules required to access the microcontroller programmers
-; attached to a USB port
+; udev rules required to access the microcontroller programmers attached to a USB port
 (define %probe-rs-udev-rules (file->udev-rule "69-probe-rs.rules" (local-file "../files/69-probe-rs.rules")))
 
 (define* (system-config #:key system home)
