@@ -4,11 +4,13 @@
   #:use-module (gnu home services)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages calendar)
+  #:use-module (saayix packages file-managers)
   #:export (home-cli-service-type))
 
 (define (home-cli-profile-service config)
   (list ripgrep
         khal
+        yazi
         bat))
 
 (define home-cli-service-type
