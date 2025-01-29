@@ -2006,7 +2006,21 @@ Watch John Wiegley using gnus - very impressive, so I want to explore further.
 (provide 'my-gnus)
 #+end_src
 * Matrix Client - Element
-ement.el - element client for matrix. Configuration following 
+ement.el - element client for matrix. Configuration following
+@daviwill approach - see video
+https://www.youtube.com/watch?v=KCmlupc9z34
+
+Official Ement.el chat on Matrix: #ement.el:matrix.org
+
+Instructions for use:
+In chat buffer:
+  ?         - Help screen with keymaps
+  s r       - Send response at point - insert emoji
+  r n       - Notifications (default|all-loud|all|mentions|none)
+  r T       - Tag rooms
+Orgmode composition format
+  c         - Composition mode toggle (org-mode | plain text)
+  s-<enter> - Reply to message under mark
 * RSS Feeds
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-rss.el :mkdirp t
 
