@@ -74,6 +74,7 @@ Emacs configuration.
 - [[#rainbow-delimiters][Rainbow Delimiters]]
 - [[#email---notmuch][email - notmuch]]
 - [[#gnus][GNUS]]
+- [[#matrix-client---element][Matrix Client - Element]]
 - [[#rss-feeds][RSS Feeds]]
 - [[#org-caldav][org-caldav]]
 - [[#helpful][Helpful]]
@@ -2004,6 +2005,8 @@ Watch John Wiegley using gnus - very impressive, so I want to explore further.
 ;; Not yet configured
 (provide 'my-gnus)
 #+end_src
+* Matrix Client - Element
+ement.el - element client for matrix. Configuration following 
 * RSS Feeds
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-rss.el :mkdirp t
 
