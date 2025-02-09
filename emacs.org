@@ -64,7 +64,6 @@ Emacs configuration.
 - [[#org-mode][Org-mode]]
 - [[#org-bullet-mode][Org Bullet mode]]
 - [[#org-roam][Org-roam]]
-- [[#auctex][Auctex]]
 - [[#reftex][Reftex]]
 - [[#hydra][Hydra]]
 - [[#magit][Magit]]
@@ -1618,45 +1617,61 @@ Note taking on steroids. Need to learn how to use it properly.
 ;; https://org-roam.readthedocs.io/en/master/installation/
 ;; and also the System Crafters videos on org-roam (from v2 onwards).
 
-(use-package org-roam
-  :init
-  (setq org-roam-v2-ack t) ;; Silence version 2 update message  
-  :custom
-  (org-roam-db-location *pj/org-roam-db-location*)
-  (org-roam-directory *pj/org-roam-directory*)
-  (org-roam-completion-everywhere t)
-  (org-roam-capture-templates
-   '(("d" "default" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n")
-      :unnarrowed t)
-     ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project\n#+date: %U")
-      :unnarrowed t)))
-;;  (org-roam-dailies-capture-templates
-;;   '(("d" "default" entry "* %<%I:%M %p>: %?"
-;;      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>an"))))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n j" . org-roam-dailies-capture-today)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n c" . org-roam-capture)
-         :map org-mode-map
-         ("C-M-i"   . completion-at-point)
-         :map org-roam-dailies-map
-         ("Y" . org-roam-dailies-capture-yesterday)
-         ("T" . org-roam-dailies-capture-tomorrow))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-  :config
-  (require 'org-roam-dailies) ;; ensure the keymap is available
-  (org-roam-db-autosync-mode))
+ (use-package org-roam
+   :init
+   (setq org-roam-v2-ack t) ;; Silence version 2 update message
+   :custom
+   (org-roam-db-location *pj/org-roam-db-location*)
+   (org-roam-directory *pj/org-roam-directory*)
+   (org-roam-completion-everywhere t)
+;;   (org-roam-capture-templates
+;;    '(("d" "default" plain
+;;       "%?"
+;;       :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n")
+;;       :unnarrowed t)
+;;      ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+;;       :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project\n#+date: %U")
+;;       :unnarrowed t)))
+;; ;;  (org-roam-dailies-capture-templates
+;; ;;   '(("d" "default" entry "* %<%I:%M %p>: %?"
+;; ;;      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>an"))))
+   :bind (("C-c n l" . org-roam-buffer-toggle)
+          ("C-c n f" . org-roam-node-find)
+          ("C-c n i" . org-roam-node-insert)
+          ("C-c n j" . org-roam-dailies-capture-today)
+          ("C-c n g" . org-roam-graph)
+          ("C-c n c" . org-roam-capture)
+          :map org-mode-map
+          ("C-M-i"   . completion-at-point)
+          :map org-roam-dailies-map
+          ("Y" . org-roam-dailies-capture-yesterday)
+          ("T" . org-roam-dailies-capture-tomorrow))
+   :bind-keymap
+   ("C-c n d" . org-roam-dailies-map)
+   :config
+   (require 'org-roam-dailies) ;; ensure the keymap is available
+   (org-roam-db-autosync-mode))
+
+;;  (use-package org-roam
+;;    :init
+;;    (setq org-roam-v2-ack t)
+;;    :custom
+;;    (org-roam-db-location *pj/org-roam-db-location*)
+;;    (org-roam-directory *pj/org-roam-directory*)
+;;    (org-roam-completion-everywhere t)
+
+;;    :config
+;; ;   (setq org-roam-database-connector 'sqlite-builtin)
+;;    (org-roam-db-autosync-mode))
 
 (provide 'my-orgmode)
 #+end_src
 
-* Auctex
+#+results:
+: my-orgmode
+
+*
+Auctex
 TODO: Check the function of this. I want to write my book, and this
 will be usefull for managing references.
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-text-tools.el :mkdirp t
