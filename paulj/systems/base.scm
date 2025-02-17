@@ -77,6 +77,7 @@
                 (terminals
                  (list
                   (greetd-terminal-configuration
+                   (extra-shephard-requirement '(seatd))
                    (terminal-vt "1")
                    (terminal-switch #t)
                    (default-session-command
