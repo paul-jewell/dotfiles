@@ -24,13 +24,11 @@ HISTFILESIZE=10000000
 
 EDITOR=/usr/bin/emacsclient
 alias bbb="ssh paul@navigator"
-alias vim=nvim
 alias sbcl="rlwrap sbcl"
 alias nextcloud-ssh="ssh -p7264 10.1.1.13"
 alias ls=eza
 alias ll="eza -l -g --icons"
 alias lla="ll -a"
-alias cat=bat
 export SCIPY_PIL_IMAGE_VIEWER=display
 
 PATH="/home/paul/perl5/bin${PATH:+:${PATH}}"
