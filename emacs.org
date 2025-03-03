@@ -583,7 +583,7 @@ Currently trialing Prot's themes from his ef-themes package
         ef-themes-variable-pitch-ui t) ; Use variable pitch for all UI elements
   ;; Disable all other themese to avoid blending
   (mapc #'disable-theme custom-enabled-themes)
-  (load-theme 'ef-dark :no-confirm))
+  (load-theme 'ef-light :no-confirm))
 #+end_src
 * Fonts
 Using the fontaine package from Prot. Font sizes are calculated from
