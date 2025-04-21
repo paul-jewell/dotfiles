@@ -58,6 +58,8 @@ Emacs configuration.
   - [[#haskell][Haskell]]
   - [[#nix][nix]]
   - [[#yaml-mode][yaml mode]]
+  - [[#perl--rakudo][perl / rakudo]]
+  - [[#close-my-programmingel][Close my-programming.el]]
 - [[#erc][ERC]]
 - [[#yasnippet][yasnippet]]
 - [[#multiple-cursors][Multiple Cursors]]
@@ -1345,6 +1347,29 @@ is wonderful.
 
   (use-package yaml-mode)
 
+#+end_src
+** perl / rakudo
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
+;;================================================================================
+;;.....perl / rakudo mode
+;;     ==================
+
+(use-package raku-mode)
+(use-package perl-ts-mode)
+(add-to-list 'treesit-language-source-alist
+	     '(perl . ("https://github.com/tree-sitter-perl/tree-sitter-perl" "release")))
+(add-to-list 'treesit-language-source-alist
+	     '(pod . ("https://github.com/tree-sitter-perl/tree-sitter-pod" "release")))
+(treesit-install-language-grammar 'perl)
+(treesit-install-language-grammar 'pod)
+
+
+
+#+end_src
+
+** Close my-programming.el
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
+;; This must be the last statement in the file...
 (provide 'my-programming)
 #+end_src
 * ERC
