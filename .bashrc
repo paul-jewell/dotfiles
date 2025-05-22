@@ -31,7 +31,7 @@ alias ll="eza -l -g --icons"
 alias lla="ll -a"
 export SCIPY_PIL_IMAGE_VIEWER=display
 
-PATH="/home/paul/perl5/bin${PATH:+:${PATH}}"
+PATH="/home/paul/go/bin:/home/paul/perl5/bin${PATH:+:${PATH}}"
 export PATH
 PERL5LIB="/home/paul/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"
 export PERL5LIB
