@@ -1125,8 +1125,34 @@ works. TODO: Needs to be revisited.
 ** Go
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp
 (use-package go-mode
-  )
-
+  :mode "\\.go\\'"
+  :preface
+  (defun vd/go-lsp-start()
+    (define-key go-ts-mode-map
+                ["RET"] 'newline-and-indent)
+    (define-key go-ts-mode-map
+                ["M-RET"] 'newline)
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t)
+    (lsp-deferred))
+  :hook
+  (go-ts-mode . vd/go-lsp-start)
+  :custom
+  (go-ts-mode-indent-offset 4)
+  :config
+  ;;(add-to-list 'exec-path "~/.local/bin")
+  (setq lsp-go-analyses '((nilness . t)
+                          (shadow . t)
+                          (unusedwrite . t)
+                          (fieldalignment . t))
+        lsp-go-codelenses '((test . t)
+                            (tidy . t)
+                            (upgrade_dependency . t)
+                            (vendor . t)
+                            (run_govulncheck . t)
+                            )))
+(use-package go-tag)
+(use-package godoctor)
 #+end_src
 ** Rust
 Started learning rust. This config snippet is copied from elsewhere,
