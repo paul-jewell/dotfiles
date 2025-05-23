@@ -46,6 +46,7 @@ Emacs configuration.
 - [[#lsp-mode][LSP mode]]
 - [[#programming-configuration][Programming Configuration]]
   - [[#c][C++]]
+  - [[#go][Go]]
   - [[#rust][Rust]]
   - [[#javascript-and-html][Javascript and HTML]]
   - [[#clojure][Clojure]]
@@ -1046,6 +1047,7 @@ Still learning about this, so this is quite fluid.
     '(c-mode . c-ts-mode)
     (c++-mode . c++-ts-mode)
     (c-or-c++-mode . c-or-c++-ts-mode)
+    (go-mode . go-ts-mode)
     (css-mode . css-ts-mode)
     (java-mode . java-ts-mode)
     (javascript-mode . js-ts-mode)
@@ -1119,6 +1121,12 @@ works. TODO: Needs to be revisited.
 #+end_src
 
 
+** Go
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp
+(use-package go-mode
+  )
+
+#+end_src
 ** Rust
 Started learning rust. This config snippet is copied from elsewhere,
 but seems to work at the moment.
