@@ -33,6 +33,7 @@ export SCIPY_PIL_IMAGE_VIEWER=display
 
 GOPATH=/home/paul/go
 
+export GOPATH
 PATH="$GOPATH/bin:/home/paul/perl5/bin${PATH:+:${PATH}}"
 export PATH
 PERL5LIB="/home/paul/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"
@@ -46,6 +47,8 @@ export PERL_MM_OPT
 # Ensure gpg uses the correct key for decrypting passwords, without asking for the yubikey
 # This is currently not working - pass still asks for the yubikey...
 # export PASSWORD_STORE_GPG_OPTS="--default-key 32089A9C90EAF4BB"
+
+export LESSCOLORIZER='bat --style=full --theme=gruvbox-light'
 
 eval "$(starship init bash)"
 # Use fish in place of bash
