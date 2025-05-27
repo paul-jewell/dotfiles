@@ -1085,7 +1085,9 @@ eglot configuration for lsp mode functionality.
     ;; assuming you have the respective LSP server installed.
     :hook ((web-mode . eglot-ensure)
            (rust-mode . eglot-ensure)
-           (rust-ts-mode . eglot-ensure))
+           (rust-ts-mode . eglot-ensure)
+           (go-mode . eglot-ensure)
+           (go-ts-mode . eglot-ensure))
     :config
     ;; You can configure additional LSP servers by modifying
     ;; `eglot-server-programs'. The following tells eglot to use TypeScript
