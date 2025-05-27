@@ -1103,6 +1103,10 @@ eglot configuration for lsp mode functionality.
     (setq completion-category-overrides '((eglot (styles orderless))
                                           (eglot-capf (styles orderless)))))
 
+(defun eglot-format-buffer-before-save ()
+  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+(add-hook 'go-mode-hook #'eglot-format-buffer-before-save)
+
 (provide 'my-lsp)
 #+end_src
 
