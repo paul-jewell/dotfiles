@@ -174,7 +174,10 @@ TODO: Complete the breakdown and documentation in this file.
 
 (defvar *pj/org-directory* (car org-agenda-files))
 (defvar *pj/org-default-notes-file* (concat (file-name-as-directory *pj/org-directory*) "diary.org.gpg"))
-(defvar *pj/org-default-refile-file* (concat (file-name-as-directory *pj/org-directory*) "refile.org"))
+(defvar *pj/org-default-refile-file*
+  (concat (file-name-as-directory *pj/org-directory*) "refile.org"))
+(defvar *pj/org-default-idea-file*
+  (concat (file-name-as-directory *pj/org-directory*) "ideas.org"))
 
 (defun pj/uuidgen ()
   "Generate a UUID for the ID Property of each task."
@@ -192,6 +195,14 @@ TODO: Complete the breakdown and documentation in this file.
 :PROPERTIES:
 :ID:    %(pj/uuidgen):CREATED: %U\n%a
 :END:" :prepend t :clock-in t :clock-resume t)
+
+          ;; Someday/Maybe projects and ideas  
+          ("i" "idea" entry (file *pj/org-default-idea-file*)
+           "* %?
+:PROPERTIES:
+:ID %(pj/uuidgen)
+:CREATED: %U
+:END:")
           
           ("n" "note" entry (file *pj/org-default-refile-file*)
            "* %? :NOTE:\n
@@ -363,6 +374,8 @@ TODO: Complete the breakdown and documentation in this file.
                             (org-tags-match-list-sublevels nil)
                             (org-agenda-todo-ignore-scheduled pj/hide-scheduled-and-waiting-next-tasks)
                             (org-agenda-todo-ignore-deadlines pj/hide-scheduled-and-waiting-next-tasks)))
+                (tags "idea"                      ((org-agenda-overriding-header "SomeDay/Maybe")
+                       ))
                 (tags "-REFILE/"
                       ((org-agenda-overriding-header "Tasks to Archive")
                        (org-agenda-skip-function 'pj/skip-non-archivable-tasks)
