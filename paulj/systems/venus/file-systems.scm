@@ -2,22 +2,22 @@
   #:use-module (gnu system file-systems)
   #:export (%btrfs-file-systems))
 
-(define guix-pool-part
-  (file-system-label "guix-pool"))
+(define pool-partition
+  (file-system-label "pool"))
   
-(define guix-boot-part
+(define boot-partition
   (file-system-label "guix-boot"))
 
 (define root
   (file-system
-   (device guix-pool-part)
+   (device pool-partition)
    (mount-point "/")
    (type "btrfs")
    (options "subvol=@root,ssd")))
 
 (define gnu
   (file-system
-   (device guix-pool-part)
+   (device pool-partition)
    (mount-point "/gnu")
    (type "btrfs")
    (flags '(no-atime))
@@ -26,7 +26,7 @@
 
 (define var-log
   (file-system
-   (device guix-pool-part)
+   (device pool-partition)
    (mount-point "/var/log")
    (type "btrfs")
    (flags '(no-atime))
@@ -35,14 +35,14 @@
 
 (define home
   (file-system
-   (device guix-pool-part)
+   (device pool-partition)
    (mount-point "/home")
    (type "btrfs")
    (options "subvol=@home")))
 
 (define boot
   (file-system
-   (device guix-boot-part)
+   (device boot-partition)
    (mount-point "/boot/efi")
    (check? #f)
    (type "vfat")))
