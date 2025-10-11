@@ -2,22 +2,28 @@
   #:use-module (gnu system file-systems)
   #:export (%btrfs-file-systems))
 
-(define pool-partition
-  (file-system-label "pool"))
-  
 (define boot-partition
   (file-system-label "guix-boot"))
 
+# TODO: Add source name
+(define venus-mapped-devices
+  (list
+    (mapped-device 
+      (source ())
+      (target "enc")
+      (type luks-device-mapping))))
+
 (define root
   (file-system
-   (device pool-partition)
+   (device "/dev/mapper/enc")
    (mount-point "/")
    (type "btrfs")
+   (needed-for-boot? #t)
    (options "subvol=@root,ssd")))
 
 (define gnu
   (file-system
-   (device pool-partition)
+   (device "/dev/mapper/enc")
    (mount-point "/gnu")
    (type "btrfs")
    (flags '(no-atime))
@@ -26,7 +32,7 @@
 
 (define var-log
   (file-system
-   (device pool-partition)
+   (device "/dev/mapper/enc")
    (mount-point "/var/log")
    (type "btrfs")
    (flags '(no-atime))
@@ -35,10 +41,17 @@
 
 (define home
   (file-system
-   (device pool-partition)
+   (device "/dev/mapper/enc")
    (mount-point "/home")
    (type "btrfs")
    (options "subvol=@home")))
+
+(define swap
+  (file-system
+    (device "/dev/mapper/enc")
+    (mount-point "/swap")
+    (type "btrfs")
+    (options "subvol=@swap")))
 
 (define boot
   (file-system
@@ -53,6 +66,7 @@
          var-log
          home
          boot
+         swap
          (delete %debug-file-system
                  %base-file-systems)))
 

@@ -51,7 +51,7 @@
   
   (swap-devices
    (list
-    (swap-space (target (file-system-label "guix-swap")))))
+    (swap-space (target "/swap/swapfile"))))
 
   (file-systems %btrfs-file-systems)
   (services (list))))
