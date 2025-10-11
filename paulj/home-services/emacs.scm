@@ -36,7 +36,7 @@
    emacs-marginalia
    emacs-markdown-mode
    emacs-multiple-cursors
-   emacs-nix-mode
+;;   emacs-nix-mode
    emacs-no-littering
    emacs-orderless
    ;;emacs-quelpa-use-package

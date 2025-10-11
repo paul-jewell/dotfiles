@@ -4,7 +4,7 @@
   #:export (%btrfs-file-systems))
 
 (define boot-partition
-  (file-system-label "guix-boot"))
+  (file-system-label "boot-part"))
 
 (define venus-mapped-devices
   (list
