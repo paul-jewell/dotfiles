@@ -19,7 +19,7 @@
    (mount-point "/")
    (type "btrfs")
    (needed-for-boot? #t)
-   (options "subvol=@root,ssd")))
+   (options "subvol=@,ssd")))
 
 (define gnu
   (file-system
