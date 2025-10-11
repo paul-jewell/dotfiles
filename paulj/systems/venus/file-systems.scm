@@ -5,11 +5,10 @@
 (define boot-partition
   (file-system-label "guix-boot"))
 
-# TODO: Add source name
 (define venus-mapped-devices
   (list
     (mapped-device 
-      (source ())
+      (source "/dev/nvme0n1p2")
       (target "enc")
       (type luks-device-mapping))))
 
