@@ -6,6 +6,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnome-xyz)
   #:use-module (gnu packages fonts)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (nongnu packages mozilla)
@@ -27,7 +28,7 @@
         wl-clipboard
         mako
         foot
-        firefox
+;        firefox
         alacritty
         helix
         gammastep
@@ -81,7 +82,6 @@
         ;; Audio devices and media playback
         mpv
         mpv-mpris
-        youtube-dl
         playerctl
         gstreamer
         gst-plugins-base

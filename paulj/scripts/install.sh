@@ -1,5 +1,5 @@
 scp -r paul@10.1.1.112:~/tmp/dotfiles .
-cryptsetup luksFormat --type luks1 /dev/nvme0n1p2 --label guix-root
+cryptsetup luksFormat --type luks1 /dev/nvme0n1p2
 cryptsetup luksOpen /dev/nvme0n1p2 enc
 mkfs.btrfs /dev/mapper/enc
 mkdir /mnt/ssd && mount /dev/mapper/enc /mnt/ssd

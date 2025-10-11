@@ -41,7 +41,7 @@
                     gvfs
                     stow
                     vim
-                    nextcloud-client
+ ;;                   nextcloud-client
                     bluez
                     bluez-alsa
                     %base-packages))

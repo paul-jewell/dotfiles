@@ -1,5 +1,6 @@
 (define-module (paulj systems venus file-systems)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system mapped-devices)
   #:export (%btrfs-file-systems))
 
 (define boot-partition

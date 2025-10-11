@@ -55,11 +55,11 @@
    emacs-cfrs
    emacs-cider
    emacs-clojure-mode
-   emacs-compat
+;;   emacs-compat
    emacs-consult
-   emacs-dash
+;;   emacs-dash
    emacs-embark
-   emacs-f
+;;   emacs-f
    emacs-ht
    emacs-hydra
    ;; emacs-ly
@@ -73,7 +73,7 @@
    emacs-posframe
    ;; emacs-quelpa
    emacs-queue
-   emacs-s
+;;   emacs-s
    emacs-sesman
    emacs-shrink-path
    emacs-slime
