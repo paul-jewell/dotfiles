@@ -21,7 +21,7 @@
    (type "btrfs")
    (needed-for-boot? #t)
    (dependencies %venus-mapped-devices)
-   (options "subvol=@root,ssd")))
+   (options "subvol=@,ssd")))
 
 (define gnu
   (file-system
