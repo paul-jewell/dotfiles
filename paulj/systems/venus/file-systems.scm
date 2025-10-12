@@ -1,6 +1,7 @@
 (define-module (paulj systems venus file-systems)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
+  #:use-module (ice-9 match)
   #:export (%btrfs-file-systems))
 
 (define boot-partition
@@ -25,7 +26,7 @@
          ((subvol . mount-point)
           (file-system
             (type "btrfs")
-            (device = "/dev/mapper/enc")
+            (device "/dev/mapper/enc")
             (mount-point mount-point)
             (options (format #f "subvol=~a" subvol))
             (dependencies venus-mapped-devices))))
