@@ -27,9 +27,9 @@
  (home-environment
   (services (cons*
              (service home-x270-service-type)
-             (service home-desktop-service-type) ;; Graphical desktop service
-             (service home-pipewire-service-type)
-             (service home-finance-service-type)
+  ;;           (service home-desktop-service-type) ;; Graphical desktop service
+  ;;           (service home-pipewire-service-type)
+  ;;           (service home-finance-service-type)
 ;;             (service home-video-service-type)
              common-home-services)))
  
@@ -48,7 +48,9 @@
                (bootloader grub-efi-bootloader)
                (targets '("/boot/efi"))
                (keyboard-layout keyboard-layout)))
-  
+
+  (mapped-devices venus-mapped-devices)
+ 
   (swap-devices
    (list
     (swap-space (target "/swap/swapfile"))))
