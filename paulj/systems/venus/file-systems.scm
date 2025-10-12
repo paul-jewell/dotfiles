@@ -1,12 +1,13 @@
 (define-module (paulj systems venus file-systems)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
-  #:export (%btrfs-file-systems))
+  #:export (%btrfs-file-systems)
+  #:export (%venus-mapped-devices))
 
 (define boot-partition
   (file-system-label "boot-part"))
 
-(define venus-mapped-devices
+(define %venus-mapped-devices
   (list
     (mapped-device 
       (source "/dev/nvme0n1p2")

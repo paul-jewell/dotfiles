@@ -53,5 +53,7 @@
    (list
     (swap-space (target "/swap/swapfile"))))
 
+  (mapped-devices %venus-mapped-devices)
+
   (file-systems %btrfs-file-systems)
   (services (list))))
