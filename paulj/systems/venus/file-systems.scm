@@ -10,7 +10,7 @@
 (define %venus-mapped-devices
   (list
     (mapped-device 
-      (source "/dev/nvme0n1p2")
+      (source (uuid "cdd85826-8f57-4f6d-b38f-077bb46a73df"))
       (target "enc")
       (type luks-device-mapping))))
 
@@ -20,6 +20,7 @@
    (mount-point "/")
    (type "btrfs")
    (needed-for-boot? #t)
+   (dependencies %venus-mapped-devices)
    (options "subvol=@root,ssd")))
 
 (define gnu
@@ -29,6 +30,7 @@
    (type "btrfs")
    (flags '(no-atime))
    (needed-for-boot? #t)
+   (dependencies %venus-mapped-devices)
    (options "subvol=@gnu,compress=zstd,ssd")))
 
 (define var-log
@@ -38,6 +40,7 @@
    (type "btrfs")
    (flags '(no-atime))
    (needed-for-boot? #t)
+   (dependencies %venus-mapped-devices)
    (options "subvol=@log,compress=zstd,ssd")))
 
 (define home
@@ -45,14 +48,16 @@
    (device "/dev/mapper/enc")
    (mount-point "/home")
    (type "btrfs")
+   (dependencies %venus-mapped-devices)
    (options "subvol=@home")))
 
 (define swap
   (file-system
-    (device "/dev/mapper/enc")
-    (mount-point "/swap")
-    (type "btrfs")
-    (options "subvol=@swap")))
+   (device "/dev/mapper/enc")
+   (mount-point "/swap")
+   (type "btrfs")
+   (dependencies %venus-mapped-devices)
+   (options "subvol=@swap")))
 
 (define boot
   (file-system
