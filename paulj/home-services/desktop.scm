@@ -28,7 +28,7 @@
         wl-clipboard
         mako
         foot
-        firefox
+;;        firefox
         alacritty
         helix
         gammastep
