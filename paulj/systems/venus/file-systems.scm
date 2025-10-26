@@ -10,7 +10,7 @@
 (define %venus-mapped-devices
   (list
     (mapped-device 
-      (source (uuid "cdd85826-8f57-4f6d-b38f-077bb46a73df"))
+      (source (uuid "9982ece8-47e6-42f5-a352-4fd01f1c2561"))
       (target "enc")
       (type luks-device-mapping))))
 

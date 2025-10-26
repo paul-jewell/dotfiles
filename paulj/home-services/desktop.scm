@@ -28,7 +28,7 @@
         wl-clipboard
         mako
         foot
-;        firefox
+        firefox
         alacritty
         helix
         gammastep
@@ -69,7 +69,7 @@
         font-ibm-plex
         
         ;; Browsers
-        (specification->package "qtwayland@5")
+;;        (specification->package "qtwayland@5")
         ;;qutebrowser
         ;;vimb
         nyxt
@@ -93,7 +93,7 @@
         pavucontrol
 
         ;; Graphics
-        gimp-next
+        gimp-3
 
         ;; PDF reader
         zathura

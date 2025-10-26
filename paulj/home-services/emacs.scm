@@ -1,6 +1,7 @@
 (define-module (paulj home-services emacs)
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-build)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages mail)
@@ -55,14 +56,12 @@
    emacs-cfrs
    emacs-cider
    emacs-clojure-mode
-;;   emacs-compat
    emacs-consult
-;;   emacs-dash
+   emacs-dash
    emacs-embark
-;;   emacs-f
+   emacs-f
    emacs-ht
    emacs-hydra
-   ;; emacs-ly
    emacs-macrostep
    emacs-magit
    emacs-nerd-icons
@@ -71,9 +70,8 @@
    emacs-pfuture
    emacs-popup
    emacs-posframe
-   ;; emacs-quelpa
    emacs-queue
-;;   emacs-s
+   emacs-s
    emacs-sesman
    emacs-shrink-path
    emacs-slime
