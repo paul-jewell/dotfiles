@@ -11,6 +11,7 @@
   #:use-module (guix gexp)
   #:use-module (nongnu packages mozilla)
   #:use-module (saayix packages text-editors)
+  #:use-module (saayix packages terminals)
   #:use-module (saayix packages fonts)
   #:export (home-desktop-service-type))
 
@@ -28,8 +29,9 @@
         wl-clipboard
         mako
         foot
-;;        firefox
+        firefox
         alacritty
+        ghostty
         helix
         gammastep
         grimshot ;; grimshot --notify copy area
