@@ -1315,9 +1315,10 @@ additions and changes.
 #+begin_src emacs-lisp
 (use-package geiser
   :config
-  (setq geiser-guile-binary "/usr/bin/guile-3.0"))
+  (setq geiser-default-implementation 'guile))
 
-(use-package geiser-guile)
+(use-package geiser-guile
+  :after geiser)
   
 #+end_src
 ** lua
@@ -1428,7 +1429,6 @@ Developed from bbatsov's code on his github.
 ;; thank you bbatsov - for sharing your code for ERC config.
 
 (require 'erc)
-(require 'erc-log)
 (require 'erc-notify)
 (require 'erc-spelling)
 (require 'erc-autoaway)
@@ -1448,7 +1448,7 @@ Developed from bbatsov's code on his github.
                                      "#rust"
                            ;;          "#clojure"
                                      "#haskell"
-                           ;;          "#debian"
+                                     "#debian"
                                      "#scheme"
                                      "#guix"
                                      "#nonguix"
