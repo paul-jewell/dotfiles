@@ -969,7 +969,7 @@ small delay.
   ;; Spell checker.
 
   (require 'ispell)
-  (setenv "LANG" "en_GB")
+  (setenv "LANG" "en_GB.utf8")
   (setq ispell-program-name "hunspell")
   (if (string= system-type "windows-nt")
       (setq ispell-hunspell-dict-paths-alist
