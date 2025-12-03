@@ -48,10 +48,15 @@
                (bootloader grub-efi-bootloader)
                (targets '("/boot/efi"))
                (keyboard-layout keyboard-layout)))
+
+  (file-systems %btrfs-file-systems)
   
   (swap-devices
    (list
-    (swap-space (target (file-system-label "guix-swap")))))
+    (swap-space
+     (target "/swap/swapfile")
+     (dependencies file-systems))))
 
-  (file-systems %btrfs-file-systems)
-  (services (list))))
+  (mapped-devices %venus-mapped-devices)
+
+ (services (list))))

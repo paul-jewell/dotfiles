@@ -6,10 +6,12 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnome-xyz)
   #:use-module (gnu packages fonts)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (nongnu packages mozilla)
   #:use-module (saayix packages text-editors)
+  #:use-module (saayix packages terminals)
   #:use-module (saayix packages fonts)
   #:export (home-desktop-service-type))
 
@@ -29,6 +31,7 @@
         foot
         firefox
         alacritty
+        ghostty
         helix
         gammastep
         grimshot ;; grimshot --notify copy area
@@ -68,7 +71,7 @@
         font-ibm-plex
         
         ;; Browsers
-        (specification->package "qtwayland@5")
+;;        (specification->package "qtwayland@5")
         ;;qutebrowser
         ;;vimb
         nyxt
@@ -81,7 +84,6 @@
         ;; Audio devices and media playback
         mpv
         mpv-mpris
-        youtube-dl
         playerctl
         gstreamer
         gst-plugins-base
@@ -93,7 +95,7 @@
         pavucontrol
 
         ;; Graphics
-        gimp-next
+        gimp-3
 
         ;; PDF reader
         zathura

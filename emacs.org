@@ -1091,7 +1091,9 @@ eglot configuration for lsp mode functionality.
     ;; assuming you have the respective LSP server installed.
     :hook ((web-mode . eglot-ensure)
            (rust-mode . eglot-ensure)
-           (rust-ts-mode . eglot-ensure))
+           (rust-ts-mode . eglot-ensure)
+           (go-mode . eglot-ensure)
+           (go-ts-mode . eglot-ensure))
     :config
     ;; You can configure additional LSP servers by modifying
     ;; `eglot-server-programs'. The following tells eglot to use TypeScript
@@ -1106,6 +1108,10 @@ eglot configuration for lsp mode functionality.
     ;; use orderless for completion filtering
     (setq completion-category-overrides '((eglot (styles orderless))
                                           (eglot-capf (styles orderless)))))
+
+(defun eglot-format-buffer-before-save ()
+  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+(add-hook 'go-mode-hook #'eglot-format-buffer-before-save)
 
 (provide 'my-lsp)
 #+end_src
@@ -1130,35 +1136,41 @@ works. TODO: Needs to be revisited.
 
 ** Go
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp
-(use-package go-mode
-  :mode "\\.go\\'"
-  :preface
-  (defun vd/go-lsp-start()
-    (define-key go-ts-mode-map
-                ["RET"] 'newline-and-indent)
-    (define-key go-ts-mode-map
-                ["M-RET"] 'newline)
-    (add-hook 'before-save-hook #'lsp-format-buffer t t)
-    (add-hook 'before-save-hook #'lsp-organize-imports t t)
-    (lsp-deferred))
-  :hook
-  (go-ts-mode . vd/go-lsp-start)
-  :custom
-  (go-ts-mode-indent-offset 4)
+(use-package project)
+(defun project-find-go-module (dir)
+  (when-let ((root (locate-dominating-file dir "go.mod")))
+    (cons 'go-module root)))
+
+(cl-defmethod project-root ((project (head go-module)))
+  (cdr project))
+
+(add-hook 'project-find-functions #'project-find-go-module)
+
+
+
+(use-package go-ts-mode
+  :hook (go-ts-mode . eglot-ensure)
   :config
-  ;;(add-to-list 'exec-path "~/.local/bin")
-  (setq lsp-go-analyses '((nilness . t)
-                          (shadow . t)
-                          (unusedwrite . t)
-                          (fieldalignment . t))
-        lsp-go-codelenses '((test . t)
-                            (tidy . t)
-                            (upgrade_dependency . t)
-                            (vendor . t)
-                            (run_govulncheck . t)
-                            )))
-(use-package go-tag)
-(use-package godoctor)
+  (add-hook 'go-ts-mode-hook #'(lambda ()
+                                 (setq-local tab-width 4)))
+  (setq gofmt-command "goimports"))
+
+(setq-default eglot-workspace-configuration
+              '((:gopls .
+                        ((staticcheck . t)
+                         (matcher . "CaseSensitive")))))
+
+(add-hook 'before-save-hook
+          (lambda ()
+            (call-interactively 'eglot-code-action-organize-imports))
+          nil t)
+
+(use-package go-mode
+  :after go-ts-mode)
+
+(use-package gotest
+  :after go-ts-mode)
+
 #+end_src
 ** Rust
 Started learning rust. This config snippet is copied from elsewhere,
@@ -1310,10 +1322,11 @@ additions and changes.
 #./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package geiser
   :config
-  (setq geiser-guile-binary "/usr/bin/guile-3.0"))
+  (setq geiser-default-implementation 'guile))
 
-(use-package geiser-guile)
-
+(use-package geiser-guile
+  :after geiser)
+  
 #+end_src
 ** lua
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
@@ -1423,7 +1436,6 @@ Developed from bbatsov's code on his github.
 ;; thank you bbatsov - for sharing your code for ERC config.
 
 (require 'erc)
-(require 'erc-log)
 (require 'erc-notify)
 (require 'erc-spelling)
 (require 'erc-autoaway)
@@ -1443,7 +1455,7 @@ Developed from bbatsov's code on his github.
                                      "#rust"
                            ;;          "#clojure"
                                      "#haskell"
-                           ;;          "#debian"
+                                     "#debian"
                                      "#scheme"
                                      "#guix"
                                      "#nonguix"

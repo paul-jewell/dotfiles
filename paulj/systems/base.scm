@@ -21,6 +21,11 @@
 ; udev rules required to access the microcontroller programmers attached to a USB port
 (define %probe-rs-udev-rules (file->udev-rule "69-probe-rs.rules" (local-file "../files/69-probe-rs.rules")))
 
+(define %nonguix-key
+  (plain-file "nonguix.pub"
+              "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
+
+
 (define* (system-config #:key system home)
   (operating-system
    (inherit system)
@@ -53,7 +58,20 @@
      (modify-services %base-services
                       (delete login-service-type)
                       (delete mingetty-service-type)
-                      (delete console-font-service-type))
+                      (delete console-font-service-type)
+		                (guix-service-type config =>
+                                         (guix-configuration
+				                              (inherit config)
+					                           (substitute-urls
+				                               (append
+				                                (list "https://substitutes.nonguix.org")
+				                                %default-substitute-urls))
+					                           (authorized-keys
+                                           (append (list (plain-file "nonguix.pub"
+                                                                     "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
+                                           
+						                         %default-authorized-guix-keys)))))
+
      (operating-system-user-services system)
      (list
       ;; Set up my home configuration
