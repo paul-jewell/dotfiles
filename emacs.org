@@ -301,6 +301,12 @@ which operating system is running:
       (setq *pj/regular-font-size* 150)))
    ((string-prefix-p "isolde" (system-name))
     (progn
+      (setq *pj/load-site-gentoo* t)
+      (setq *pj/regular-font-size* 130)
+      (setq *pj/enable-email* t)))
+   ((string-prefix-p "neptune" (system-name))
+    (progn
+      (setq *pj/load-site-gentoo* t)
       (setq *pj/regular-font-size* 130)
       (setq *pj/enable-email* t)))
    ((string-prefix-p "pluto" (system-name))
@@ -1300,13 +1306,14 @@ quicklisp leads to the following:
 ** Guile
 Guile configuration from the Guile Hackers Manual, [[https://jeko.frama.io/en/emacs.html][here]], plus
 additions and changes.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
+#./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package geiser
   :config
   (setq geiser-guile-binary "/usr/bin/guile-3.0"))
 
 (use-package geiser-guile)
-  
+
 #+end_src
 ** lua
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
