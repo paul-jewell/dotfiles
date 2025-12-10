@@ -24,6 +24,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu system)

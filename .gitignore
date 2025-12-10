@@ -9,6 +9,9 @@
 .files/.emacs.d/*init.el
 .files/.emacs.d/pj-modules/*
 .files/.emacs.d/lisp/*
+.files/.emacs.d/elpa*
+.files/.emacs.d/quelpa*
+.files/.emacs.d/eln-cache
 
 .bin/sync-dotfiles
 .bin/update-profiles

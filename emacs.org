@@ -119,7 +119,7 @@ Recommended to have this at the top of the configuration files.
 Slightly adapted from code in Prot's configuration renamed for consistency.
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/early-init.el
 (defvar pj/emacs-tiling-wm-regexp
-  (regexp-opt '("xmonad" "i3"))
+  (regexp-opt '("xmonad" "i3"))  ;; TODO: Add other tiling managers...
   "Regular expression for tiling window managers.")
 
 (defmacro pj/emacs-with-desktop-session (&rest body)
@@ -301,6 +301,12 @@ which operating system is running:
       (setq *pj/regular-font-size* 150)))
    ((string-prefix-p "isolde" (system-name))
     (progn
+      (setq *pj/load-site-gentoo* t)
+      (setq *pj/regular-font-size* 130)
+      (setq *pj/enable-email* t)))
+   ((string-prefix-p "neptune" (system-name))
+    (progn
+      (setq *pj/load-site-gentoo* t)
       (setq *pj/regular-font-size* 130)
       (setq *pj/enable-email* t)))
    ((string-prefix-p "pluto" (system-name))
@@ -729,215 +735,216 @@ ssh connection to other machines.
 * Completion Frameworks
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-completion.el :mkdirp t
 
-  ;;; COMPLETION
-  (use-package vertico
-    :init
-    ;; Enable vertico using the vertico-flat-mode
-    (require 'vertico-directory)
-    (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
+    ;;; COMPLETION
+    (use-package vertico
+      :init
+      ;; Enable vertico using the vertico-flat-mode
+      (require 'vertico-directory)
+      (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
-    (use-package orderless
-      :commands (orderless)
-      :custom
-      (completion-styles '(orderless basic))
-      (completion-category-overrides '((file (styles partial-completion))
-                                       (ledger (styles basic)))))
+      (use-package orderless
+        :commands (orderless)
+        :custom
+        (completion-styles '(orderless basic))
+        (completion-category-overrides '((file (styles partial-completion))
+                                         (ledger (styles basic)))))
 
-    (use-package marginalia
-      :custom
-      (marginalia-annotators
-       '(marginalia-annotators-heavy marginalia-annotators-light nil))
+      (use-package marginalia
+        :custom
+        (marginalia-annotators
+         '(marginalia-annotators-heavy marginalia-annotators-light nil))
+        :config
+        (marginalia-mode))
+      (vertico-mode t)
       :config
-      (marginalia-mode))
-    (vertico-mode t)
-    :config
-    ;; Do not allow the cursor in the minibuffer prompt
-    (setq minibuffer-prompt-properties
-          '(read-only t cursor-intangible t face minibuffer-prompt))
-    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-    ;; Enable recursive minibuffers
-    (setq enable-recursive-minibuffers t))
-  ;;;; Extra Completion Functions
-  (use-package consult
-    :ensure t
-    :after vertico
-    :bind (("C-x b"       . consult-buffer)
-           ("C-x C-k C-k" . consult-kmacro)
-           ("M-y"         . consult-yank-pop)
-           ("M-g g"       . consult-goto-line)
-           ("M-g M-g"     . consult-goto-line)
-           ("M-g f"       . consult-flymake)
-           ("M-g i"       . consult-imenu)
-           ("M-s l"       . consult-line)
-           ("M-s L"       . consult-line-multi)
-           ("M-s u"       . consult-focus-lines)
-           ("M-s g"       . consult-ripgrep)
-           ("M-s M-g"     . consult-ripgrep)
-           ("C-x C-SPC"   . consult-global-mark)
-           ("C-x M-:"     . consult-complex-command)
-           ;; TODO: Identify new key chords for these two...
-           ;;         ("C-c n"       . consult-org-agenda)
-           ;;         ("C-c m"       . my/notegrep)
-           :map minibuffer-local-map
-           ("M-r" . consult-history))
-    :custom
-    (completion-in-region-function #'consult-completion-in-region)
-    :config
-    (defun my/notegrep ()
-      "Use interactive grepping to search my notes"
-      (interactive)
-      (consult-ripgrep org-directory))
-    (recentf-mode t))
+      ;; Do not allow the cursor in the minibuffer prompt
+      (setq minibuffer-prompt-properties
+            '(read-only t cursor-intangible t face minibuffer-prompt))
+      (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+      ;; Enable recursive minibuffers
+      (setq enable-recursive-minibuffers t))
+    ;;;; Extra Completion Functions
+    (use-package consult
+      :ensure t
+      :after vertico
+      :bind (("C-x b"       . consult-buffer)
+             ("C-x C-k C-k" . consult-kmacro)
+             ("M-y"         . consult-yank-pop)
+             ("M-g g"       . consult-goto-line)
+             ("M-g M-g"     . consult-goto-line)
+             ("M-g f"       . consult-flymake)
+             ("M-g i"       . consult-imenu)
+             ("M-s l"       . consult-line)
+             ("M-s L"       . consult-line-multi)
+             ("M-s u"       . consult-focus-lines)
+             ("M-s g"       . consult-ripgrep)
+             ("M-s M-g"     . consult-ripgrep)
+             ("C-x C-SPC"   . consult-global-mark)
+             ("C-x M-:"     . consult-complex-command)
+             ;; TODO: Identify new key chords for these two...
+             ;;         ("C-c n"       . consult-org-agenda)
+             ;;         ("C-c m"       . my/notegrep)
+             :map minibuffer-local-map
+             ("M-r" . consult-history))
+      :custom
+      (completion-in-region-function #'consult-completion-in-region)
+      :config
+      (defun my/notegrep ()
+        "Use interactive grepping to search my notes"
+        (interactive)
+        (consult-ripgrep org-directory))
+      (recentf-mode t))
 
-  (use-package consult-dir
-    :ensure t
-    :bind (("C-x C-j" . consult-dir)
-           ;; :map minibuffer-local-completion-map
-           :map vertico-map
-           ("C-x C-j" . consult-dir)))
+    (use-package consult-dir
+      :ensure t
+      :bind (("C-x C-j" . consult-dir)
+             ;; :map minibuffer-local-completion-map
+             :map vertico-map
+             ("C-x C-j" . consult-dir)))
 
-  (use-package consult-recoll
-    :ensure t
-    :bind (("M-s r" . consult-recoll))
-    :init
-    (setq consult-recoll-inline-snippets t)
-    :config
-    (defun recoll-index (&optional args)
-      "Start indexing deamon if there is not one running already.
-  This way our searches are kept up to date"
-      (interactive)
-      (let ((recollindex-buffer "*RECOLLINDEX*"))
-        (unless (process-live-p (get-buffer-process (get-buffer recollindex-buffer)))
-          (make-process :name "recollindex"
-                        :buffer recollindex-buffer
-                        :command '("recollindex" "-m" "-D")))))
-    (eval-after-load 'consult-recoll
-      (recoll-index)))
+    (use-package consult-recoll
+      :ensure t
+      :bind (("M-s r" . consult-recoll))
+      :init
+      (setq consult-recoll-inline-snippets t)
+      :config
+      (defun recoll-index (&optional args)
+        "Start indexing deamon if there is not one running already.
+    This way our searches are kept up to date"
+        (interactive)
+        (let ((recollindex-buffer "*RECOLLINDEX*"))
+          (unless (process-live-p (get-buffer-process (get-buffer recollindex-buffer)))
+            (make-process :name "recollindex"
+                          :buffer recollindex-buffer
+                          :command '("recollindex" "-m" "-D")))))
+      (eval-after-load 'consult-recoll
+        (recoll-index)))
 
-  (use-package embark
-    :bind
-    ;; pick some comfortable binding
-    (("C-="                     . embark-act)
-     ("C-<escape>"              . embark-act)
-     ([remap describe-bindings] . embark-bindings)
-     :map embark-file-map
-     ("C-d"                     . dragon-drop))
-    :custom
-    (embark-indicators
-     '(embark-highlight-indicator
-       embark-isearch-highlight-indicator
-       embark-minimal-indicator))
-    :init
-    ;; Optionally replace the key help with a completing-read interface
-    (setq prefix-help-command #'embark-prefix-help-command)
-    (setq embark-prompter 'embark-completing-read-prompter)
-    :config
-    (defun search-in-source-graph (text))
-    (defun dragon-drop (file)
-      (start-process-shell-command "dragon-drop" nil
-                                   (concat "dragon-drop " file)))
+    (use-package embark
+      :bind
+      ;; pick some comfortable binding
+      (("C-="                     . embark-act)
+       ("C-<escape>"              . embark-act)
+       ([remap describe-bindings] . embark-bindings)
+       :map embark-file-map
+       ("C-d"                     . dragon-drop))
+      :custom
+      (embark-indicators
+       '(embark-highlight-indicator
+         embark-isearch-highlight-indicator
+         embark-minimal-indicator))
+      :init
+      ;; Optionally replace the key help with a completing-read interface
+      (setq prefix-help-command #'embark-prefix-help-command)
+      (setq embark-prompter 'embark-completing-read-prompter)
+      :config
+      (defun search-in-source-graph (text))
+      (defun dragon-drop (file)
+        (start-process-shell-command "dragon-drop" nil
+                                     (concat "dragon-drop " file)))
 
-    ;; Preview any command with M-.
-    (define-key minibuffer-local-map (kbd "M-.") #'my-embark-preview)
-    (defun my-embark-preview ()
-      "Previews candidate in vertico buffer, unless it's a consult command"
-      (interactive)
-      (unless (bound-and-true-p consult--preview-function)
-        (save-selected-window
-          (let ((embark-quit-after-action nil))
-            (embark-dwim))))))
-  ;; Consult users will also want the embark-consult package.
-  (use-package embark-consult
-    :after (:all embark consult)
-    :demand t
-    ;; if you want to have consult previews as you move around an
-    ;; auto-updating embark collect buffer
-    :hook
-    (embark-collect-mode . consult-preview-at-point-mode))
-  ;; For uploading files
-  (use-package 0x0
-    :after embark
-    :bind (
-           :map embark-file-map
-           ("U"    . 0x0-upload-file)
-           :map embark-region-map
-           ("U"    . 0x0-dwim))
-    :commands (0x0-dwim 0x0-upload-file))
+      ;; Preview any command with M-.
+      (define-key minibuffer-local-map (kbd "M-.") #'my-embark-preview)
+      (defun my-embark-preview ()
+        "Previews candidate in vertico buffer, unless it's a consult command"
+        (interactive)
+        (unless (bound-and-true-p consult--preview-function)
+          (save-selected-window
+            (let ((embark-quit-after-action nil))
+              (embark-dwim))))))
+    ;; Consult users will also want the embark-consult package.
+    (use-package embark-consult
+      :after (:all embark consult)
+      :demand t
+      ;; if you want to have consult previews as you move around an
+      ;; auto-updating embark collect buffer
+      :hook
+      (embark-collect-mode . consult-preview-at-point-mode))
+    ;; For uploading files
+    (use-package 0x0
+      :after embark
+      :bind (
+             :map embark-file-map
+             ("U"    . 0x0-upload-file)
+             :map embark-region-map
+             ("U"    . 0x0-dwim))
+      :commands (0x0-dwim 0x0-upload-file))
 
-  ;;;; Code Completion
-  (use-package corfu
-    ;; Optional customizations
-    :custom
-    ;;(corfu-cycle t)                 ; Allows cycling through candidates
-    (corfu-auto t)                    ; Enable auto completion
-    ;;(corfu-auto-prefix 2)
-    (corfu-auto-delay 0.5)
-    (corfu-popupinfo-delay '(0.5 . 0.2))
-    ;;(corfu-preview-current 'insert) ; insert previewed candidate
-    ;;(corfu-preselect 'prompt)
-    ;;(corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
-    ;; Optionally use TAB for cycling, default is `corfu-complete'.
-    :bind (:map corfu-map
-                ("M-SPC"      . corfu-insert-separator)
-                ("TAB"        . corfu-next)
-                ([tab]        . corfu-next)
-                ("S-TAB"      . corfu-previous)
-                ([backtab]    . corfu-previous)
-                ("S-<return>" . corfu-insert)
-                ("RET"        . nil))
-  
-    :init
-    (global-corfu-mode)
-    (corfu-history-mode)
-    (corfu-popupinfo-mode) ; Popup completion info
-    :config
-    (add-hook 'eshell-mode-hook
-              (lambda () (setq-local corfu-quit-at-boundary t
-                                     corfu-quit-no-match t
-                                     corfu-auto nil)
-                (corfu-mode))))
+    ;;;; Code Completion
+    (use-package corfu
+      ;; Optional customizations
+      :custom
+      ;;(corfu-cycle t)                 ; Allows cycling through candidates
+      (corfu-auto t)                    ; Enable auto completion
+      ;;(corfu-auto-prefix 2)
+      (corfu-auto-delay 0.5)
+      (corfu-popupinfo-delay '(0.5 . 0.2))
+      ;;(corfu-preview-current 'insert) ; insert previewed candidate
+      ;;(corfu-preselect 'prompt)
+      ;;(corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
+      ;; Optionally use TAB for cycling, default is `corfu-complete'.
+      :bind (:map corfu-map
+                  ("M-SPC"      . corfu-insert-separator)
+                  ("TAB"        . corfu-next)
+                  ([tab]        . corfu-next)
+                  ("S-TAB"      . corfu-previous)
+                  ([backtab]    . corfu-previous)
+                  ("S-<return>" . corfu-insert)
+                  ("RET"        . nil))
+    
+      :init
+      (global-corfu-mode)
+      (corfu-history-mode)
+      (corfu-popupinfo-mode) ; Popup completion info
+      :config
+      (add-hook 'eshell-mode-hook
+                (lambda () (setq-local corfu-quit-at-boundary t
+                                       corfu-quit-no-match t
+                                       corfu-auto nil)
+                  (corfu-mode))))
 
-  (use-package emacs
-    :init
-    (setq completion-cycle-threshold 3)
-    (setq tab-always-indent 'complete))
+    (use-package emacs
+      :init
+      (setq completion-cycle-threshold 3)
+      (setq tab-always-indent 'complete))
 
-  (use-package cape
-    :defer 10
-    :bind ("C-c f" . cape-file)
-    :init
-    ;; Add `completion-at-point-functions', used by `completion-at-point'.
-    ;; (defalias 'dabbrev-after-2 (cape-capf-prefix-length #'cape-dabbrev 2))
-    ;; (add-to-list 'completion-at-point-functions 'dabbrev-after-2 t)
-    (cl-pushnew #'cape-file completion-at-point-functions)
-    :config
-    ;; Silence then pcomplete capf, no errors or messages!
-    (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
-    (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
-    ;; Ensure that pcomplete does not write to the buffer
-    ;; and behaves as a pure `completion-at-point-function'.
-    (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
+    (use-package cape
+      :defer 10
+      :bind ("C-c f" . cape-file)
+      :init
+      ;; Add `completion-at-point-functions', used by `completion-at-point'.
+      ;; (defalias 'dabbrev-after-2 (cape-capf-prefix-length #'cape-dabbrev 2))
+      ;; (add-to-list 'completion-at-point-functions 'dabbrev-after-2 t)
+      (cl-pushnew #'cape-file completion-at-point-functions)
+      :config
+      ;; Silence then pcomplete capf, no errors or messages!
+      (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
+      (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+      ;; Ensure that pcomplete does not write to the buffer
+      ;; and behaves as a pure `completion-at-point-function'.
+      ;;(advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
+      )
 
-  (use-package yasnippet-snippets
-    :after yasnippet)
-  ;; (use-package yasnippet-capf
-  ;;   :ensure nil
-  ;;   :quelpa (yasnippet-capf :fetcher github :repo "elken/yasnippet-capf")
-  ;;   :after yasnippet
-  ;;   :hook ((prog-mode . yas-setup-capf)
-  ;;          (text-mode . yas-setup-capf)
-  ;;          (lsp-mode  . yas-setup-capf)
-  ;;          (sly-mode  . yas-setup-capf))
-  ;;   :bind (("C-c y" . yasnippet-capf)
-  ;;          ("M-+"   . yas-insert-snippet))
-  ;;   :config
-  ;;   (defun yas-setup-capf ()
-  ;;     (setq-local completion-at-point-functions
-  ;;                 (cons 'yasnippet-capf
-  ;;                       completion-at-point-functions)))
-  ;;   (push 'yasnippet-capf completion-at-point-functions))
+    (use-package yasnippet-snippets
+      :after yasnippet)
+    ;; (use-package yasnippet-capf
+    ;;   :ensure nil
+    ;;   :quelpa (yasnippet-capf :fetcher github :repo "elken/yasnippet-capf")
+    ;;   :after yasnippet
+    ;;   :hook ((prog-mode . yas-setup-capf)
+    ;;          (text-mode . yas-setup-capf)
+    ;;          (lsp-mode  . yas-setup-capf)
+    ;;          (sly-mode  . yas-setup-capf))
+    ;;   :bind (("C-c y" . yasnippet-capf)
+    ;;          ("M-+"   . yas-insert-snippet))
+    ;;   :config
+    ;;   (defun yas-setup-capf ()
+    ;;     (setq-local completion-at-point-functions
+    ;;                 (cons 'yasnippet-capf
+    ;;                       completion-at-point-functions)))
+    ;;   (push 'yasnippet-capf completion-at-point-functions))
 
-(provide 'my-completion)
+  (provide 'my-completion)
 #+end_src
 
 * Which-key
@@ -963,7 +970,7 @@ small delay.
   ;; Spell checker.
 
   (require 'ispell)
-  (setenv "LANG" "en_GB")
+;;  (setenv "LANG" "en_GB.utf8")
   (setq ispell-program-name "hunspell")
   (if (string= system-type "windows-nt")
       (setq ispell-hunspell-dict-paths-alist
@@ -971,7 +978,7 @@ small delay.
   (setq ispell-local-dictionary "en_GB")
   (setq ispell-local-dictionary-alist
         '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)))
-  ;; (flyspell-mode 1)
+ (flyspell-mode 1)
   (global-set-key (kbd "M-\\") 'ispell-word)
 
   (provide 'my-ispell)
@@ -1085,7 +1092,9 @@ eglot configuration for lsp mode functionality.
     ;; assuming you have the respective LSP server installed.
     :hook ((web-mode . eglot-ensure)
            (rust-mode . eglot-ensure)
-           (rust-ts-mode . eglot-ensure))
+           (rust-ts-mode . eglot-ensure)
+           (go-mode . eglot-ensure)
+           (go-ts-mode . eglot-ensure))
     :config
     ;; You can configure additional LSP servers by modifying
     ;; `eglot-server-programs'. The following tells eglot to use TypeScript
@@ -1100,6 +1109,10 @@ eglot configuration for lsp mode functionality.
     ;; use orderless for completion filtering
     (setq completion-category-overrides '((eglot (styles orderless))
                                           (eglot-capf (styles orderless)))))
+
+(defun eglot-format-buffer-before-save ()
+  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+(add-hook 'go-mode-hook #'eglot-format-buffer-before-save)
 
 (provide 'my-lsp)
 #+end_src
@@ -1124,35 +1137,41 @@ works. TODO: Needs to be revisited.
 
 ** Go
 #+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp
-(use-package go-mode
-  :mode "\\.go\\'"
-  :preface
-  (defun vd/go-lsp-start()
-    (define-key go-ts-mode-map
-                ["RET"] 'newline-and-indent)
-    (define-key go-ts-mode-map
-                ["M-RET"] 'newline)
-    (add-hook 'before-save-hook #'lsp-format-buffer t t)
-    (add-hook 'before-save-hook #'lsp-organize-imports t t)
-    (lsp-deferred))
-  :hook
-  (go-ts-mode . vd/go-lsp-start)
-  :custom
-  (go-ts-mode-indent-offset 4)
+(use-package project)
+(defun project-find-go-module (dir)
+  (when-let ((root (locate-dominating-file dir "go.mod")))
+    (cons 'go-module root)))
+
+(cl-defmethod project-root ((project (head go-module)))
+  (cdr project))
+
+(add-hook 'project-find-functions #'project-find-go-module)
+
+
+
+(use-package go-ts-mode
+  :hook (go-ts-mode . eglot-ensure)
   :config
-  ;;(add-to-list 'exec-path "~/.local/bin")
-  (setq lsp-go-analyses '((nilness . t)
-                          (shadow . t)
-                          (unusedwrite . t)
-                          (fieldalignment . t))
-        lsp-go-codelenses '((test . t)
-                            (tidy . t)
-                            (upgrade_dependency . t)
-                            (vendor . t)
-                            (run_govulncheck . t)
-                            )))
-(use-package go-tag)
-(use-package godoctor)
+  (add-hook 'go-ts-mode-hook #'(lambda ()
+                                 (setq-local tab-width 4)))
+  (setq gofmt-command "goimports"))
+
+(setq-default eglot-workspace-configuration
+              '((:gopls .
+                        ((staticcheck . t)
+                         (matcher . "CaseSensitive")))))
+
+(add-hook 'before-save-hook
+          (lambda ()
+            (call-interactively 'eglot-code-action-organize-imports))
+          nil t)
+
+(use-package go-mode
+  :after go-ts-mode)
+
+(use-package gotest
+  :after go-ts-mode)
+
 #+end_src
 ** Rust
 Started learning rust. This config snippet is copied from elsewhere,
@@ -1300,12 +1319,13 @@ quicklisp leads to the following:
 ** Guile
 Guile configuration from the Guile Hackers Manual, [[https://jeko.frama.io/en/emacs.html][here]], plus
 additions and changes.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ./.files/.emacs.d/pj-modules/my-programming.el :mkdirp t
 (use-package geiser
   :config
-  (setq geiser-guile-binary "/usr/bin/guile-3.0"))
+  (setq geiser-default-implementation 'guile))
 
-(use-package geiser-guile)
+(use-package geiser-guile
+  :after geiser)
   
 #+end_src
 ** lua
@@ -1416,7 +1436,6 @@ Developed from bbatsov's code on his github.
 ;; thank you bbatsov - for sharing your code for ERC config.
 
 (require 'erc)
-(require 'erc-log)
 (require 'erc-notify)
 (require 'erc-spelling)
 (require 'erc-autoaway)
@@ -1436,7 +1455,7 @@ Developed from bbatsov's code on his github.
                                      "#rust"
                            ;;          "#clojure"
                                      "#haskell"
-                           ;;          "#debian"
+                                     "#debian"
                                      "#scheme"
                                      "#guix"
                                      "#nonguix"
