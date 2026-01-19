@@ -1090,7 +1090,11 @@ eglot configuration for lsp mode functionality.
            ("C-c ." . eglot-code-action-quickfix))
     ;; Add your programming modes here to automatically start Eglot,
     ;; assuming you have the respective LSP server installed.
-    :hook ((web-mode . eglot-ensure)
+    :hook ((c-mode . eglot-ensure)
+           (c-ts-mode . eglot-ensure)
+           (c++-mode . eglot-ensure)
+           (c++-ts-mode . eglot-ensure)
+           (web-mode . eglot-ensure)
            (rust-mode . eglot-ensure)
            (rust-ts-mode . eglot-ensure)
            (go-mode . eglot-ensure)
